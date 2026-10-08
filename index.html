@@ -45,7 +45,7 @@ header p {
 
 .stats {
     display: grid;
-    grid-template-columns: repeat(5, 1fr);
+    grid-template-columns: repeat(6, 1fr);
     gap: 10px;
     margin-bottom: 20px;
 }
@@ -66,6 +66,10 @@ header p {
 
 .hp {
     color: #ff5555;
+}
+
+.mana {
+    color: #4ca6ff;
 }
 
 .gold {
@@ -114,7 +118,8 @@ header p {
     filter: drop-shadow(0 0 20px #ff3030);
 }
 
-.healthbar {
+.healthbar,
+.manabar {
     width: 80%;
     height: 20px;
     background: #241c2c;
@@ -123,14 +128,22 @@ header p {
     margin: 8px;
 }
 
-.health {
+.health,
+.manaBar {
     height: 100%;
-    background: linear-gradient(90deg,#ff3030,#ff7b55);
     transition: width .3s;
+}
+
+.health {
+    background: linear-gradient(90deg,#ff3030,#ff7b55);
 }
 
 .enemyhealth {
     background: linear-gradient(90deg,#7d22ff,#d832ff);
+}
+
+.manaBar {
+    background: linear-gradient(90deg,#1677ff,#6ac7ff);
 }
 
 button {
@@ -151,8 +164,18 @@ button:hover {
     background: #493a7d;
 }
 
+button:disabled {
+    opacity: .4;
+    cursor: not-allowed;
+    transform: none;
+}
+
 .attack {
     background: linear-gradient(135deg,#7b35ff,#bd3dff);
+}
+
+.magic {
+    background: linear-gradient(135deg,#135de6,#8b5cff);
 }
 
 .shop {
@@ -185,25 +208,36 @@ button:hover {
     color: #bbb;
 }
 
-.shop-grid {
+.shop-grid,
+.spell-grid {
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 10px;
 }
 
-.item {
+.item,
+.spell {
     padding: 15px;
     background: #171526;
     border: 1px solid #342d50;
     border-radius: 12px;
 }
 
-.item-icon {
+.item-icon,
+.spell-icon {
     font-size: 40px;
 }
 
-.locked {
-    opacity: .4;
+.spell {
+    border-color: #3b62a5;
+}
+
+.spell h3 {
+    margin: 8px 0;
+}
+
+.spell small {
+    color: #aaa;
 }
 
 #shopPanel,
@@ -222,8 +256,8 @@ button:hover {
 }
 
 .modal-content {
-    width: min(700px, 90%);
-    max-height: 85vh;
+    width: min(800px, 92%);
+    max-height: 90vh;
     overflow-y: auto;
     background: #11111d;
     border: 1px solid #6046a5;
@@ -248,13 +282,49 @@ button:hover {
     font-size: 60px;
 }
 
+.status {
+    color: #ff9c42;
+    font-weight: bold;
+    min-height: 22px;
+}
+
+#magicButtons {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 5px;
+    margin-top: 5px;
+}
+
+#magicButtons button {
+    margin: 2px 0;
+}
+
+@media(max-width: 900px) {
+    .stats {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
+
 @media(max-width: 800px) {
+    .layout {
+        grid-template-columns: 1fr;
+    }
+
     .stats {
         grid-template-columns: repeat(2, 1fr);
     }
 
-    .layout {
+    .spell-grid,
+    .shop-grid {
         grid-template-columns: 1fr;
+    }
+
+    .character {
+        font-size: 75px;
+    }
+
+    .enemy {
+        font-size: 65px;
     }
 }
 </style>
@@ -264,7 +334,7 @@ button:hover {
 
 <header>
     <h1>⚔️ KARANLIK ARENA ⚔️</h1>
-    <p>Güçlen. Silahını geliştir. Bossları yok et.</p>
+    <p>Güçlen. Büyüler öğren. Silahını geliştir. Bossları yok et.</p>
 </header>
 
 <div class="container">
@@ -274,6 +344,11 @@ button:hover {
         <div class="stat">
             ❤️ CAN
             <strong class="hp" id="hpText">100 / 100</strong>
+        </div>
+
+        <div class="stat">
+            🔵 MANA
+            <strong class="mana" id="manaText">100 / 100</strong>
         </div>
 
         <div class="stat">
@@ -323,6 +398,8 @@ button:hover {
 
                     <span id="enemyHpText">50 / 50</span>
 
+                    <div class="status" id="enemyStatus"></div>
+
                 </div>
 
                 <div class="healthbar">
@@ -334,6 +411,15 @@ button:hover {
 
                 <span id="playerHpSmall">100 / 100</span>
 
+                <div class="manabar">
+                    <div id="playerManaBar"
+                         class="manaBar"
+                         style="width:100%">
+                    </div>
+                </div>
+
+                <span id="playerManaSmall">100 / 100 Mana</span>
+
             </div>
 
             <div id="actionButtons">
@@ -342,8 +428,36 @@ button:hover {
                     ⚔️ SALDIR
                 </button>
 
+                <div id="magicButtons">
+
+                    <button class="magic" onclick="castSpell('fireball')">
+                        🔥 Ateş Topu
+                    </button>
+
+                    <button class="magic" onclick="castSpell('ice')">
+                        ❄️ Buz Mızrağı
+                    </button>
+
+                    <button class="magic" onclick="castSpell('lightning')">
+                        ⚡ Şimşek
+                    </button>
+
+                    <button class="magic" onclick="castSpell('heal')">
+                        ✨ Kutsal Şifa
+                    </button>
+
+                    <button class="magic" onclick="castSpell('curse')">
+                        ☠️ Lanet
+                    </button>
+
+                </div>
+
                 <button onclick="drinkPotion()">
                     🧪 İKSİR KULLAN
+                </button>
+
+                <button onclick="restoreMana()">
+                    🔵 MANA İKSİRİ
                 </button>
 
                 <button onclick="goForest()">
@@ -363,6 +477,7 @@ button:hover {
             <div class="log" id="log">
                 <p>⚔️ Maceraya hoş geldin savaşçı.</p>
                 <p>🌲 Ormana girerek savaşmaya başlayabilirsin.</p>
+                <p>🔮 Büyülerini kullanmak için önce bir düşmanla savaş.</p>
             </div>
 
         </div>
@@ -374,7 +489,18 @@ button:hover {
             <p>⚔️ Silah: <b id="weaponText">Tahta Kılıç</b></p>
             <p>🔨 Silah Seviyesi: <b id="weaponLevelText">1</b></p>
             <p>🧪 İksir: <b id="potionText">3</b></p>
+            <p>🔵 Mana İksiri: <b id="manaPotionText">2</b></p>
             <p>✨ XP: <b id="xpText">0 / 100</b></p>
+
+            <hr>
+
+            <h3>🔮 Büyüler</h3>
+
+            <p>🔥 Ateş Topu — 25 Mana</p>
+            <p>❄️ Buz Mızrağı — 20 Mana</p>
+            <p>⚡ Şimşek — 35 Mana</p>
+            <p>✨ Kutsal Şifa — 30 Mana</p>
+            <p>☠️ Lanet — 40 Mana</p>
 
             <hr>
 
@@ -389,9 +515,10 @@ button:hover {
             <hr>
 
             <h3>💡 İpucu</h3>
+
             <p style="color:#aaa">
-                Altınlarını markette silah ve zırh almak için kullan.
-                Level atladıkça daha güçlü bosslar açılır.
+                Büyüler normal saldırıdan daha güçlüdür fakat mana tüketir.
+                Mana iksirleri ile savaş sırasında mana doldurabilirsin.
             </p>
 
         </div>
@@ -415,10 +542,18 @@ button:hover {
 
 <div class="item">
 <div class="item-icon">🧪</div>
-<h3>İksir</h3>
+<h3>Can İksiri</h3>
 <p>+50 Can</p>
 <p>💰 30 altın</p>
 <button onclick="buyPotion()">SATIN AL</button>
+</div>
+
+<div class="item">
+<div class="item-icon">🔵</div>
+<h3>Mana İksiri</h3>
+<p>+50 Mana</p>
+<p>💰 40 altın</p>
+<button onclick="buyManaPotion()">SATIN AL</button>
 </div>
 
 <div class="item">
@@ -466,6 +601,67 @@ button:hover {
 <br>
 
 <button class="close" onclick="closeShop()">❌ KAPAT</button>
+
+</div>
+</div>
+
+
+<!-- BÜYÜLER -->
+
+<div class="modal" id="spellModal">
+
+<div class="modal-content">
+
+<h2>🔮 BÜYÜ KİTABI</h2>
+
+<p>
+Büyüler savaş sırasında kullanılabilir.
+</p>
+
+<div class="spell-grid">
+
+<div class="spell">
+<div class="spell-icon">🔥</div>
+<h3>Ateş Topu</h3>
+<p>Güçlü ateş saldırısı.</p>
+<small>Mana: 25 | Hasar: 35-50</small>
+</div>
+
+<div class="spell">
+<div class="spell-icon">❄️</div>
+<h3>Buz Mızrağı</h3>
+<p>Düşmanı yavaşlatır.</p>
+<small>Mana: 20 | Hasar: 25-40</small>
+</div>
+
+<div class="spell">
+<div class="spell-icon">⚡</div>
+<h3>Şimşek</h3>
+<p>Çok yüksek hasar verir.</p>
+<small>Mana: 35 | Hasar: 50-75</small>
+</div>
+
+<div class="spell">
+<div class="spell-icon">✨</div>
+<h3>Kutsal Şifa</h3>
+<p>Canını iyileştirir.</p>
+<small>Mana: 30 | +60 Can</small>
+</div>
+
+<div class="spell">
+<div class="spell-icon">☠️</div>
+<h3>Lanet</h3>
+<p>Düşmanın saldırısını azaltır.</p>
+<small>Mana: 40 | Hasar: 20-30</small>
+</div>
+
+</div>
+
+<br>
+
+<button class="close" onclick="closeSpellBook()">
+❌ KAPAT
+</button>
 
 </div>
 </div>
@@ -543,7 +739,9 @@ SAVAŞ
 
 </div>
 
-<button class="close" onclick="closeArena()">❌ KAPAT</button>
+<button class="close" onclick="closeArena()">
+❌ KAPAT
+</button>
 
 </div>
 </div>
@@ -556,6 +754,9 @@ let player = {
     hp: 100,
     maxHp: 100,
 
+    mana: 100,
+    maxMana: 100,
+
     attack: 10,
     defense: 0,
 
@@ -565,6 +766,7 @@ let player = {
     xp: 0,
 
     potions: 3,
+    manaPotions: 2,
 
     weapon: "Tahta Kılıç",
     weaponLevel: 1
@@ -595,6 +797,7 @@ function log(text) {
     box.appendChild(p);
 
     box.scrollTop = box.scrollHeight;
+
 }
 
 
@@ -607,7 +810,18 @@ function update() {
         `${player.hp} / ${player.maxHp}`;
 
     document.getElementById("playerHealth").style.width =
-        `${Math.max(0,player.hp/player.maxHp*100)}%`;
+        `${Math.max(0, player.hp / player.maxHp * 100)}%`;
+
+
+    document.getElementById("manaText").textContent =
+        `${player.mana} / ${player.maxMana}`;
+
+    document.getElementById("playerManaSmall").textContent =
+        `${player.mana} / ${player.maxMana} Mana`;
+
+    document.getElementById("playerManaBar").style.width =
+        `${Math.max(0, player.mana / player.maxMana * 100)}%`;
+
 
     document.getElementById("attackText").textContent =
         player.attack;
@@ -630,20 +844,48 @@ function update() {
     document.getElementById("potionText").textContent =
         player.potions;
 
+    document.getElementById("manaPotionText").textContent =
+        player.manaPotions;
+
     document.getElementById("xpText").textContent =
         `${player.xp} / ${requiredXP()}`;
+
 
     if(enemy) {
 
         document.getElementById("enemyHpText").textContent =
-            `${Math.max(0,enemy.hp)} / ${enemy.maxHp}`;
+            `${Math.max(0, enemy.hp)} / ${enemy.maxHp}`;
 
         document.getElementById("enemyHealth").style.width =
-            `${Math.max(0,enemy.hp/enemy.maxHp*100)}%`;
+            `${Math.max(0, enemy.hp / enemy.maxHp * 100)}%`;
+
+        if(enemy.burning) {
+
+            document.getElementById("enemyStatus").textContent =
+                "🔥 YANIYOR";
+
+        } else if(enemy.frozen) {
+
+            document.getElementById("enemyStatus").textContent =
+                "❄️ YAVAŞLADI";
+
+        } else if(enemy.cursed) {
+
+            document.getElementById("enemyStatus").textContent =
+                "☠️ LANETLİ";
+
+        } else {
+
+            document.getElementById("enemyStatus").textContent =
+                "";
+
+        }
     }
+
 
     document.getElementById("shopGold").textContent =
         player.gold;
+
 }
 
 
@@ -670,11 +912,17 @@ function gainXP(amount) {
 
         player.hp = player.maxHp;
 
+        player.maxMana += 15;
+
+        player.mana = player.maxMana;
+
         player.attack += 5;
 
         log(`🎉 LEVEL ${player.level}!`);
 
         log("❤️ Maksimum canın arttı!");
+
+        log("🔵 Maksimum manan arttı!");
 
         log("⚔️ Saldırın arttı!");
 
@@ -689,9 +937,11 @@ function gainXP(amount) {
 
         if(player.level === 12)
             log("🐉 EJDERHA AÇILDI!");
+
     }
 
     update();
+
 }
 
 
@@ -705,23 +955,32 @@ function goForest() {
     }
 
     let e = enemies[
-        Math.floor(Math.random()*enemies.length)
+        Math.floor(Math.random() * enemies.length)
     ];
 
     enemy = {
 
-        name:e[0],
-        emoji:e[1],
-        hp:e[2] + player.level*5,
-        maxHp:e[2] + player.level*5,
-        attack:e[3] + player.level,
-        gold:e[4],
-        xp:e[5],
-        boss:false
+        name: e[0],
+        emoji: e[1],
+
+        hp: e[2] + player.level * 5,
+        maxHp: e[2] + player.level * 5,
+
+        attack: e[3] + player.level,
+
+        gold: e[4],
+        xp: e[5],
+
+        boss: false,
+
+        burning: false,
+        frozen: false,
+        cursed: false
 
     };
 
-    document.getElementById("enemyArea").style.display = "block";
+    document.getElementById("enemyArea").style.display =
+        "block";
 
     document.getElementById("enemyEmoji").textContent =
         enemy.emoji;
@@ -750,7 +1009,7 @@ function attack() {
 
     let damage =
         player.attack +
-        Math.floor(Math.random()*11);
+        Math.floor(Math.random() * 11);
 
     let critical =
         Math.random() < 0.15;
@@ -781,18 +1040,217 @@ function attack() {
 }
 
 
+function castSpell(type) {
+
+    if(!enemy) {
+
+        log("🔮 Büyü kullanmak için önce bir düşman bul!");
+
+        return;
+    }
+
+
+    let manaCost = 0;
+    let damage = 0;
+
+
+    if(type === "fireball") {
+
+        manaCost = 25;
+
+        if(player.mana < manaCost) {
+            log("🔵 Yeterli manan yok!");
+            return;
+        }
+
+        damage = random(35,50);
+
+        player.mana -= manaCost;
+
+        enemy.hp -= damage;
+
+        enemy.burning = true;
+
+        log(`🔥 Ateş Topu ${damage} hasar verdi!`);
+
+        log("🔥 Düşman yanmaya başladı!");
+
+    }
+
+
+    else if(type === "ice") {
+
+        manaCost = 20;
+
+        if(player.mana < manaCost) {
+            log("🔵 Yeterli manan yok!");
+            return;
+        }
+
+        damage = random(25,40);
+
+        player.mana -= manaCost;
+
+        enemy.hp -= damage;
+
+        enemy.frozen = true;
+
+        log(`❄️ Buz Mızrağı ${damage} hasar verdi!`);
+
+        log("❄️ Düşman yavaşladı!");
+
+    }
+
+
+    else if(type === "lightning") {
+
+        manaCost = 35;
+
+        if(player.mana < manaCost) {
+            log("🔵 Yeterli manan yok!");
+            return;
+        }
+
+        damage = random(50,75);
+
+        player.mana -= manaCost;
+
+        let critical = Math.random() < 0.25;
+
+        if(critical) {
+
+            damage *= 2;
+
+            log("⚡ ŞİMŞEK KRİTİK VURUŞ YAPTI!");
+
+        }
+
+        enemy.hp -= damage;
+
+        log(`⚡ Şimşek ${damage} hasar verdi!`);
+
+    }
+
+
+    else if(type === "heal") {
+
+        manaCost = 30;
+
+        if(player.mana < manaCost) {
+            log("🔵 Yeterli manan yok!");
+            return;
+        }
+
+        if(player.hp >= player.maxHp) {
+
+            log("❤️ Canın zaten full!");
+
+            return;
+        }
+
+        player.mana -= manaCost;
+
+        let heal = 60;
+
+        player.hp =
+            Math.min(player.maxHp, player.hp + heal);
+
+        log(`✨ Kutsal Şifa ile ${heal} can yeniledin.`);
+
+        enemyAttack();
+
+        update();
+
+        return;
+
+    }
+
+
+    else if(type === "curse") {
+
+        manaCost = 40;
+
+        if(player.mana < manaCost) {
+            log("🔵 Yeterli manan yok!");
+            return;
+        }
+
+        damage = random(20,30);
+
+        player.mana -= manaCost;
+
+        enemy.hp -= damage;
+
+        enemy.cursed = true;
+
+        log(`☠️ Lanet ${damage} hasar verdi!`);
+
+        log("☠️ Düşmanın saldırısı azaldı!");
+
+    }
+
+
+    if(enemy.hp <= 0) {
+
+        winBattle();
+
+        return;
+    }
+
+    enemyAttack();
+
+    update();
+
+}
+
+
+function random(min,max) {
+
+    return Math.floor(
+        Math.random() * (max - min + 1)
+    ) + min;
+
+}
+
+
 function enemyAttack() {
 
+    let enemyDamage = enemy.attack;
+
+    if(enemy.frozen) {
+
+        enemyDamage = Math.floor(enemyDamage * 0.65);
+
+    }
+
+    if(enemy.cursed) {
+
+        enemyDamage = Math.floor(enemyDamage * 0.55);
+
+    }
+
     let damage =
-        enemy.attack -
+        enemyDamage -
         player.defense +
-        Math.floor(Math.random()*6);
+        Math.floor(Math.random() * 6);
 
     damage = Math.max(1,damage);
 
     player.hp -= damage;
 
     log(`💢 ${enemy.name} sana ${damage} hasar verdi.`);
+
+
+    if(enemy.burning) {
+
+        let burnDamage = random(5,10);
+
+        enemy.hp -= burnDamage;
+
+        log(`🔥 Yanma etkisi ${burnDamage} hasar verdi!`);
+
+    }
+
 
     if(player.hp <= 0) {
 
@@ -801,6 +1259,7 @@ function enemyAttack() {
         log("💀 ÖLDÜN!");
 
         setTimeout(gameOver,500);
+
     }
 
 }
@@ -833,7 +1292,7 @@ function drinkPotion() {
 
     if(player.potions <= 0) {
 
-        log("❌ İksirin yok!");
+        log("❌ Can iksirin yok!");
 
         return;
     }
@@ -850,9 +1309,39 @@ function drinkPotion() {
     let heal = 50;
 
     player.hp =
-        Math.min(player.maxHp,player.hp+heal);
+        Math.min(player.maxHp,player.hp + heal);
 
     log(`🧪 +${heal} can yeniledin.`);
+
+    update();
+
+}
+
+
+function restoreMana() {
+
+    if(player.manaPotions <= 0) {
+
+        log("❌ Mana iksirin yok!");
+
+        return;
+    }
+
+    if(player.mana >= player.maxMana) {
+
+        log("🔵 Manan zaten full!");
+
+        return;
+    }
+
+    player.manaPotions--;
+
+    let mana = 50;
+
+    player.mana =
+        Math.min(player.maxMana,player.mana + mana);
+
+    log(`🔵 +${mana} mana yeniledin.`);
 
     update();
 
@@ -890,7 +1379,27 @@ function buyPotion() {
 
     player.potions++;
 
-    log("🧪 İksir satın aldın!");
+    log("🧪 Can iksiri satın aldın!");
+
+    update();
+
+}
+
+
+function buyManaPotion() {
+
+    if(player.gold < 40) {
+
+        log("❌ Yeterli altının yok!");
+
+        return;
+    }
+
+    player.gold -= 40;
+
+    player.manaPotions++;
+
+    log("🔵 Mana iksiri satın aldın!");
 
     update();
 
@@ -909,6 +1418,8 @@ function buyWeapon(name,attack,cost) {
     player.gold -= cost;
 
     player.weapon = name;
+
+    player.weaponLevel++;
 
     player.attack += attack;
 
@@ -957,7 +1468,15 @@ function closeArena() {
 }
 
 
-function startBoss(name,emoji,hp,attack,gold,xp,levelRequired) {
+function startBoss(
+    name,
+    emoji,
+    hp,
+    attack,
+    gold,
+    xp,
+    levelRequired
+) {
 
     if(player.level < levelRequired) {
 
@@ -992,7 +1511,11 @@ function startBoss(name,emoji,hp,attack,gold,xp,levelRequired) {
         gold:gold,
         xp:xp,
 
-        boss:true
+        boss:true,
+
+        burning:false,
+        frozen:false,
+        cursed:false
 
     };
 
@@ -1026,6 +1549,22 @@ function gameOver() {
     );
 
     location.reload();
+
+}
+
+
+function openSpellBook() {
+
+    document.getElementById("spellModal").style.display =
+        "flex";
+
+}
+
+
+function closeSpellBook() {
+
+    document.getElementById("spellModal").style.display =
+        "none";
 
 }
 
