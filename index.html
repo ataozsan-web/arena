@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>⚔️ Karanlık Arena</title>
+<title>Karanlık Krallık RPG</title>
 
 <style>
 * {
@@ -13,1024 +13,1000 @@
 body {
     margin: 0;
     font-family: Arial, sans-serif;
-    color: white;
-    min-height: 100vh;
     background:
-        radial-gradient(circle at 50% 20%, #293b66 0%, transparent 35%),
-        linear-gradient(135deg, #080b14, #151027 50%, #080812);
-}
-
-header {
-    text-align: center;
-    padding: 20px;
-    background: rgba(0,0,0,.45);
-    border-bottom: 2px solid #784cff;
-}
-
-header h1 {
-    margin: 0;
-    color: #c9a7ff;
-    text-shadow: 0 0 20px #8c52ff;
-}
-
-header p {
-    color: #aaa;
+        linear-gradient(rgba(5,10,8,.75), rgba(5,10,8,.9)),
+        url("https://images.unsplash.com/photo-1448375240586-882707db888b?auto=format&fit=crop&w=1600&q=80");
+    background-size: cover;
+    background-attachment: fixed;
+    color: white;
 }
 
 .container {
-    max-width: 1200px;
+    max-width: 1100px;
     margin: auto;
     padding: 20px;
 }
 
+header {
+    background: rgba(0,0,0,.75);
+    border: 2px solid #604020;
+    border-radius: 15px;
+    padding: 20px;
+    text-align: center;
+    margin-bottom: 15px;
+}
+
+header h1 {
+    margin: 0 0 10px;
+    color: #ffd166;
+}
+
 .stats {
-    display: grid;
-    grid-template-columns: repeat(5, 1fr);
-    gap: 10px;
-    margin-bottom: 20px;
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    flex-wrap: wrap;
 }
 
 .stat {
-    background: rgba(20,20,35,.9);
-    border: 1px solid #3d3565;
-    border-radius: 12px;
-    padding: 14px;
-    text-align: center;
+    background: #191919;
+    padding: 8px 14px;
+    border-radius: 8px;
+    border: 1px solid #555;
 }
 
-.stat strong {
-    display: block;
-    font-size: 20px;
-    margin-top: 5px;
-}
-
-.hp {
-    color: #ff5555;
-}
-
-.gold {
-    color: #ffd34e;
-}
-
-.xp {
-    color: #a86cff;
-}
-
-.layout {
-    display: grid;
-    grid-template-columns: 2fr 1fr;
-    gap: 20px;
-}
-
-.panel {
-    background: rgba(12,13,24,.93);
-    border: 1px solid #39325b;
-    border-radius: 18px;
-    padding: 20px;
-    box-shadow: 0 10px 40px rgba(0,0,0,.35);
-}
-
-.scene {
-    min-height: 400px;
-    border-radius: 16px;
-    background:
-        radial-gradient(circle at 50% 50%, rgba(109,65,180,.25), transparent 45%),
-        linear-gradient(#11182a, #080910);
+.menu {
     display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    border: 1px solid #443b70;
-}
-
-.character {
-    font-size: 100px;
-    filter: drop-shadow(0 0 20px #8b5cff);
-}
-
-.enemy {
-    font-size: 85px;
-    margin: 15px;
-    filter: drop-shadow(0 0 20px #ff3030);
-}
-
-.healthbar {
-    width: 80%;
-    height: 20px;
-    background: #241c2c;
-    border-radius: 20px;
-    overflow: hidden;
-    margin: 8px;
-}
-
-.health {
-    height: 100%;
-    background: linear-gradient(90deg,#ff3030,#ff7b55);
-    transition: width .3s;
-}
-
-.enemyhealth {
-    background: linear-gradient(90deg,#7d22ff,#d832ff);
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 15px;
 }
 
 button {
-    width: 100%;
-    border: 0;
-    border-radius: 10px;
-    padding: 13px;
-    margin: 5px 0;
-    background: #292344;
+    background: #252525;
     color: white;
+    border: 1px solid #777;
+    padding: 11px 16px;
+    border-radius: 8px;
     cursor: pointer;
-    font-size: 15px;
-    transition: .15s;
+    font-weight: bold;
 }
 
 button:hover {
-    transform: translateY(-2px);
-    background: #493a7d;
+    background: #4a321e;
 }
 
-.attack {
-    background: linear-gradient(135deg,#7b35ff,#bd3dff);
+button:disabled {
+    opacity: .4;
+    cursor: not-allowed;
 }
 
-.shop {
-    background: linear-gradient(135deg,#d08b20,#ffd447);
-    color: #211800;
+.panel {
+    background: rgba(12,12,12,.9);
+    border: 1px solid #604020;
+    border-radius: 12px;
+    padding: 20px;
+    margin-bottom: 15px;
 }
 
-.arena {
-    background: linear-gradient(135deg,#a51f3e,#e54665);
+.hidden {
+    display: none;
 }
 
-.danger {
-    background: #461e28;
+h2 {
+    color: #ffd166;
+}
+
+h3 {
+    color: #e9b949;
+}
+
+.forest {
+    background: linear-gradient(135deg, #162d1b, #101510);
+    border: 1px solid #315a36;
+    border-radius: 10px;
+    padding: 15px;
+    margin: 10px 0;
+}
+
+.forest.locked {
+    opacity: .45;
+}
+
+.forest button {
+    margin-top: 8px;
+}
+
+.enemy {
+    background: #261515;
+    border: 1px solid #743434;
+    border-radius: 12px;
+    padding: 20px;
+    text-align: center;
+}
+
+.enemy-img {
+    font-size: 75px;
+}
+
+.hpbar {
+    width: 100%;
+    height: 20px;
+    background: #222;
+    border-radius: 10px;
+    overflow: hidden;
+    margin: 10px 0;
+}
+
+.hp {
+    height: 100%;
+    background: linear-gradient(90deg, #d62828, #ef5350);
+    transition: width .3s;
 }
 
 .log {
-    height: 220px;
+    height: 180px;
     overflow-y: auto;
-    background: #080910;
-    border-radius: 12px;
+    background: #080808;
     padding: 12px;
+    border-radius: 8px;
+    border: 1px solid #333;
     margin-top: 15px;
-    border: 1px solid #29233e;
-    font-family: monospace;
-    font-size: 13px;
 }
 
-.log p {
-    margin: 6px 0;
-    color: #bbb;
-}
-
-.shop-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 10px;
-}
-
+.shop-item,
 .item {
-    padding: 15px;
-    background: #171526;
-    border: 1px solid #342d50;
-    border-radius: 12px;
-}
-
-.item-icon {
-    font-size: 40px;
-}
-
-.locked {
-    opacity: .4;
-}
-
-#shopPanel,
-#arenaPanel {
-    display: none;
-}
-
-.modal {
-    position: fixed;
-    inset: 0;
-    background: rgba(0,0,0,.8);
-    display: none;
-    justify-content: center;
+    display: flex;
+    justify-content: space-between;
     align-items: center;
-    z-index: 10;
+    background: #191919;
+    padding: 12px;
+    margin: 8px 0;
+    border-radius: 8px;
 }
 
-.modal-content {
-    width: min(700px, 90%);
-    max-height: 85vh;
-    overflow-y: auto;
-    background: #11111d;
-    border: 1px solid #6046a5;
-    border-radius: 18px;
-    padding: 25px;
+.good {
+    color: #6ee76e;
 }
 
-.close {
-    background: #392331;
+.bad {
+    color: #ff6464;
 }
 
-.boss-card {
-    text-align: center;
-    padding: 18px;
-    margin: 10px 0;
-    border: 1px solid #49345f;
-    border-radius: 15px;
-    background: #17121f;
-}
-
-.boss-icon {
-    font-size: 60px;
-}
-
-@media(max-width: 800px) {
-    .stats {
-        grid-template-columns: repeat(2, 1fr);
-    }
-
-    .layout {
-        grid-template-columns: 1fr;
-    }
+.gold {
+    color: #ffd166;
 }
 </style>
 </head>
 
 <body>
 
-<header>
-    <h1>⚔️ KARANLIK ARENA ⚔️</h1>
-    <p>Güçlen. Silahını geliştir. Bossları yok et.</p>
-</header>
-
 <div class="container">
 
+<header>
+    <h1>⚔️ KARANLIK KRALLIK</h1>
+
     <div class="stats">
-
-        <div class="stat">
-            ❤️ CAN
-            <strong class="hp" id="hpText">100 / 100</strong>
-        </div>
-
-        <div class="stat">
-            ⚔️ SALDIRI
-            <strong id="attackText">10</strong>
-        </div>
-
-        <div class="stat">
-            🛡️ SAVUNMA
-            <strong id="defenseText">0</strong>
-        </div>
-
-        <div class="stat">
-            ⭐ LEVEL
-            <strong id="levelText">1</strong>
-        </div>
-
-        <div class="stat">
-            💰 ALTIN
-            <strong class="gold" id="goldText">100</strong>
-        </div>
-
+        <div class="stat">❤️ Can: <span id="hp">100</span>/100</div>
+        <div class="stat">⭐ Seviye: <span id="level">1</span></div>
+        <div class="stat">✨ XP: <span id="xp">0</span>/<span id="xpNeed">100</span></div>
+        <div class="stat">💰 Altın: <span id="gold">100</span></div>
+        <div class="stat">⚔️ Saldırı: <span id="attack">10</span></div>
+        <div class="stat">🛡️ Savunma: <span id="defense">5</span></div>
     </div>
+</header>
 
-    <div class="layout">
-
-        <div class="panel">
-
-            <div class="scene">
-
-                <div id="playerEmoji" class="character">🧙‍♂️</div>
-
-                <h2 id="sceneTitle">Karanlık Orman</h2>
-
-                <div id="enemyArea" style="display:none;text-align:center">
-
-                    <div id="enemyEmoji" class="enemy">👹</div>
-
-                    <h2 id="enemyName">Goblin</h2>
-
-                    <div class="healthbar">
-                        <div id="enemyHealth"
-                             class="health enemyhealth"
-                             style="width:100%">
-                        </div>
-                    </div>
-
-                    <span id="enemyHpText">50 / 50</span>
-
-                </div>
-
-                <div class="healthbar">
-                    <div id="playerHealth"
-                         class="health"
-                         style="width:100%">
-                    </div>
-                </div>
-
-                <span id="playerHpSmall">100 / 100</span>
-
-            </div>
-
-            <div id="actionButtons">
-
-                <button class="attack" onclick="attack()">
-                    ⚔️ SALDIR
-                </button>
-
-                <button onclick="drinkPotion()">
-                    🧪 İKSİR KULLAN
-                </button>
-
-                <button onclick="goForest()">
-                    🌲 ORMANA GİT
-                </button>
-
-                <button class="shop" onclick="openShop()">
-                    🏪 MARKET
-                </button>
-
-                <button class="arena" onclick="openArena()">
-                    🏟️ ARENA
-                </button>
-
-            </div>
-
-            <div class="log" id="log">
-                <p>⚔️ Maceraya hoş geldin savaşçı.</p>
-                <p>🌲 Ormana girerek savaşmaya başlayabilirsin.</p>
-            </div>
-
-        </div>
-
-        <div class="panel">
-
-            <h2>🎒 Karakter</h2>
-
-            <p>⚔️ Silah: <b id="weaponText">Tahta Kılıç</b></p>
-            <p>🔨 Silah Seviyesi: <b id="weaponLevelText">1</b></p>
-            <p>🧪 İksir: <b id="potionText">3</b></p>
-            <p>✨ XP: <b id="xpText">0 / 100</b></p>
-
-            <hr>
-
-            <h3>🎯 Hedefler</h3>
-
-            <p>🌲 Orman → sınırsız</p>
-            <p>🏟️ Arena → Level 3</p>
-            <p>👹 Ork Şefi → Level 5</p>
-            <p>🔥 Cehennem Lordu → Level 8</p>
-            <p>🐉 Ejderha → Level 12</p>
-
-            <hr>
-
-            <h3>💡 İpucu</h3>
-            <p style="color:#aaa">
-                Altınlarını markette silah ve zırh almak için kullan.
-                Level atladıkça daha güçlü bosslar açılır.
-            </p>
-
-        </div>
-
-    </div>
-
+<div class="menu">
+    <button onclick="showPanel('world')">🌲 Ormanlar</button>
+    <button onclick="showPanel('shop')">🏪 Market</button>
+    <button onclick="showPanel('equipment')">⚔️ Ekipman</button>
+    <button onclick="showPanel('magic')">✨ Büyüler</button>
+    <button onclick="showPanel('village')">🏘️ Köy</button>
+    <button onclick="showPanel('arena')">🏟️ Arena</button>
 </div>
 
+<!-- ORMANLAR -->
+
+<div id="world" class="panel">
+    <h2>🌲 Ormanlar</h2>
+    <p>Ormana gir ve yaratıklarla savaş. Her orman bir öncekinden daha zordur.</p>
+
+    <div class="forest">
+        <h3>🌿 1. Yeşil Orman</h3>
+        <p>Kolay bölge. Yeni başlayanlar için.</p>
+        <p>Moblar: 🐺 Kurt, 👹 Goblin, 🐗 Yaban Domuzu</p>
+        <button onclick="enterForest(1)">Ormana Gir</button>
+    </div>
+
+    <div class="forest">
+        <h3>🌲 2. Karanlık Orman</h3>
+        <p>Buradaki yaratıklar daha güçlü.</p>
+        <p>Moblar: 💀 İskelet, 🕷️ Dev Örümcek, 👺 Ork</p>
+        <button id="forest2" onclick="enterForest(2)">Ormana Gir</button>
+    </div>
+
+    <div class="forest">
+        <h3>🌑 3. Lanetli Orman</h3>
+        <p>Karanlık büyüler kullanan yaratıklar burada.</p>
+        <p>Moblar: 🧟 Zombi, 🧙 Kara Büyücü, 👻 Hayalet</p>
+        <button id="forest3" onclick="enterForest(3)">Ormana Gir</button>
+    </div>
+
+    <div class="forest">
+        <h3>🔥 4. Cehennem Ormanı</h3>
+        <p>Sadece güçlü savaşçılar hayatta kalabilir.</p>
+        <p>Moblar: 🔥 Ateş Şeytanı, 😈 Demon, 🐉 Ejderha Yavrusu</p>
+        <button id="forest4" onclick="enterForest(4)">Ormana Gir</button>
+    </div>
+</div>
+
+<!-- SAVAŞ -->
+
+<div id="battle" class="panel hidden">
+    <h2>⚔️ Savaş</h2>
+
+    <div class="enemy">
+        <div class="enemy-img" id="enemyEmoji">👹</div>
+        <h2 id="enemyName">Goblin</h2>
+
+        <p>❤️ Can: <span id="enemyHp">50</span>/<span id="enemyMaxHp">50</span></p>
+
+        <div class="hpbar">
+            <div id="enemyHpBar" class="hp" style="width:100%"></div>
+        </div>
+
+        <p>⚔️ Saldırı: <span id="enemyAttack">5</span></p>
+
+        <button onclick="attackEnemy()">⚔️ Saldır</button>
+        <button onclick="usePotion()">🧪 İksir</button>
+        <button onclick="runAway()">🏃 Kaç</button>
+    </div>
+
+    <div class="log" id="battleLog"></div>
+</div>
 
 <!-- MARKET -->
 
-<div class="modal" id="shopModal">
+<div id="shop" class="panel hidden">
+    <h2>🏪 Market</h2>
 
-<div class="modal-content">
+    <div class="shop-item">
+        <span>🧪 Can İksiri (+40 HP)</span>
+        <button onclick="buyPotion()">25 💰</button>
+    </div>
 
-<h2>🏪 KARANLIK MARKET</h2>
+    <div class="shop-item">
+        <span>⚔️ Demir Kılıç (+5 Saldırı)</span>
+        <button onclick="buySword()">150 💰</button>
+    </div>
 
-<p>💰 Altın: <b id="shopGold">100</b></p>
+    <div class="shop-item">
+        <span>🛡️ Demir Zırh (+5 Savunma)</span>
+        <button onclick="buyArmor()">150 💰</button>
+    </div>
 
-<div class="shop-grid">
+    <div class="shop-item">
+        <span>⚔️ Çelik Kılıç (+10 Saldırı)</span>
+        <button onclick="buySteelSword()">350 💰</button>
+    </div>
 
-<div class="item">
-<div class="item-icon">🧪</div>
-<h3>İksir</h3>
-<p>+50 Can</p>
-<p>💰 30 altın</p>
-<button onclick="buyPotion()">SATIN AL</button>
+    <div class="shop-item">
+        <span>🛡️ Çelik Zırh (+10 Savunma)</span>
+        <button onclick="buySteelArmor()">350 💰</button>
+    </div>
 </div>
 
-<div class="item">
-<div class="item-icon">⚔️</div>
-<h3>Demir Kılıç</h3>
-<p>+15 Saldırı</p>
-<p>💰 150 altın</p>
-<button onclick="buyWeapon('Demir Kılıç',15,150)">SATIN AL</button>
+<!-- EKİPMAN -->
+
+<div id="equipment" class="panel hidden">
+    <h2>⚔️ Ekipman</h2>
+
+    <div class="item">
+        <span>⚔️ Silah</span>
+        <span id="weapon">Tahta Kılıç</span>
+    </div>
+
+    <div class="item">
+        <span>🛡️ Zırh</span>
+        <span id="armor">Eski Zırh</span>
+    </div>
+
+    <div class="item">
+        <span>🧪 İksir</span>
+        <span id="potions">3</span>
+    </div>
+
+    <h3>🔨 Mob Malzemeleri</h3>
+
+    <div class="item">
+        <span>🪨 Demir Parçası</span>
+        <span id="iron">0</span>
+    </div>
+
+    <div class="item">
+        <span>🐺 Kurt Dişi</span>
+        <span id="fang">0</span>
+    </div>
+
+    <div class="item">
+        <span>🔥 Alev Kristali</span>
+        <span id="fireCrystal">0</span>
+    </div>
 </div>
 
-<div class="item">
-<div class="item-icon">🔥</div>
-<h3>Ateş Kılıcı</h3>
-<p>+30 Saldırı</p>
-<p>💰 350 altın</p>
-<button onclick="buyWeapon('Ateş Kılıcı',30,350)">SATIN AL</button>
+<!-- BÜYÜLER -->
+
+<div id="magic" class="panel hidden">
+    <h2>✨ Büyüler</h2>
+
+    <div class="item">
+        <div>
+            <b>🔥 Ateş Topu</b>
+            <p>Hasar: <span id="fireDamage">25</span></p>
+            <p>Seviye: <span id="fireLevel">1</span></p>
+        </div>
+        <button onclick="castFireball()">Kullan</button>
+    </div>
+
+    <div class="item">
+        <div>
+            <b>❄️ Buz Mızrağı</b>
+            <p>Hasar: <span id="iceDamage">35</span></p>
+            <p>Seviye: <span id="iceLevel">1</span></p>
+        </div>
+        <button onclick="castIce()">Kullan</button>
+    </div>
+
+    <div class="item">
+        <div>
+            <b>⚡ Şimşek</b>
+            <p>Hasar: <span id="lightDamage">50</span></p>
+            <p>Seviye: <span id="lightLevel">1</span></p>
+        </div>
+        <button onclick="castLightning()">Kullan</button>
+    </div>
+
+    <p>📜 Bosslardan parşömen düşürerek büyülerini geliştirebilirsin.</p>
+
+    <div class="item">
+        <span>📜 Büyü Parşömeni</span>
+        <span id="scroll">0</span>
+    </div>
+
+    <button onclick="upgradeMagic()">✨ Büyü Geliştir</button>
 </div>
 
-<div class="item">
-<div class="item-icon">⚡</div>
-<h3>Şimşek Kılıcı</h3>
-<p>+50 Saldırı</p>
-<p>💰 700 altın</p>
-<button onclick="buyWeapon('Şimşek Kılıcı',50,700)">SATIN AL</button>
+<!-- KÖY -->
+
+<div id="village" class="panel hidden">
+    <h2>🏘️ Köy</h2>
+
+    <div class="item">
+        <span>👴 Köy Muhtarı</span>
+        <span>"Ormanın derinliklerinde büyük bir güç yatıyor..."</span>
+    </div>
+
+    <div class="item">
+        <span>🧙 Büyücü</span>
+        <span>"Bossları yenersen sana parşömen bırakabilirler."</span>
+    </div>
+
+    <div class="item">
+        <span>🔨 Demirci</span>
+        <span>"Yaratıklardan malzeme getir, silahını güçlendireyim."</span>
+    </div>
+
+    <div class="item">
+        <span>🧪 Şifacı</span>
+        <span>"İksirlerini unutma. Bazı yaratıklar çok güçlü."</span>
+    </div>
+
+    <div class="item">
+        <span>👦 Köylü</span>
+        <span>"Ben olsam o dördüncü ormana girmezdim..."</span>
+    </div>
 </div>
-
-<div class="item">
-<div class="item-icon">🛡️</div>
-<h3>Demir Zırh</h3>
-<p>+10 Savunma</p>
-<p>💰 200 altın</p>
-<button onclick="buyArmor(10,200)">SATIN AL</button>
-</div>
-
-<div class="item">
-<div class="item-icon">🐉</div>
-<h3>Ejderha Zırhı</h3>
-<p>+25 Savunma</p>
-<p>💰 600 altın</p>
-<button onclick="buyArmor(25,600)">SATIN AL</button>
-</div>
-
-</div>
-
-<br>
-
-<button class="close" onclick="closeShop()">❌ KAPAT</button>
-
-</div>
-</div>
-
 
 <!-- ARENA -->
 
-<div class="modal" id="arenaModal">
+<div id="arena" class="panel hidden">
+    <h2>🏟️ Arena</h2>
+    <p>Seviyen yükseldikçe bosslarla savaşabilirsin.</p>
 
-<div class="modal-content">
-
-<h2>🏟️ BOSS ARENASI</h2>
-
-<p>
-Burada güçlü bosslarla savaşabilirsin.
-</p>
-
-<div class="boss-card">
-
-<div class="boss-icon">🗡️</div>
-
-<h3>Arena Savaşçısı</h3>
-
-<p>❤️ 120 Can | ⚔️ 20 Saldırı</p>
-<p>🔓 Level 3</p>
-
-<button onclick="startBoss('Arena Savaşçısı','🗡️',120,20,100,100,3)">
-SAVAŞ
-</button>
-
+    <button id="boss1" onclick="fightBoss(1)">👹 Goblin Kralı - Seviye 5</button>
+    <button id="boss2" onclick="fightBoss(2)">💀 Ölüm Şövalyesi - Seviye 10</button>
+    <button id="boss3" onclick="fightBoss(3)">🐉 Ejderha - Seviye 15</button>
+    <button id="boss4" onclick="fightBoss(4)">😈 Demon Lord - Seviye 20</button>
+    <button id="boss5" onclick="fightBoss(5)">👿 Karanlık Tanrı - Seviye 25</button>
 </div>
 
-<div class="boss-card">
-
-<div class="boss-icon">👹</div>
-
-<h3>Ork Şefi</h3>
-
-<p>❤️ 250 Can | ⚔️ 30 Saldırı</p>
-<p>🔓 Level 5</p>
-
-<button onclick="startBoss('Ork Şefi','👹',250,30,250,200,5)">
-SAVAŞ
-</button>
-
 </div>
-
-<div class="boss-card">
-
-<div class="boss-icon">🔥</div>
-
-<h3>Cehennem Lordu</h3>
-
-<p>❤️ 450 Can | ⚔️ 40 Saldırı</p>
-<p>🔓 Level 8</p>
-
-<button onclick="startBoss('Cehennem Lordu','🔥',450,40,500,400,8)">
-SAVAŞ
-</button>
-
-</div>
-
-<div class="boss-card">
-
-<div class="boss-icon">🐉</div>
-
-<h3>Ejderha</h3>
-
-<p>❤️ 800 Can | ⚔️ 55 Saldırı</p>
-<p>🔓 Level 12</p>
-
-<button onclick="startBoss('Ejderha','🐉',800,55,1500,1000,12)">
-SAVAŞ
-</button>
-
-</div>
-
-<button class="close" onclick="closeArena()">❌ KAPAT</button>
-
-</div>
-</div>
-
 
 <script>
 
 let player = {
-
     hp: 100,
     maxHp: 100,
-
-    attack: 10,
-    defense: 0,
-
-    gold: 100,
-
     level: 1,
     xp: 0,
-
+    gold: 100,
+    attack: 10,
+    defense: 5,
     potions: 3,
 
     weapon: "Tahta Kılıç",
-    weaponLevel: 1
+    armor: "Eski Zırh",
 
+    iron: 0,
+    fang: 0,
+    fireCrystal: 0,
+    scroll: 0,
+
+    fireLevel: 1,
+    iceLevel: 1,
+    lightLevel: 1
 };
 
 let enemy = null;
 
-const enemies = [
+const forests = {
 
-    ["Goblin","👹",50,8,25,25],
-    ["Kurt","🐺",60,10,30,30],
-    ["İskelet","💀",70,12,35,35],
-    ["Ork","👺",85,15,45,45],
-    ["Vahşi Savaşçı","⚔️",100,18,55,60]
+    1: [
+        ["Kurt", "🐺", 40, 7, 25],
+        ["Goblin", "👹", 50, 8, 30],
+        ["Yaban Domuzu", "🐗", 60, 10, 35]
+    ],
 
-];
+    2: [
+        ["İskelet", "💀", 90, 15, 55],
+        ["Dev Örümcek", "🕷️", 100, 18, 65],
+        ["Ork", "👺", 120, 20, 80]
+    ],
 
+    3: [
+        ["Zombi", "🧟", 150, 25, 100],
+        ["Kara Büyücü", "🧙", 130, 32, 120],
+        ["Hayalet", "👻", 170, 28, 130]
+    ],
 
-function log(text) {
+    4: [
+        ["Ateş Şeytanı", "🔥", 230, 40, 180],
+        ["Demon", "😈", 280, 45, 220],
+        ["Ejderha Yavrusu", "🐉", 320, 50, 300]
+    ]
+};
 
-    let box = document.getElementById("log");
+const bosses = {
 
-    let p = document.createElement("p");
+    1: ["Goblin Kralı", "👹", 400, 45, 500],
+    2: ["Ölüm Şövalyesi", "💀", 800, 70, 1000],
+    3: ["Ejderha", "🐉", 1400, 100, 1800],
+    4: ["Demon Lord", "😈", 2200, 140, 3000],
+    5: ["Karanlık Tanrı", "👿", 3500, 190, 6000]
 
-    p.textContent = text;
+};
 
-    box.appendChild(p);
+function showPanel(id) {
 
-    box.scrollTop = box.scrollHeight;
-}
+    document.querySelectorAll(".panel").forEach(panel => {
+        panel.classList.add("hidden");
+    });
 
-
-function update() {
-
-    document.getElementById("hpText").textContent =
-        `${player.hp} / ${player.maxHp}`;
-
-    document.getElementById("playerHpSmall").textContent =
-        `${player.hp} / ${player.maxHp}`;
-
-    document.getElementById("playerHealth").style.width =
-        `${Math.max(0,player.hp/player.maxHp*100)}%`;
-
-    document.getElementById("attackText").textContent =
-        player.attack;
-
-    document.getElementById("defenseText").textContent =
-        player.defense;
-
-    document.getElementById("levelText").textContent =
-        player.level;
-
-    document.getElementById("goldText").textContent =
-        player.gold;
-
-    document.getElementById("weaponText").textContent =
-        player.weapon;
-
-    document.getElementById("weaponLevelText").textContent =
-        player.weaponLevel;
-
-    document.getElementById("potionText").textContent =
-        player.potions;
-
-    document.getElementById("xpText").textContent =
-        `${player.xp} / ${requiredXP()}`;
-
-    if(enemy) {
-
-        document.getElementById("enemyHpText").textContent =
-            `${Math.max(0,enemy.hp)} / ${enemy.maxHp}`;
-
-        document.getElementById("enemyHealth").style.width =
-            `${Math.max(0,enemy.hp/enemy.maxHp*100)}%`;
-    }
-
-    document.getElementById("shopGold").textContent =
-        player.gold;
-}
-
-
-function requiredXP() {
-
-    return player.level * 100;
+    document.getElementById(id).classList.remove("hidden");
 
 }
 
+function updateUI() {
 
-function gainXP(amount) {
+    document.getElementById("hp").textContent = player.hp;
+    document.getElementById("level").textContent = player.level;
+    document.getElementById("xp").textContent = player.xp;
+    document.getElementById("xpNeed").textContent = player.level * 100;
 
-    player.xp += amount;
+    document.getElementById("gold").textContent = player.gold;
+    document.getElementById("attack").textContent = player.attack;
+    document.getElementById("defense").textContent = player.defense;
 
-    log(`✨ +${amount} XP`);
+    document.getElementById("potions").textContent = player.potions;
 
-    while(player.xp >= requiredXP()) {
+    document.getElementById("weapon").textContent = player.weapon;
+    document.getElementById("armor").textContent = player.armor;
 
-        player.xp -= requiredXP();
+    document.getElementById("iron").textContent = player.iron;
+    document.getElementById("fang").textContent = player.fang;
+    document.getElementById("fireCrystal").textContent = player.fireCrystal;
+    document.getElementById("scroll").textContent = player.scroll;
 
-        player.level++;
+    document.getElementById("fireLevel").textContent = player.fireLevel;
+    document.getElementById("iceLevel").textContent = player.iceLevel;
+    document.getElementById("lightLevel").textContent = player.lightLevel;
 
-        player.maxHp += 20;
+    document.getElementById("fireDamage").textContent =
+        25 + (player.fireLevel - 1) * 15;
 
-        player.hp = player.maxHp;
+    document.getElementById("iceDamage").textContent =
+        35 + (player.iceLevel - 1) * 20;
 
-        player.attack += 5;
+    document.getElementById("lightDamage").textContent =
+        50 + (player.lightLevel - 1) * 30;
 
-        log(`🎉 LEVEL ${player.level}!`);
-
-        log("❤️ Maksimum canın arttı!");
-
-        log("⚔️ Saldırın arttı!");
-
-        if(player.level === 3)
-            log("🏟️ ARENA AÇILDI!");
-
-        if(player.level === 5)
-            log("👹 ORK ŞEFİ AÇILDI!");
-
-        if(player.level === 8)
-            log("🔥 CEHENNEM LORDU AÇILDI!");
-
-        if(player.level === 12)
-            log("🐉 EJDERHA AÇILDI!");
-    }
-
-    update();
+    updateForestLocks();
 }
 
+function updateForestLocks() {
 
-function goForest() {
+    document.getElementById("forest2").disabled = player.level < 3;
+    document.getElementById("forest3").disabled = player.level < 7;
+    document.getElementById("forest4").disabled = player.level < 12;
 
-    if(enemy) {
+    document.getElementById("boss1").disabled = player.level < 5;
+    document.getElementById("boss2").disabled = player.level < 10;
+    document.getElementById("boss3").disabled = player.level < 15;
+    document.getElementById("boss4").disabled = player.level < 20;
+    document.getElementById("boss5").disabled = player.level < 25;
+}
 
-        log("⚠️ Önce mevcut düşmanı yenmelisin!");
+function enterForest(level) {
 
+    if (level === 2 && player.level < 3) {
+        alert("Bu orman için 3. seviyede olmalısın!");
         return;
     }
 
-    let e = enemies[
-        Math.floor(Math.random()*enemies.length)
-    ];
+    if (level === 3 && player.level < 7) {
+        alert("Bu orman için 7. seviyede olmalısın!");
+        return;
+    }
+
+    if (level === 4 && player.level < 12) {
+        alert("Bu orman için 12. seviyede olmalısın!");
+        return;
+    }
+
+    const mobs = forests[level];
+
+    const chosen = mobs[Math.floor(Math.random() * mobs.length)];
+
+    startBattle(
+        chosen[0],
+        chosen[1],
+        chosen[2] + player.level * 5,
+        chosen[3] + player.level * 2,
+        chosen[4] + level * 15,
+        false
+    );
+}
+
+function fightBoss(number) {
+
+    const required = number * 5;
+
+    if (player.level < required) {
+        alert("Bu boss için seviye " + required + " gerekiyor!");
+        return;
+    }
+
+    const boss = bosses[number];
+
+    startBattle(
+        boss[0],
+        boss[1],
+        boss[2],
+        boss[3],
+        boss[4],
+        true
+    );
+}
+
+function startBattle(name, emoji, hp, attack, reward, boss) {
 
     enemy = {
-
-        name:e[0],
-        emoji:e[1],
-        hp:e[2] + player.level*5,
-        maxHp:e[2] + player.level*5,
-        attack:e[3] + player.level,
-        gold:e[4],
-        xp:e[5],
-        boss:false
-
+        name,
+        emoji,
+        hp,
+        maxHp: hp,
+        attack,
+        reward,
+        boss
     };
 
-    document.getElementById("enemyArea").style.display = "block";
+    document.getElementById("battle").classList.remove("hidden");
 
-    document.getElementById("enemyEmoji").textContent =
-        enemy.emoji;
+    document.querySelectorAll(".panel").forEach(panel => {
+        if (panel.id !== "battle") {
+            panel.classList.add("hidden");
+        }
+    });
 
-    document.getElementById("enemyName").textContent =
-        enemy.name;
+    document.getElementById("enemyName").textContent = name;
+    document.getElementById("enemyEmoji").textContent = emoji;
+    document.getElementById("enemyHp").textContent = hp;
+    document.getElementById("enemyMaxHp").textContent = hp;
+    document.getElementById("enemyAttack").textContent = attack;
 
-    document.getElementById("sceneTitle").textContent =
-        "⚔️ SAVAŞ";
+    document.getElementById("battleLog").innerHTML =
+        "⚠️ <b>" + name + "</b> karşına çıktı!<br>";
 
-    log(`⚠️ ${enemy.name} karşına çıktı!`);
-
-    update();
+    updateEnemy();
 
 }
 
+function updateEnemy() {
 
-function attack() {
+    if (!enemy) return;
 
-    if(!enemy) {
+    document.getElementById("enemyHp").textContent =
+        Math.max(0, enemy.hp);
 
-        log("🌲 Önce ormana git veya arenadan boss seç.");
+    let percent = Math.max(
+        0,
+        (enemy.hp / enemy.maxHp) * 100
+    );
 
-        return;
-    }
+    document.getElementById("enemyHpBar").style.width =
+        percent + "%";
+}
+
+function attackEnemy() {
+
+    if (!enemy) return;
 
     let damage =
-        player.attack +
-        Math.floor(Math.random()*11);
-
-    let critical =
-        Math.random() < 0.15;
-
-    if(critical) {
-
-        damage *= 2;
-
-        log("💥 KRİTİK VURUŞ!");
-
-    }
+        Math.floor(Math.random() * 10) + player.attack;
 
     enemy.hp -= damage;
 
-    log(`⚔️ ${enemy.name}'e ${damage} hasar verdin.`);
+    log("⚔️ " + damage + " hasar verdin!");
 
-    if(enemy.hp <= 0) {
+    if (enemy.hp <= 0) {
 
         winBattle();
-
         return;
     }
 
     enemyAttack();
 
-    update();
-
+    updateEnemy();
 }
-
 
 function enemyAttack() {
 
     let damage =
-        enemy.attack -
-        player.defense +
-        Math.floor(Math.random()*6);
-
-    damage = Math.max(1,damage);
+        Math.max(
+            1,
+            Math.floor(Math.random() * enemy.attack) + 1
+            - Math.floor(player.defense / 2)
+        );
 
     player.hp -= damage;
 
-    log(`💢 ${enemy.name} sana ${damage} hasar verdi.`);
+    log("💢 " + enemy.name + " sana " + damage + " hasar verdi!");
 
-    if(player.hp <= 0) {
+    if (player.hp <= 0) {
 
         player.hp = 0;
 
-        log("💀 ÖLDÜN!");
+        alert("💀 Öldün!");
 
-        setTimeout(gameOver,500);
+        player.hp = player.maxHp;
+
+        showPanel("world");
+
+        enemy = null;
     }
 
+    updateUI();
 }
-
 
 function winBattle() {
 
-    log(`💀 ${enemy.name} yenildi!`);
+    let reward = enemy.reward;
 
-    player.gold += enemy.gold;
+    player.gold += reward;
 
-    log(`💰 +${enemy.gold} altın`);
+    let xp = Math.floor(reward / 2);
 
-    gainXP(enemy.xp);
+    gainXP(xp);
+
+    log("💥 " + enemy.name + " yenildi!");
+    log("💰 " + reward + " altın kazandın!");
+    log("⭐ " + xp + " XP kazandın!");
+
+    if (enemy.boss) {
+
+        player.scroll++;
+
+        log("📜 Boss'tan BÜYÜ PARŞÖMENİ düştü!");
+
+    } else {
+
+        let drop = Math.random();
+
+        if (drop < .35) {
+
+            player.iron++;
+            log("🪨 Demir Parçası düştü!");
+
+        } else if (drop < .65) {
+
+            player.fang++;
+            log("🐺 Yaratık Dişi düştü!");
+
+        } else if (drop < .8) {
+
+            player.fireCrystal++;
+            log("🔥 Alev Kristali düştü!");
+
+        }
+    }
 
     enemy = null;
 
-    document.getElementById("enemyArea").style.display =
-        "none";
+    updateUI();
 
-    document.getElementById("sceneTitle").textContent =
-        "Karanlık Orman";
-
-    update();
-
+    setTimeout(() => {
+        showPanel("world");
+    }, 900);
 }
 
+function gainXP(amount) {
 
-function drinkPotion() {
+    player.xp += amount;
 
-    if(player.potions <= 0) {
+    while (player.xp >= player.level * 100) {
+
+        player.xp -= player.level * 100;
+
+        player.level++;
+
+        player.maxHp += 15;
+        player.hp = player.maxHp;
+
+        player.attack += 3;
+        player.defense += 2;
+
+        log("🎉 SEVİYE ATLADIN! Seviye " + player.level);
+    }
+}
+
+function runAway() {
+
+    if (!enemy) return;
+
+    if (Math.random() < .7) {
+
+        log("🏃 Kaçmayı başardın!");
+
+        enemy = null;
+
+        showPanel("world");
+
+    } else {
+
+        log("😈 Kaçamadın!");
+
+        enemyAttack();
+    }
+}
+
+function usePotion() {
+
+    if (player.potions <= 0) {
 
         log("❌ İksirin yok!");
-
         return;
     }
 
-    if(player.hp >= player.maxHp) {
+    if (player.hp >= player.maxHp) {
 
         log("❤️ Canın zaten full!");
-
         return;
     }
 
     player.potions--;
 
-    let heal = 50;
+    let heal = 40;
 
-    player.hp =
-        Math.min(player.maxHp,player.hp+heal);
+    player.hp = Math.min(
+        player.maxHp,
+        player.hp + heal
+    );
 
-    log(`🧪 +${heal} can yeniledin.`);
+    log("🧪 40 can yeniledin!");
 
-    update();
-
+    updateUI();
 }
 
+function castFireball() {
 
-function openShop() {
+    if (!enemy) {
 
-    document.getElementById("shopModal").style.display =
-        "flex";
+        alert("Önce savaşa gir!");
+        return;
+    }
 
-    update();
+    let damage =
+        25 + (player.fireLevel - 1) * 15;
 
+    enemy.hp -= damage;
+
+    log("🔥 Ateş Topu " + damage + " hasar verdi!");
+
+    if (enemy.hp <= 0) {
+
+        winBattle();
+        return;
+    }
+
+    enemyAttack();
+    updateEnemy();
 }
 
+function castIce() {
 
-function closeShop() {
+    if (!enemy) {
 
-    document.getElementById("shopModal").style.display =
-        "none";
+        alert("Önce savaşa gir!");
+        return;
+    }
 
+    let damage =
+        35 + (player.iceLevel - 1) * 20;
+
+    enemy.hp -= damage;
+
+    log("❄️ Buz Mızrağı " + damage + " hasar verdi!");
+
+    if (enemy.hp <= 0) {
+
+        winBattle();
+        return;
+    }
+
+    enemyAttack();
+    updateEnemy();
 }
 
+function castLightning() {
+
+    if (!enemy) {
+
+        alert("Önce savaşa gir!");
+        return;
+    }
+
+    let damage =
+        50 + (player.lightLevel - 1) * 30;
+
+    enemy.hp -= damage;
+
+    log("⚡ Şimşek " + damage + " hasar verdi!");
+
+    if (enemy.hp <= 0) {
+
+        winBattle();
+        return;
+    }
+
+    enemyAttack();
+    updateEnemy();
+}
+
+function upgradeMagic() {
+
+    if (player.scroll <= 0) {
+
+        alert("Büyü geliştirmek için parşömen gerekiyor!");
+        return;
+    }
+
+    player.scroll--;
+
+    let choice = Math.floor(Math.random() * 3);
+
+    if (choice === 0) {
+
+        player.fireLevel++;
+        alert("🔥 Ateş Topu geliştirildi!");
+
+    } else if (choice === 1) {
+
+        player.iceLevel++;
+        alert("❄️ Buz Mızrağı geliştirildi!");
+
+    } else {
+
+        player.lightLevel++;
+        alert("⚡ Şimşek geliştirildi!");
+    }
+
+    updateUI();
+}
 
 function buyPotion() {
 
-    if(player.gold < 30) {
+    if (player.gold < 25) {
 
-        log("❌ Yeterli altının yok!");
-
+        alert("Yeterli altının yok!");
         return;
     }
 
-    player.gold -= 30;
-
+    player.gold -= 25;
     player.potions++;
 
-    log("🧪 İksir satın aldın!");
-
-    update();
-
+    updateUI();
 }
 
+function buySword() {
 
-function buyWeapon(name,attack,cost) {
+    if (player.gold < 150) {
 
-    if(player.gold < cost) {
-
-        log("❌ Yeterli altının yok!");
-
+        alert("Yeterli altının yok!");
         return;
     }
 
-    player.gold -= cost;
+    player.gold -= 150;
+    player.attack += 5;
+    player.weapon = "Demir Kılıç";
 
-    player.weapon = name;
-
-    player.attack += attack;
-
-    log(`⚔️ ${name} satın aldın!`);
-
-    log(`⚔️ +${attack} saldırı!`);
-
-    update();
-
+    updateUI();
 }
 
+function buyArmor() {
 
-function buyArmor(defense,cost) {
+    if (player.gold < 150) {
 
-    if(player.gold < cost) {
-
-        log("❌ Yeterli altının yok!");
-
+        alert("Yeterli altının yok!");
         return;
     }
 
-    player.gold -= cost;
+    player.gold -= 150;
+    player.defense += 5;
+    player.armor = "Demir Zırh";
 
-    player.defense += defense;
-
-    log(`🛡️ +${defense} savunma kazandın!`);
-
-    update();
-
+    updateUI();
 }
 
+function buySteelSword() {
 
-function openArena() {
+    if (player.gold < 350) {
 
-    document.getElementById("arenaModal").style.display =
-        "flex";
-
-}
-
-
-function closeArena() {
-
-    document.getElementById("arenaModal").style.display =
-        "none";
-
-}
-
-
-function startBoss(name,emoji,hp,attack,gold,xp,levelRequired) {
-
-    if(player.level < levelRequired) {
-
-        log(
-            `🔒 ${name} için Level ${levelRequired} gerekiyor!`
-        );
-
-        closeArena();
-
+        alert("Yeterli altının yok!");
         return;
     }
 
-    if(enemy) {
+    player.gold -= 350;
+    player.attack += 10;
+    player.weapon = "Çelik Kılıç";
 
-        log("⚠️ Zaten savaştasın!");
+    updateUI();
+}
 
-        closeArena();
+function buySteelArmor() {
 
+    if (player.gold < 350) {
+
+        alert("Yeterli altının yok!");
         return;
     }
 
-    enemy = {
+    player.gold -= 350;
+    player.defense += 10;
+    player.armor = "Çelik Zırh";
 
-        name:name,
-        emoji:emoji,
-
-        hp:hp,
-        maxHp:hp,
-
-        attack:attack,
-
-        gold:gold,
-        xp:xp,
-
-        boss:true
-
-    };
-
-    closeArena();
-
-    document.getElementById("enemyArea").style.display =
-        "block";
-
-    document.getElementById("enemyEmoji").textContent =
-        emoji;
-
-    document.getElementById("enemyName").textContent =
-        "👑 " + name;
-
-    document.getElementById("sceneTitle").textContent =
-        "🏟️ BOSS SAVAŞI";
-
-    log(`🔥 BOSS SAVAŞI BAŞLADI: ${name}!`);
-
-    update();
-
+    updateUI();
 }
 
+function log(message) {
 
-function gameOver() {
+    const box = document.getElementById("battleLog");
 
-    alert(
-        "💀 ÖLDÜN!\n\n" +
-        "Level: " + player.level +
-        "\nAltın: " + player.gold
-    );
+    box.innerHTML += message + "<br>";
 
-    location.reload();
-
+    box.scrollTop = box.scrollHeight;
 }
 
-
-update();
+updateUI();
 
 </script>
 
