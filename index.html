@@ -64,21 +64,9 @@ header p {
     margin-top: 5px;
 }
 
-.hp {
-    color: #ff5555;
-}
-
-.mana {
-    color: #4ca6ff;
-}
-
-.gold {
-    color: #ffd34e;
-}
-
-.xp {
-    color: #a86cff;
-}
+.hp { color: #ff5555; }
+.mana { color: #4ca6ff; }
+.gold { color: #ffd34e; }
 
 .layout {
     display: grid;
@@ -165,7 +153,7 @@ button:hover {
 }
 
 button:disabled {
-    opacity: .4;
+    opacity: .35;
     cursor: not-allowed;
     transform: none;
 }
@@ -228,21 +216,31 @@ button:disabled {
     font-size: 40px;
 }
 
-.spell {
-    border-color: #3b62a5;
+.locked {
+    opacity: .35;
+    filter: grayscale(.8);
 }
 
-.spell h3 {
-    margin: 8px 0;
+.unlocked {
+    border-color: #42d67d;
+    box-shadow: 0 0 12px rgba(66,214,125,.15);
 }
 
-.spell small {
-    color: #aaa;
+.status {
+    color: #ff9c42;
+    font-weight: bold;
+    min-height: 22px;
 }
 
-#shopPanel,
-#arenaPanel {
-    display: none;
+#magicButtons {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 5px;
+    margin-top: 5px;
+}
+
+#magicButtons button {
+    margin: 2px 0;
 }
 
 .modal {
@@ -256,7 +254,7 @@ button:disabled {
 }
 
 .modal-content {
-    width: min(800px, 92%);
+    width: min(850px, 92%);
     max-height: 90vh;
     overflow-y: auto;
     background: #11111d;
@@ -280,23 +278,6 @@ button:disabled {
 
 .boss-icon {
     font-size: 60px;
-}
-
-.status {
-    color: #ff9c42;
-    font-weight: bold;
-    min-height: 22px;
-}
-
-#magicButtons {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 5px;
-    margin-top: 5px;
-}
-
-#magicButtons button {
-    margin: 2px 0;
 }
 
 @media(max-width: 900px) {
@@ -334,197 +315,196 @@ button:disabled {
 
 <header>
     <h1>⚔️ KARANLIK ARENA ⚔️</h1>
-    <p>Güçlen. Büyüler öğren. Silahını geliştir. Bossları yok et.</p>
+    <p>Güçlen. Büyüler öğren. İksirleri aç. Bossları yok et.</p>
 </header>
 
 <div class="container">
 
-    <div class="stats">
+<div class="stats">
 
-        <div class="stat">
-            ❤️ CAN
-            <strong class="hp" id="hpText">100 / 100</strong>
-        </div>
+<div class="stat">
+❤️ CAN
+<strong class="hp" id="hpText">100 / 100</strong>
+</div>
 
-        <div class="stat">
-            🔵 MANA
-            <strong class="mana" id="manaText">100 / 100</strong>
-        </div>
+<div class="stat">
+🔵 MANA
+<strong class="mana" id="manaText">100 / 100</strong>
+</div>
 
-        <div class="stat">
-            ⚔️ SALDIRI
-            <strong id="attackText">10</strong>
-        </div>
+<div class="stat">
+⚔️ SALDIRI
+<strong id="attackText">10</strong>
+</div>
 
-        <div class="stat">
-            🛡️ SAVUNMA
-            <strong id="defenseText">0</strong>
-        </div>
+<div class="stat">
+🛡️ SAVUNMA
+<strong id="defenseText">0</strong>
+</div>
 
-        <div class="stat">
-            ⭐ LEVEL
-            <strong id="levelText">1</strong>
-        </div>
+<div class="stat">
+⭐ LEVEL
+<strong id="levelText">1</strong>
+</div>
 
-        <div class="stat">
-            💰 ALTIN
-            <strong class="gold" id="goldText">100</strong>
-        </div>
+<div class="stat">
+💰 ALTIN
+<strong class="gold" id="goldText">100</strong>
+</div>
 
-    </div>
+</div>
 
-    <div class="layout">
+<div class="layout">
 
-        <div class="panel">
+<div class="panel">
 
-            <div class="scene">
+<div class="scene">
 
-                <div id="playerEmoji" class="character">🧙‍♂️</div>
+<div class="character">🧙‍♂️</div>
 
-                <h2 id="sceneTitle">Karanlık Orman</h2>
+<h2 id="sceneTitle">Karanlık Orman</h2>
 
-                <div id="enemyArea" style="display:none;text-align:center">
+<div id="enemyArea" style="display:none;text-align:center">
 
-                    <div id="enemyEmoji" class="enemy">👹</div>
+<div id="enemyEmoji" class="enemy">👹</div>
 
-                    <h2 id="enemyName">Goblin</h2>
+<h2 id="enemyName">Goblin</h2>
 
-                    <div class="healthbar">
-                        <div id="enemyHealth"
-                             class="health enemyhealth"
-                             style="width:100%">
-                        </div>
-                    </div>
+<div class="healthbar">
+<div id="enemyHealth"
+class="health enemyhealth"
+style="width:100%">
+</div>
+</div>
 
-                    <span id="enemyHpText">50 / 50</span>
+<span id="enemyHpText">50 / 50</span>
 
-                    <div class="status" id="enemyStatus"></div>
+<div class="status" id="enemyStatus"></div>
 
-                </div>
+</div>
 
-                <div class="healthbar">
-                    <div id="playerHealth"
-                         class="health"
-                         style="width:100%">
-                    </div>
-                </div>
+<div class="healthbar">
+<div id="playerHealth"
+class="health"
+style="width:100%">
+</div>
+</div>
 
-                <span id="playerHpSmall">100 / 100</span>
+<span id="playerHpSmall">100 / 100</span>
 
-                <div class="manabar">
-                    <div id="playerManaBar"
-                         class="manaBar"
-                         style="width:100%">
-                    </div>
-                </div>
+<div class="manabar">
+<div id="playerManaBar"
+class="manaBar"
+style="width:100%">
+</div>
+</div>
 
-                <span id="playerManaSmall">100 / 100 Mana</span>
+<span id="playerManaSmall">100 / 100 Mana</span>
 
-            </div>
+</div>
 
-            <div id="actionButtons">
+<div id="actionButtons">
 
-                <button class="attack" onclick="attack()">
-                    ⚔️ SALDIR
-                </button>
+<button class="attack" onclick="attack()">
+⚔️ SALDIR
+</button>
 
-                <div id="magicButtons">
+<div id="magicButtons">
 
-                    <button class="magic" onclick="castSpell('fireball')">
-                        🔥 Ateş Topu
-                    </button>
+<button class="magic" onclick="castSpell('fireball')">
+🔥 Ateş Topu
+</button>
 
-                    <button class="magic" onclick="castSpell('ice')">
-                        ❄️ Buz Mızrağı
-                    </button>
+<button class="magic" onclick="castSpell('ice')">
+❄️ Buz Mızrağı
+</button>
 
-                    <button class="magic" onclick="castSpell('lightning')">
-                        ⚡ Şimşek
-                    </button>
+<button class="magic" onclick="castSpell('lightning')">
+⚡ Şimşek
+</button>
 
-                    <button class="magic" onclick="castSpell('heal')">
-                        ✨ Kutsal Şifa
-                    </button>
+<button class="magic" onclick="castSpell('heal')">
+✨ Kutsal Şifa
+</button>
 
-                    <button class="magic" onclick="castSpell('curse')">
-                        ☠️ Lanet
-                    </button>
+<button class="magic" onclick="castSpell('curse')">
+☠️ Lanet
+</button>
 
-                </div>
+</div>
 
-                <button onclick="drinkPotion()">
-                    🧪 İKSİR KULLAN
-                </button>
+<button onclick="drinkPotion()">
+🧪 CAN İKSİRİ
+</button>
 
-                <button onclick="restoreMana()">
-                    🔵 MANA İKSİRİ
-                </button>
+<button onclick="restoreMana()">
+🔵 MANA İKSİRİ
+</button>
 
-                <button onclick="goForest()">
-                    🌲 ORMANA GİT
-                </button>
+<button onclick="goForest()">
+🌲 ORMANA GİT
+</button>
 
-                <button class="shop" onclick="openShop()">
-                    🏪 MARKET
-                </button>
+<button class="shop" onclick="openShop()">
+🏪 MARKET
+</button>
 
-                <button class="arena" onclick="openArena()">
-                    🏟️ ARENA
-                </button>
+<button class="arena" onclick="openArena()">
+🏟️ ARENA
+</button>
 
-            </div>
+</div>
 
-            <div class="log" id="log">
-                <p>⚔️ Maceraya hoş geldin savaşçı.</p>
-                <p>🌲 Ormana girerek savaşmaya başlayabilirsin.</p>
-                <p>🔮 Büyülerini kullanmak için önce bir düşmanla savaş.</p>
-            </div>
+<div class="log" id="log">
+<p>⚔️ Maceraya hoş geldin savaşçı.</p>
+<p>🌲 Ormana girerek savaşmaya başlayabilirsin.</p>
+<p>🧪 Marketten level'ına uygun iksirler satın alabilirsin.</p>
+</div>
 
-        </div>
+</div>
 
-        <div class="panel">
+<div class="panel">
 
-            <h2>🎒 Karakter</h2>
+<h2>🎒 Karakter</h2>
 
-            <p>⚔️ Silah: <b id="weaponText">Tahta Kılıç</b></p>
-            <p>🔨 Silah Seviyesi: <b id="weaponLevelText">1</b></p>
-            <p>🧪 İksir: <b id="potionText">3</b></p>
-            <p>🔵 Mana İksiri: <b id="manaPotionText">2</b></p>
-            <p>✨ XP: <b id="xpText">0 / 100</b></p>
+<p>⚔️ Silah: <b id="weaponText">Tahta Kılıç</b></p>
+<p>🔨 Silah Seviyesi: <b id="weaponLevelText">1</b></p>
+<p>🧪 Can İksiri: <b id="potionText">3</b></p>
+<p>🔵 Mana İksiri: <b id="manaPotionText">2</b></p>
+<p>✨ XP: <b id="xpText">0 / 100</b></p>
 
-            <hr>
+<hr>
 
-            <h3>🔮 Büyüler</h3>
+<h3>🧪 İksir Seviyeleri</h3>
 
-            <p>🔥 Ateş Topu — 25 Mana</p>
-            <p>❄️ Buz Mızrağı — 20 Mana</p>
-            <p>⚡ Şimşek — 35 Mana</p>
-            <p>✨ Kutsal Şifa — 30 Mana</p>
-            <p>☠️ Lanet — 40 Mana</p>
+<p>🟢 Küçük Can İksiri → Level 1</p>
+<p>❤️ Büyük Can İksiri → Level 5</p>
+<p>🔵 Küçük Mana İksiri → Level 1</p>
+<p>💙 Büyük Mana İksiri → Level 7</p>
+<p>⚡ Süper İksir → Level 10</p>
 
-            <hr>
+<hr>
 
-            <h3>🎯 Hedefler</h3>
+<h3>🎯 Hedefler</h3>
 
-            <p>🌲 Orman → sınırsız</p>
-            <p>🏟️ Arena → Level 3</p>
-            <p>👹 Ork Şefi → Level 5</p>
-            <p>🔥 Cehennem Lordu → Level 8</p>
-            <p>🐉 Ejderha → Level 12</p>
+<p>🌲 Orman → sınırsız</p>
+<p>🏟️ Arena → Level 3</p>
+<p>👹 Ork Şefi → Level 5</p>
+<p>🔥 Cehennem Lordu → Level 8</p>
+<p>🐉 Ejderha → Level 12</p>
 
-            <hr>
+<hr>
 
-            <h3>💡 İpucu</h3>
+<h3>💡 İpucu</h3>
 
-            <p style="color:#aaa">
-                Büyüler normal saldırıdan daha güçlüdür fakat mana tüketir.
-                Mana iksirleri ile savaş sırasında mana doldurabilirsin.
-            </p>
+<p style="color:#aaa">
+Level atladıkça markette yeni ve daha güçlü iksirler açılır.
+Bazı iksirler çok pahalıdır ama boss savaşlarında büyük avantaj sağlar.
+</p>
 
-        </div>
+</div>
 
-    </div>
-
+</div>
 </div>
 
 
@@ -536,130 +516,202 @@ button:disabled {
 
 <h2>🏪 KARANLIK MARKET</h2>
 
-<p>💰 Altın: <b id="shopGold">100</b></p>
+<p>
+⭐ Level: <b id="shopLevel">1</b>
+&nbsp;&nbsp;
+💰 Altın: <b id="shopGold">100</b>
+</p>
+
+<h3>🧪 İKSİRLER</h3>
+
+<div class="shop-grid">
+
+<div class="item" id="smallHealthItem">
+
+<div class="item-icon">🧪</div>
+
+<h3>Küçük Can İksiri</h3>
+
+<p>❤️ +50 Can</p>
+
+<p>🔓 Level 1</p>
+
+<p>💰 30 altın</p>
+
+<button onclick="buyPotion()">
+SATIN AL
+</button>
+
+</div>
+
+
+<div class="item" id="bigHealthItem">
+
+<div class="item-icon">❤️</div>
+
+<h3>Büyük Can İksiri</h3>
+
+<p>❤️ +120 Can</p>
+
+<p>🔓 Level 5</p>
+
+<p>💰 100 altın</p>
+
+<button onclick="buyBigPotion()">
+SATIN AL
+</button>
+
+</div>
+
+
+<div class="item" id="smallManaItem">
+
+<div class="item-icon">🔵</div>
+
+<h3>Küçük Mana İksiri</h3>
+
+<p>🔵 +50 Mana</p>
+
+<p>🔓 Level 1</p>
+
+<p>💰 40 altın</p>
+
+<button onclick="buyManaPotion()">
+SATIN AL
+</button>
+
+</div>
+
+
+<div class="item" id="bigManaItem">
+
+<div class="item-icon">💙</div>
+
+<h3>Büyük Mana İksiri</h3>
+
+<p>🔵 +120 Mana</p>
+
+<p>🔓 Level 7</p>
+
+<p>💰 130 altın</p>
+
+<button onclick="buyBigManaPotion()">
+SATIN AL
+</button>
+
+</div>
+
+
+<div class="item" id="superPotionItem">
+
+<div class="item-icon">⚡</div>
+
+<h3>Süper İksir</h3>
+
+<p>❤️ +200 Can +100 Mana</p>
+
+<p>🔓 Level 10</p>
+
+<p>💰 300 altın</p>
+
+<button onclick="buySuperPotion()">
+SATIN AL
+</button>
+
+</div>
+
+</div>
+
+
+<h3>⚔️ SİLAHLAR VE ZIRHLAR</h3>
 
 <div class="shop-grid">
 
 <div class="item">
-<div class="item-icon">🧪</div>
-<h3>Can İksiri</h3>
-<p>+50 Can</p>
-<p>💰 30 altın</p>
-<button onclick="buyPotion()">SATIN AL</button>
-</div>
 
-<div class="item">
-<div class="item-icon">🔵</div>
-<h3>Mana İksiri</h3>
-<p>+50 Mana</p>
-<p>💰 40 altın</p>
-<button onclick="buyManaPotion()">SATIN AL</button>
-</div>
-
-<div class="item">
 <div class="item-icon">⚔️</div>
+
 <h3>Demir Kılıç</h3>
+
 <p>+15 Saldırı</p>
+
 <p>💰 150 altın</p>
-<button onclick="buyWeapon('Demir Kılıç',15,150)">SATIN AL</button>
+
+<button onclick="buyWeapon('Demir Kılıç',15,150)">
+SATIN AL
+</button>
+
 </div>
 
 <div class="item">
+
 <div class="item-icon">🔥</div>
+
 <h3>Ateş Kılıcı</h3>
+
 <p>+30 Saldırı</p>
+
 <p>💰 350 altın</p>
-<button onclick="buyWeapon('Ateş Kılıcı',30,350)">SATIN AL</button>
+
+<button onclick="buyWeapon('Ateş Kılıcı',30,350)">
+SATIN AL
+</button>
+
 </div>
 
 <div class="item">
+
 <div class="item-icon">⚡</div>
+
 <h3>Şimşek Kılıcı</h3>
+
 <p>+50 Saldırı</p>
+
 <p>💰 700 altın</p>
-<button onclick="buyWeapon('Şimşek Kılıcı',50,700)">SATIN AL</button>
+
+<button onclick="buyWeapon('Şimşek Kılıcı',50,700)">
+SATIN AL
+</button>
+
 </div>
 
 <div class="item">
+
 <div class="item-icon">🛡️</div>
+
 <h3>Demir Zırh</h3>
+
 <p>+10 Savunma</p>
+
 <p>💰 200 altın</p>
-<button onclick="buyArmor(10,200)">SATIN AL</button>
+
+<button onclick="buyArmor(10,200)">
+SATIN AL
+</button>
+
 </div>
 
 <div class="item">
+
 <div class="item-icon">🐉</div>
+
 <h3>Ejderha Zırhı</h3>
+
 <p>+25 Savunma</p>
+
 <p>💰 600 altın</p>
-<button onclick="buyArmor(25,600)">SATIN AL</button>
-</div>
 
-</div>
+<button onclick="buyArmor(25,600)">
+SATIN AL
+</button>
 
-<br>
-
-<button class="close" onclick="closeShop()">❌ KAPAT</button>
-
-</div>
-</div>
-
-
-<!-- BÜYÜLER -->
-
-<div class="modal" id="spellModal">
-
-<div class="modal-content">
-
-<h2>🔮 BÜYÜ KİTABI</h2>
-
-<p>
-Büyüler savaş sırasında kullanılabilir.
-</p>
-
-<div class="spell-grid">
-
-<div class="spell">
-<div class="spell-icon">🔥</div>
-<h3>Ateş Topu</h3>
-<p>Güçlü ateş saldırısı.</p>
-<small>Mana: 25 | Hasar: 35-50</small>
-</div>
-
-<div class="spell">
-<div class="spell-icon">❄️</div>
-<h3>Buz Mızrağı</h3>
-<p>Düşmanı yavaşlatır.</p>
-<small>Mana: 20 | Hasar: 25-40</small>
-</div>
-
-<div class="spell">
-<div class="spell-icon">⚡</div>
-<h3>Şimşek</h3>
-<p>Çok yüksek hasar verir.</p>
-<small>Mana: 35 | Hasar: 50-75</small>
-</div>
-
-<div class="spell">
-<div class="spell-icon">✨</div>
-<h3>Kutsal Şifa</h3>
-<p>Canını iyileştirir.</p>
-<small>Mana: 30 | +60 Can</small>
-</div>
-
-<div class="spell">
-<div class="spell-icon">☠️</div>
-<h3>Lanet</h3>
-<p>Düşmanın saldırısını azaltır.</p>
-<small>Mana: 40 | Hasar: 20-30</small>
 </div>
 
 </div>
 
 <br>
 
-<button class="close" onclick="closeSpellBook()">
+<button class="close" onclick="closeShop()">
 ❌ KAPAT
 </button>
 
@@ -674,10 +726,6 @@ Büyüler savaş sırasında kullanılabilir.
 <div class="modal-content">
 
 <h2>🏟️ BOSS ARENASI</h2>
-
-<p>
-Burada güçlü bosslarla savaşabilirsin.
-</p>
 
 <div class="boss-card">
 
@@ -768,12 +816,17 @@ let player = {
     potions: 3,
     manaPotions: 2,
 
+    bigPotions: 0,
+    bigManaPotions: 0,
+    superPotions: 0,
+
     weapon: "Tahta Kılıç",
     weaponLevel: 1
-
 };
 
+
 let enemy = null;
+
 
 const enemies = [
 
@@ -797,6 +850,21 @@ function log(text) {
     box.appendChild(p);
 
     box.scrollTop = box.scrollHeight;
+}
+
+
+function random(min,max) {
+
+    return Math.floor(
+        Math.random() * (max - min + 1)
+    ) + min;
+
+}
+
+
+function requiredXP() {
+
+    return player.level * 100;
 
 }
 
@@ -810,7 +878,7 @@ function update() {
         `${player.hp} / ${player.maxHp}`;
 
     document.getElementById("playerHealth").style.width =
-        `${Math.max(0, player.hp / player.maxHp * 100)}%`;
+        `${Math.max(0,player.hp/player.maxHp*100)}%`;
 
 
     document.getElementById("manaText").textContent =
@@ -820,7 +888,7 @@ function update() {
         `${player.mana} / ${player.maxMana} Mana`;
 
     document.getElementById("playerManaBar").style.width =
-        `${Math.max(0, player.mana / player.maxMana * 100)}%`;
+        `${Math.max(0,player.mana/player.maxMana*100)}%`;
 
 
     document.getElementById("attackText").textContent =
@@ -850,48 +918,102 @@ function update() {
     document.getElementById("xpText").textContent =
         `${player.xp} / ${requiredXP()}`;
 
+    document.getElementById("shopGold").textContent =
+        player.gold;
+
+    document.getElementById("shopLevel").textContent =
+        player.level;
+
 
     if(enemy) {
 
         document.getElementById("enemyHpText").textContent =
-            `${Math.max(0, enemy.hp)} / ${enemy.maxHp}`;
+            `${Math.max(0,enemy.hp)} / ${enemy.maxHp}`;
 
         document.getElementById("enemyHealth").style.width =
-            `${Math.max(0, enemy.hp / enemy.maxHp * 100)}%`;
+            `${Math.max(0,enemy.hp/enemy.maxHp*100)}%`;
+
 
         if(enemy.burning) {
 
             document.getElementById("enemyStatus").textContent =
                 "🔥 YANIYOR";
 
-        } else if(enemy.frozen) {
+        }
+
+        else if(enemy.frozen) {
 
             document.getElementById("enemyStatus").textContent =
                 "❄️ YAVAŞLADI";
 
-        } else if(enemy.cursed) {
+        }
+
+        else if(enemy.cursed) {
 
             document.getElementById("enemyStatus").textContent =
                 "☠️ LANETLİ";
 
-        } else {
+        }
+
+        else {
 
             document.getElementById("enemyStatus").textContent =
                 "";
 
         }
+
     }
 
 
-    document.getElementById("shopGold").textContent =
-        player.gold;
+    updateShopLocks();
 
 }
 
 
-function requiredXP() {
+function updateShopLocks() {
 
-    return player.level * 100;
+    const items = [
+
+        ["smallHealthItem",1],
+        ["bigHealthItem",5],
+        ["smallManaItem",1],
+        ["bigManaItem",7],
+        ["superPotionItem",10]
+
+    ];
+
+
+    items.forEach(item => {
+
+        let element =
+            document.getElementById(item[0]);
+
+        let level =
+            item[1];
+
+        let button =
+            element.querySelector("button");
+
+
+        if(player.level >= level) {
+
+            element.classList.remove("locked");
+            element.classList.add("unlocked");
+
+            button.disabled = false;
+
+        }
+
+        else {
+
+            element.classList.remove("unlocked");
+            element.classList.add("locked");
+
+            button.disabled = true;
+
+        }
+
+    });
 
 }
 
@@ -902,6 +1024,7 @@ function gainXP(amount) {
 
     log(`✨ +${amount} XP`);
 
+
     while(player.xp >= requiredXP()) {
 
         player.xp -= requiredXP();
@@ -909,16 +1032,15 @@ function gainXP(amount) {
         player.level++;
 
         player.maxHp += 20;
-
         player.hp = player.maxHp;
 
         player.maxMana += 15;
-
         player.mana = player.maxMana;
 
         player.attack += 5;
 
-        log(`🎉 LEVEL ${player.level}!`);
+
+        log(`🎉 LEVEL ${player.level} OLDUN!`);
 
         log("❤️ Maksimum canın arttı!");
 
@@ -926,14 +1048,21 @@ function gainXP(amount) {
 
         log("⚔️ Saldırın arttı!");
 
+
         if(player.level === 3)
             log("🏟️ ARENA AÇILDI!");
 
         if(player.level === 5)
-            log("👹 ORK ŞEFİ AÇILDI!");
+            log("❤️ BÜYÜK CAN İKSİRİ MARKETTE AÇILDI!");
+
+        if(player.level === 7)
+            log("💙 BÜYÜK MANA İKSİRİ MARKETTE AÇILDI!");
 
         if(player.level === 8)
             log("🔥 CEHENNEM LORDU AÇILDI!");
+
+        if(player.level === 10)
+            log("⚡ SÜPER İKSİR MARKETTE AÇILDI!");
 
         if(player.level === 12)
             log("🐉 EJDERHA AÇILDI!");
@@ -954,30 +1083,31 @@ function goForest() {
         return;
     }
 
-    let e = enemies[
-        Math.floor(Math.random() * enemies.length)
-    ];
+
+    let e =
+        enemies[Math.floor(Math.random()*enemies.length)];
+
 
     enemy = {
 
-        name: e[0],
-        emoji: e[1],
+        name:e[0],
+        emoji:e[1],
 
-        hp: e[2] + player.level * 5,
-        maxHp: e[2] + player.level * 5,
+        hp:e[2] + player.level*5,
+        maxHp:e[2] + player.level*5,
 
-        attack: e[3] + player.level,
+        attack:e[3] + player.level,
 
-        gold: e[4],
-        xp: e[5],
+        gold:e[4],
+        xp:e[5],
 
-        boss: false,
+        boss:false,
 
-        burning: false,
-        frozen: false,
-        cursed: false
-
+        burning:false,
+        frozen:false,
+        cursed:false
     };
+
 
     document.getElementById("enemyArea").style.display =
         "block";
@@ -990,6 +1120,7 @@ function goForest() {
 
     document.getElementById("sceneTitle").textContent =
         "⚔️ SAVAŞ";
+
 
     log(`⚠️ ${enemy.name} karşına çıktı!`);
 
@@ -1007,14 +1138,12 @@ function attack() {
         return;
     }
 
+
     let damage =
-        player.attack +
-        Math.floor(Math.random() * 11);
+        player.attack + random(0,10);
 
-    let critical =
-        Math.random() < 0.15;
 
-    if(critical) {
+    if(Math.random() < .15) {
 
         damage *= 2;
 
@@ -1022,9 +1151,11 @@ function attack() {
 
     }
 
+
     enemy.hp -= damage;
 
     log(`⚔️ ${enemy.name}'e ${damage} hasar verdin.`);
+
 
     if(enemy.hp <= 0) {
 
@@ -1032,6 +1163,7 @@ function attack() {
 
         return;
     }
+
 
     enemyAttack();
 
@@ -1044,7 +1176,7 @@ function castSpell(type) {
 
     if(!enemy) {
 
-        log("🔮 Büyü kullanmak için önce bir düşman bul!");
+        log("🔮 Büyü kullanmak için önce düşman bul!");
 
         return;
     }
@@ -1059,7 +1191,9 @@ function castSpell(type) {
         manaCost = 25;
 
         if(player.mana < manaCost) {
+
             log("🔵 Yeterli manan yok!");
+
             return;
         }
 
@@ -1073,7 +1207,7 @@ function castSpell(type) {
 
         log(`🔥 Ateş Topu ${damage} hasar verdi!`);
 
-        log("🔥 Düşman yanmaya başladı!");
+        log("🔥 Düşman yanıyor!");
 
     }
 
@@ -1083,7 +1217,9 @@ function castSpell(type) {
         manaCost = 20;
 
         if(player.mana < manaCost) {
+
             log("🔵 Yeterli manan yok!");
+
             return;
         }
 
@@ -1097,8 +1233,6 @@ function castSpell(type) {
 
         log(`❄️ Buz Mızrağı ${damage} hasar verdi!`);
 
-        log("❄️ Düşman yavaşladı!");
-
     }
 
 
@@ -1107,7 +1241,9 @@ function castSpell(type) {
         manaCost = 35;
 
         if(player.mana < manaCost) {
+
             log("🔵 Yeterli manan yok!");
+
             return;
         }
 
@@ -1115,13 +1251,11 @@ function castSpell(type) {
 
         player.mana -= manaCost;
 
-        let critical = Math.random() < 0.25;
-
-        if(critical) {
+        if(Math.random() < .25) {
 
             damage *= 2;
 
-            log("⚡ ŞİMŞEK KRİTİK VURUŞ YAPTI!");
+            log("⚡ ŞİMŞEK KRİTİK!");
 
         }
 
@@ -1137,7 +1271,9 @@ function castSpell(type) {
         manaCost = 30;
 
         if(player.mana < manaCost) {
+
             log("🔵 Yeterli manan yok!");
+
             return;
         }
 
@@ -1153,9 +1289,9 @@ function castSpell(type) {
         let heal = 60;
 
         player.hp =
-            Math.min(player.maxHp, player.hp + heal);
+            Math.min(player.maxHp,player.hp + heal);
 
-        log(`✨ Kutsal Şifa ile ${heal} can yeniledin.`);
+        log(`✨ +${heal} can yeniledin.`);
 
         enemyAttack();
 
@@ -1171,7 +1307,9 @@ function castSpell(type) {
         manaCost = 40;
 
         if(player.mana < manaCost) {
+
             log("🔵 Yeterli manan yok!");
+
             return;
         }
 
@@ -1185,8 +1323,6 @@ function castSpell(type) {
 
         log(`☠️ Lanet ${damage} hasar verdi!`);
 
-        log("☠️ Düşmanın saldırısı azaldı!");
-
     }
 
 
@@ -1197,18 +1333,10 @@ function castSpell(type) {
         return;
     }
 
+
     enemyAttack();
 
     update();
-
-}
-
-
-function random(min,max) {
-
-    return Math.floor(
-        Math.random() * (max - min + 1)
-    ) + min;
 
 }
 
@@ -1217,37 +1345,38 @@ function enemyAttack() {
 
     let enemyDamage = enemy.attack;
 
-    if(enemy.frozen) {
 
-        enemyDamage = Math.floor(enemyDamage * 0.65);
+    if(enemy.frozen)
+        enemyDamage =
+            Math.floor(enemyDamage*.65);
 
-    }
 
-    if(enemy.cursed) {
+    if(enemy.cursed)
+        enemyDamage =
+            Math.floor(enemyDamage*.55);
 
-        enemyDamage = Math.floor(enemyDamage * 0.55);
-
-    }
 
     let damage =
         enemyDamage -
         player.defense +
-        Math.floor(Math.random() * 6);
+        random(0,5);
+
 
     damage = Math.max(1,damage);
 
     player.hp -= damage;
+
 
     log(`💢 ${enemy.name} sana ${damage} hasar verdi.`);
 
 
     if(enemy.burning) {
 
-        let burnDamage = random(5,10);
+        let burn = random(5,10);
 
-        enemy.hp -= burnDamage;
+        enemy.hp -= burn;
 
-        log(`🔥 Yanma etkisi ${burnDamage} hasar verdi!`);
+        log(`🔥 Yanma ${burn} hasar verdi!`);
 
     }
 
@@ -1292,10 +1421,11 @@ function drinkPotion() {
 
     if(player.potions <= 0) {
 
-        log("❌ Can iksirin yok!");
+        log("❌ Küçük can iksirin yok!");
 
         return;
     }
+
 
     if(player.hp >= player.maxHp) {
 
@@ -1304,14 +1434,43 @@ function drinkPotion() {
         return;
     }
 
+
     player.potions--;
 
-    let heal = 50;
+    player.hp =
+        Math.min(player.maxHp,player.hp+50);
+
+    log("🧪 +50 can yeniledin.");
+
+    update();
+
+}
+
+
+function drinkBigPotion() {
+
+    if(player.bigPotions <= 0) {
+
+        log("❌ Büyük can iksirin yok!");
+
+        return;
+    }
+
+
+    if(player.hp >= player.maxHp) {
+
+        log("❤️ Canın zaten full!");
+
+        return;
+    }
+
+
+    player.bigPotions--;
 
     player.hp =
-        Math.min(player.maxHp,player.hp + heal);
+        Math.min(player.maxHp,player.hp+120);
 
-    log(`🧪 +${heal} can yeniledin.`);
+    log("❤️ Büyük iksir +120 can verdi!");
 
     update();
 
@@ -1322,10 +1481,11 @@ function restoreMana() {
 
     if(player.manaPotions <= 0) {
 
-        log("❌ Mana iksirin yok!");
+        log("❌ Küçük mana iksirin yok!");
 
         return;
     }
+
 
     if(player.mana >= player.maxMana) {
 
@@ -1334,14 +1494,83 @@ function restoreMana() {
         return;
     }
 
+
     player.manaPotions--;
 
-    let mana = 50;
+    player.mana =
+        Math.min(player.maxMana,player.mana+50);
+
+    log("🔵 +50 mana yeniledin.");
+
+    update();
+
+}
+
+
+function restoreBigMana() {
+
+    if(player.bigManaPotions <= 0) {
+
+        log("❌ Büyük mana iksirin yok!");
+
+        return;
+    }
+
+
+    if(player.mana >= player.maxMana) {
+
+        log("🔵 Manan zaten full!");
+
+        return;
+    }
+
+
+    player.bigManaPotions--;
 
     player.mana =
-        Math.min(player.maxMana,player.mana + mana);
+        Math.min(player.maxMana,player.mana+120);
 
-    log(`🔵 +${mana} mana yeniledin.`);
+    log("💙 Büyük mana iksiri +120 mana verdi!");
+
+    update();
+
+}
+
+
+function useSuperPotion() {
+
+    if(player.superPotions <= 0) {
+
+        log("❌ Süper iksirin yok!");
+
+        return;
+    }
+
+
+    if(
+        player.hp >= player.maxHp &&
+        player.mana >= player.maxMana
+    ) {
+
+        log("⚡ Can ve mana zaten full!");
+
+        return;
+    }
+
+
+    player.superPotions--;
+
+    player.hp =
+        Math.min(player.maxHp,player.hp+200);
+
+    player.mana =
+        Math.min(player.maxMana,player.mana+100);
+
+    log("⚡ SÜPER İKSİR kullanıldı!");
+
+    log("❤️ +200 Can");
+
+    log("🔵 +100 Mana");
 
     update();
 
@@ -1368,6 +1597,14 @@ function closeShop() {
 
 function buyPotion() {
 
+    if(player.level < 1) {
+
+        log("🔒 Bu iksir Level 1'de açılır!");
+
+        return;
+    }
+
+
     if(player.gold < 30) {
 
         log("❌ Yeterli altının yok!");
@@ -1375,11 +1612,41 @@ function buyPotion() {
         return;
     }
 
+
     player.gold -= 30;
 
     player.potions++;
 
-    log("🧪 Can iksiri satın aldın!");
+    log("🧪 Küçük can iksiri satın aldın!");
+
+    update();
+
+}
+
+
+function buyBigPotion() {
+
+    if(player.level < 5) {
+
+        log("🔒 Büyük Can İksiri Level 5'te açılır!");
+
+        return;
+    }
+
+
+    if(player.gold < 100) {
+
+        log("❌ Yeterli altının yok!");
+
+        return;
+    }
+
+
+    player.gold -= 100;
+
+    player.bigPotions++;
+
+    log("❤️ Büyük Can İksiri satın aldın!");
 
     update();
 
@@ -1388,6 +1655,14 @@ function buyPotion() {
 
 function buyManaPotion() {
 
+    if(player.level < 1) {
+
+        log("🔒 Bu iksir Level 1'de açılır!");
+
+        return;
+    }
+
+
     if(player.gold < 40) {
 
         log("❌ Yeterli altının yok!");
@@ -1395,11 +1670,70 @@ function buyManaPotion() {
         return;
     }
 
+
     player.gold -= 40;
 
     player.manaPotions++;
 
-    log("🔵 Mana iksiri satın aldın!");
+    log("🔵 Küçük Mana İksiri satın aldın!");
+
+    update();
+
+}
+
+
+function buyBigManaPotion() {
+
+    if(player.level < 7) {
+
+        log("🔒 Büyük Mana İksiri Level 7'de açılır!");
+
+        return;
+    }
+
+
+    if(player.gold < 130) {
+
+        log("❌ Yeterli altının yok!");
+
+        return;
+    }
+
+
+    player.gold -= 130;
+
+    player.bigManaPotions++;
+
+    log("💙 Büyük Mana İksiri satın aldın!");
+
+    update();
+
+}
+
+
+function buySuperPotion() {
+
+    if(player.level < 10) {
+
+        log("🔒 Süper İksir Level 10'da açılır!");
+
+        return;
+    }
+
+
+    if(player.gold < 300) {
+
+        log("❌ Yeterli altının yok!");
+
+        return;
+    }
+
+
+    player.gold -= 300;
+
+    player.superPotions++;
+
+    log("⚡ Süper İksir satın aldın!");
 
     update();
 
@@ -1414,6 +1748,7 @@ function buyWeapon(name,attack,cost) {
 
         return;
     }
+
 
     player.gold -= cost;
 
@@ -1440,6 +1775,7 @@ function buyArmor(defense,cost) {
 
         return;
     }
+
 
     player.gold -= cost;
 
@@ -1489,6 +1825,7 @@ function startBoss(
         return;
     }
 
+
     if(enemy) {
 
         log("⚠️ Zaten savaştasın!");
@@ -1497,6 +1834,7 @@ function startBoss(
 
         return;
     }
+
 
     enemy = {
 
@@ -1516,10 +1854,11 @@ function startBoss(
         burning:false,
         frozen:false,
         cursed:false
-
     };
 
+
     closeArena();
+
 
     document.getElementById("enemyArea").style.display =
         "block";
@@ -1532,6 +1871,7 @@ function startBoss(
 
     document.getElementById("sceneTitle").textContent =
         "🏟️ BOSS SAVAŞI";
+
 
     log(`🔥 BOSS SAVAŞI BAŞLADI: ${name}!`);
 
@@ -1549,22 +1889,6 @@ function gameOver() {
     );
 
     location.reload();
-
-}
-
-
-function openSpellBook() {
-
-    document.getElementById("spellModal").style.display =
-        "flex";
-
-}
-
-
-function closeSpellBook() {
-
-    document.getElementById("spellModal").style.display =
-        "none";
 
 }
 
