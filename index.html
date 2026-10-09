@@ -528,7 +528,7 @@ style="width:100%">
 </button>
 
 <button id="restoreManaBtn" onclick="restoreMana()">
-🔵 MANA İKSİRİ BAS (0)
+🔵 MANA KULLAN (0)
 </button>
 
 <button onclick="goForest()">
@@ -1324,10 +1324,10 @@ function update() {
 
     // İksir butonlarında mevcut miktarı anlık göster
     document.getElementById("drinkPotionBtn").textContent =
-        `🧪 MİNİK İKSİR BAS (${Math.max(0, player.potions)})`;
+        `🧪 MİNİK İKSİR UYGULA (${Math.max(0, player.potions)})`;
 
     document.getElementById("restoreManaBtn").textContent =
-        `🔵 MANA İKSİRİ BAS (${Math.max(0, player.manaPotions)})`;
+        `🔵 MANA UYGULA (${Math.max(0, player.manaPotions)})`;
 
     const spellButtons = {
         fireball: player.fireballCharges,
