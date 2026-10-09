@@ -2784,7 +2784,7 @@ function openTutorial(){
 }
 function closeTutorial(){
     document.getElementById('tutorialModal').style.display='none';
-    try{localStorage.setItem('karanlikArenaTutorialSeen','1');}catch(e){}
+    try{localStorage.setItem('karanlikArenaTutorialSeen_v33','1');}catch(e){}
 }
 function tutorialNext(){
     const total=document.querySelectorAll('#tutorialModal .tutorial-page').length;
@@ -2796,7 +2796,7 @@ function tutorialPrev(){ if(tutorialPage>0){ tutorialPage--; renderTutorial(); }
 
 update();
 
-try{ if(localStorage.getItem('karanlikArenaTutorialSeen')!=='1'){ openTutorial(); } }catch(e){ openTutorial(); }
+try{ if(localStorage.getItem('karanlikArenaTutorialSeen_v33')!=='1'){ openTutorial(); } }catch(e){ openTutorial(); }
 
 </script>
 
