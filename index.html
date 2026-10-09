@@ -83,28 +83,74 @@ header p {
 }
 
 .scene {
-    min-height: 400px;
+    min-height: 500px;
     border-radius: 16px;
+    position: relative;
+    overflow: hidden;
     background:
-        radial-gradient(circle at 50% 50%, rgba(109,65,180,.25), transparent 45%),
-        linear-gradient(#11182a, #080910);
+        radial-gradient(circle at 50% 25%, rgba(76,117,190,.30), transparent 32%),
+        radial-gradient(circle at 50% 85%, rgba(117,42,171,.22), transparent 38%),
+        linear-gradient(180deg,#101a31 0%,#11182a 48%,#080910 100%);
     display: flex;
     flex-direction: column;
-    justify-content: center;
+    justify-content: flex-end;
     align-items: center;
-    border: 1px solid #443b70;
+    border: 1px solid #51457e;
+    box-shadow: inset 0 -100px 100px rgba(0,0,0,.32);
 }
 
-.character {
-    font-size: 100px;
-    filter: drop-shadow(0 0 20px #8b5cff);
+.scene::before {
+    content: ''; position: absolute; inset: 0;
+    background: radial-gradient(circle at 50% 20%, rgba(230,240,255,.14) 0 5%, transparent 6%),
+                linear-gradient(125deg, transparent 0 35%, rgba(33,57,84,.35) 36% 39%, transparent 40% 60%, rgba(33,57,84,.35) 61% 64%, transparent 65%);
+    opacity: .75; pointer-events: none;
 }
-
-.enemy {
-    font-size: 85px;
-    margin: 15px;
-    filter: drop-shadow(0 0 20px #ff3030);
+.battle-stage {
+    position:absolute; left:0; right:0; top:0; height:72%; z-index:1;
+    display:flex; align-items:flex-end; justify-content:space-around; padding:40px 8% 8px;
 }
+.battle-stage::after {
+    content:''; position:absolute; left:8%; right:8%; bottom:10px; height:55px; border-radius:50%;
+    background:radial-gradient(ellipse,rgba(0,0,0,.8),transparent 70%); filter:blur(5px); pointer-events:none;
+}
+.fighter { position:relative; width:42%; text-align:center; z-index:2; }
+.fighter-art { font-size:112px; line-height:1; user-select:none; transition:transform .18s ease,filter .18s ease; filter:drop-shadow(0 12px 12px rgba(0,0,0,.75)); }
+.player-fighter .fighter-art { filter:drop-shadow(0 0 18px rgba(111,94,255,.8)) drop-shadow(0 12px 12px rgba(0,0,0,.75)); }
+.enemy-fighter .fighter-art { filter:drop-shadow(0 0 18px rgba(255,58,91,.65)) drop-shadow(0 12px 12px rgba(0,0,0,.75)); }
+.fighter-name { margin-top:7px; font-weight:800; font-size:17px; text-shadow:0 2px 5px #000; }
+.fighter-bar { width:100%; height:12px; margin-top:7px; background:#090a12; border:1px solid #4b4666; border-radius:20px; overflow:hidden; }
+.fighter-bar-fill { height:100%; transition:width .25s ease; }
+.player-bar-fill { background:linear-gradient(90deg,#4d24ff,#b15cff); }
+.enemy-bar-fill { background:linear-gradient(90deg,#ff253f,#ff6b6b); }
+.vs-badge {
+    position:absolute; left:50%; bottom:82px; transform:translateX(-50%); width:52px; height:52px; display:grid; place-items:center;
+    border-radius:50%; background:rgba(10,8,20,.9); border:2px solid #8e64ff; color:#d9c9ff; font-weight:900;
+    box-shadow:0 0 22px rgba(125,73,255,.5); z-index:4;
+}
+.battle-banner {
+    position:absolute; top:16px; left:50%; transform:translateX(-50%); z-index:4; padding:8px 18px;
+    border:1px solid #55458a; border-radius:999px; background:rgba(7,7,16,.82); color:#d8caff; font-weight:800;
+    letter-spacing:.5px; box-shadow:0 0 20px rgba(111,76,220,.25);
+}
+.damage-popup {
+    position:absolute; left:50%; top:42%; transform:translate(-50%,0) scale(.6); font-size:38px; font-weight:900; opacity:0;
+    pointer-events:none; z-index:8; text-shadow:0 3px 0 #160611,0 0 16px currentColor;
+}
+.damage-popup.show { animation:damageFloat .7s ease-out forwards; }
+.damage-popup.player-hit { color:#ff5264; }
+.damage-popup.enemy-hit { color:#ffd54d; }
+.damage-popup.magic-hit { color:#62d8ff; }
+@keyframes damageFloat { 0%{opacity:0;transform:translate(-50%,10px) scale(.6)} 15%{opacity:1;transform:translate(-50%,0) scale(1.08)} 100%{opacity:0;transform:translate(-50%,-70px) scale(1)} }
+.fighter.player-lunge .fighter-art { animation:playerLunge .38s ease; }
+.fighter.enemy-lunge .fighter-art { animation:enemyLunge .38s ease; }
+.fighter.hit .fighter-art { animation:fighterHit .34s ease; }
+.fighter.magic-cast .fighter-art { animation:magicCast .48s ease; }
+@keyframes playerLunge { 50%{transform:translateX(55px) scale(1.08)} }
+@keyframes enemyLunge { 50%{transform:translateX(-55px) scale(1.08)} }
+@keyframes fighterHit { 20%,60%{transform:translateX(-9px) rotate(-3deg);filter:brightness(1.8) drop-shadow(0 0 24px #fff)} }
+@keyframes magicCast { 50%{transform:scale(1.16) translateY(-8px);filter:brightness(1.7) drop-shadow(0 0 35px #66ccff)} }
+.character { font-size:100px; }
+.enemy { font-size:85px; margin:15px; }
 
 .healthbar,
 .manabar {
@@ -312,13 +358,12 @@ button:disabled {
         grid-template-columns: 1fr;
     }
 
-    .character {
-        font-size: 75px;
-    }
-
-    .enemy {
-        font-size: 65px;
-    }
+    .character { font-size:75px; }
+    .enemy { font-size:65px; }
+    .fighter-art { font-size:78px; }
+    .battle-stage { padding-left:3%; padding-right:3%; }
+    .fighter-name { font-size:14px; }
+    .vs-badge { width:42px; height:42px; bottom:74px; }
 }
 
 
@@ -397,27 +442,31 @@ button:disabled {
 
 <div class="scene">
 
-<div class="character">🧙‍♂️</div>
-
+<div class="battle-banner" id="battleBanner">🌲 KARANLIK ORMAN</div>
+<div class="battle-stage" id="battleStage">
+    <div class="fighter player-fighter" id="playerFighter">
+        <div class="fighter-art" id="playerArt">🧙‍♂️</div>
+        <div class="fighter-name">⚔️ SEN</div>
+        <div class="fighter-bar"><div id="playerBattleHealth" class="fighter-bar-fill player-bar-fill" style="width:100%"></div></div>
+        <small id="playerBattleHp">100 / 100</small>
+    </div>
+    <div class="vs-badge">VS</div>
+    <div class="fighter enemy-fighter" id="enemyFighter" style="opacity:.35">
+        <div id="enemyEmoji" class="fighter-art enemy">👹</div>
+        <div class="fighter-name" id="enemyName">BEKLENİYOR...</div>
+        <div class="fighter-bar"><div id="enemyBattleHealth" class="fighter-bar-fill enemy-bar-fill" style="width:100%"></div></div>
+        <small id="enemyBattleHp">—</small>
+    </div>
+</div>
+<div id="damagePopup" class="damage-popup">-0</div>
 <h2 id="sceneTitle">Karanlık Orman</h2>
 
 <div id="enemyArea" style="display:none;text-align:center">
-
-<div id="enemyEmoji" class="enemy">👹</div>
-
-<h2 id="enemyName">Goblin</h2>
-
-<div class="healthbar">
-<div id="enemyHealth"
-class="health enemyhealth"
-style="width:100%">
-</div>
-</div>
-
+<div id="enemyEmojiLegacy" class="enemy" style="display:none">👹</div>
+<h2 id="enemyNameLegacy" style="display:none">Goblin</h2>
+<div class="healthbar"><div id="enemyHealth" class="health enemyhealth" style="width:100%"></div></div>
 <span id="enemyHpText">50 / 50</span>
-
 <div class="status" id="enemyStatus"></div>
-
 </div>
 
 <div class="healthbar">
@@ -607,7 +656,7 @@ Bazı iksirler çok pahalıdır ama boss savaşlarında büyük avantaj sağlar.
 <div class="tutorial-card">🧩 <b>Malzemeler</b><br>Demir, Altın ve Elmas parçaları canavarlardan düşer. Yeni silah ve zırh almak için genellikle 5 parça gerekir.</div>
 <div class="tutorial-card">🔨 <b>Tamir</b><br>Silahın dayanıklılığı düşünce eksik dayanıklılık başına altın ödeyerek tekrar tamamen doldurabilirsin.</div>
 <div class="tutorial-card">🧪 <b>İksirler</b><br>Küçük Can/Mana başlangıçta; Büyük Can Lv5, Büyük Mana Lv7, Süper İksir Lv10'da açılır.</div>
-<div class="tutorial-card">🔮 <b>Büyü Geliştirme</b><br>Ateş Topu, Buz Mızrağı, Şimşek, Kutsal Şifa ve Lanet altın karşılığında geliştirilebilir.</div>
+<div class="tutorial-card">🔮 <b>Büyü Geliştirme</b><br>Büyüler Lv.2'ye kadar geliştirilir. Her büyü için belirli güçlü canavarlardan düşen özel çekirdeklerden 5 adet ve altın gerekir.</div>
 </div>
 <div class="tutorial-tip">💡 <b>Güçlenme sırası:</b> Canavarları yen → altın/malzeme biriktir → silah/zırh al veya geliştir → büyülerini güçlendir → daha zorlu bölgelere ilerle.</div>
 </div>
@@ -755,11 +804,20 @@ SATIN AL
 <h3>🔮 BÜYÜ GELİŞTİRMELERİ</h3>
 
 <div class="shop-grid">
-<div class="item"><div class="item-icon">🔥</div><h3>Ateş Topu</h3><p>Seviye: <b id="fireballShopLevel">1</b></p><p>💰 Geliştirme: <b id="fireballShopCost">200</b> altın</p><button onclick="upgradeSpell('fireball')">GELİŞTİR</button></div>
-<div class="item"><div class="item-icon">❄️</div><h3>Buz Mızrağı</h3><p>Seviye: <b id="iceShopLevel">1</b></p><p>💰 Geliştirme: <b id="iceShopCost">250</b> altın</p><button onclick="upgradeSpell('ice')">GELİŞTİR</button></div>
-<div class="item"><div class="item-icon">⚡</div><h3>Şimşek</h3><p>Seviye: <b id="lightningShopLevel">1</b></p><p>💰 Geliştirme: <b id="lightningShopCost">350</b> altın</p><button onclick="upgradeSpell('lightning')">GELİŞTİR</button></div>
-<div class="item"><div class="item-icon">✨</div><h3>Kutsal Şifa</h3><p>Seviye: <b id="healShopLevel">1</b></p><p>💰 Geliştirme: <b id="healShopCost">300</b> altın</p><button onclick="upgradeSpell('heal')">GELİŞTİR</button></div>
-<div class="item"><div class="item-icon">☠️</div><h3>Lanet</h3><p>Seviye: <b id="curseShopLevel">1</b></p><p>💰 Geliştirme: <b id="curseShopCost">400</b> altın</p><button onclick="upgradeSpell('curse')">GELİŞTİR</button></div>
+<div class="item"><div class="item-icon">🔥</div><h3>Ateş Topu</h3><p>Seviye: <b id="fireballShopLevel">1</b></p><p>🧩 Ateş Çekirdeği: <b id="fireballShopMaterial">0 / 5</b></p><p>💰 Geliştirme: <b id="fireballShopCost">200</b> altın</p><button id="fireballUpgradeBtn" onclick="upgradeSpell('fireball')">GELİŞTİR</button></div>
+<div class="item"><div class="item-icon">❄️</div><h3>Buz Mızrağı</h3><p>Seviye: <b id="iceShopLevel">1</b></p><p>🧩 Buz Çekirdeği: <b id="iceShopMaterial">0 / 5</b></p><p>💰 Geliştirme: <b id="iceShopCost">250</b> altın</p><button id="iceUpgradeBtn" onclick="upgradeSpell('ice')">GELİŞTİR</button></div>
+<div class="item"><div class="item-icon">⚡</div><h3>Şimşek</h3><p>Seviye: <b id="lightningShopLevel">1</b></p><p>🧩 Şimşek Çekirdeği: <b id="lightningShopMaterial">0 / 5</b></p><p>💰 Geliştirme: <b id="lightningShopCost">350</b> altın</p><button id="lightningUpgradeBtn" onclick="upgradeSpell('lightning')">GELİŞTİR</button></div>
+<div class="item"><div class="item-icon">✨</div><h3>Kutsal Şifa</h3><p>Seviye: <b id="healShopLevel">1</b></p><p>🧩 Kutsal Çekirdek: <b id="healShopMaterial">0 / 5</b></p><p>💰 Geliştirme: <b id="healShopCost">300</b> altın</p><button id="healUpgradeBtn" onclick="upgradeSpell('heal')">GELİŞTİR</button></div>
+<div class="item"><div class="item-icon">☠️</div><h3>Lanet</h3><p>Seviye: <b id="curseShopLevel">1</b></p><p>🧩 Lanet Çekirdeği: <b id="curseShopMaterial">0 / 5</b></p><p>💰 Geliştirme: <b id="curseShopCost">400</b> altın</p><button id="curseUpgradeBtn" onclick="upgradeSpell('curse')">GELİŞTİR</button></div>
+</div>
+
+<div class="item" style="margin-top:14px">
+<p>🔥 <b>Ateş Çekirdeği</b> → Ateş Elementali / Lav Elementali</p>
+<p>❄️ <b>Buz Çekirdeği</b> → Buz Golemi / Donmuş Dev</p>
+<p>⚡ <b>Şimşek Çekirdeği</b> → Karanlık Büyücü / Gölge Büyücü</p>
+<p>✨ <b>Kutsal Çekirdek</b> → Vampir / Kan Avcısı</p>
+<p>☠️ <b>Lanet Çekirdeği</b> → Hayalet / Lanetli Ruh / Lanetli Şövalye</p>
+<p style="color:#aaa">Her büyü yalnızca Lv.2'ye kadar geliştirilebilir. Lv.2 için 5 özel çekirdek ve altın gerekir.</p>
 </div>
 
 <h3>🧩 EKİPMAN MALZEMELERİ</h3>
@@ -774,6 +832,7 @@ SATIN AL
 <div class="item">
 <div class="item-icon">🪵</div><h3>Tahta Kılıç</h3>
 <p>⚔️ Seviye: <b id="woodSwordLevel">1</b> · +10 Saldırı</p>
+<p>📈 Lv.2 geliştirme: <b>+%2 hasar</b> · Maksimum Lv.2</p>
 <p>🔨 Dayanıklılık: <b>2+</b> · Seviye arttıkça artar</p>
 <p>💰 Geliştirme: <b id="woodSwordUpgradeCost">100</b> altın</p>
 <button id="woodSwordUpgradeBtn" onclick="upgradeWeapon()">GELİŞTİR</button>
@@ -782,6 +841,7 @@ SATIN AL
 <div class="item">
 <div class="item-icon">⚔️</div><h3>Demir Kılıç</h3>
 <p>🧩 Gereken: 5 ⚙️ Demir Parçası</p><p>⚔️ Seviye: <b id="ironSwordLevel">Kilitli</b> · +15 Saldırı</p>
+<p>📈 Lv.2 geliştirme: <b>+%3 hasar</b> · Maksimum Lv.2</p>
 <p>🔨 Dayanıklılık: <b>3+</b> · Seviye arttıkça artar</p>
 <p>💰 Satın alma: 300 altın</p><p>💰 Geliştirme: <b id="ironSwordUpgradeCost">0</b> altın</p>
 <button id="ironSwordBuyBtn" onclick="buyWeapon('Demir Kılıç',15,300,'iron')">SATIN AL</button>
@@ -791,6 +851,7 @@ SATIN AL
 <div class="item">
 <div class="item-icon">🟡</div><h3>Altın Kılıç</h3>
 <p>🧩 Gereken: 5 🟡 Altın Parçası</p><p>⚔️ Seviye: <b id="goldSwordLevel">Kilitli</b> · +30 Saldırı</p>
+<p>📈 Lv.2 geliştirme: <b>+%4 hasar</b> · Maksimum Lv.2</p>
 <p>🔨 Dayanıklılık: <b>4+</b> · Seviye arttıkça artar</p>
 <p>💰 Satın alma: 750 altın</p><p>💰 Geliştirme: <b id="goldSwordUpgradeCost">0</b> altın</p>
 <button id="goldSwordBuyBtn" onclick="buyWeapon('Altın Kılıç',30,750,'gold')">SATIN AL</button>
@@ -800,6 +861,7 @@ SATIN AL
 <div class="item">
 <div class="item-icon">💎</div><h3>Elmas Kılıç</h3>
 <p>🧩 Gereken: 5 💎 Elmas Parçası</p><p>⚔️ Seviye: <b id="diamondSwordLevel">Kilitli</b> · +50 Saldırı</p>
+<p>📈 Lv.2 geliştirme: <b>+%5 hasar</b> · Maksimum Lv.2</p>
 <p>🔨 Dayanıklılık: <b>5+</b> · Seviye arttıkça artar</p>
 <p>💰 Satın alma: 1500 altın</p><p>💰 Geliştirme: <b id="diamondSwordUpgradeCost">0</b> altın</p>
 <button id="diamondSwordBuyBtn" onclick="buyWeapon('Elmas Kılıç',50,1500,'diamond')">SATIN AL</button>
@@ -988,6 +1050,11 @@ let player = {
     ironPieces: 0,
     goldPieces: 0,
     diamondPieces: 0,
+    fireCorePieces: 0,
+    iceCorePieces: 0,
+    lightningCorePieces: 0,
+    holyCorePieces: 0,
+    curseCorePieces: 0,
     spellLevels: { fireball: 1, ice: 1, lightning: 1, heal: 1, curse: 1 },
 
     curseCharges: 0,
@@ -1156,8 +1223,8 @@ function update() {
         const buyEl = cfg.buyId ? document.getElementById(cfg.buyId) : null;
         if(levelEl) levelEl.textContent = owned ? player.weaponLevel : (name === "Tahta Kılıç" ? 1 : "Kilitli");
         if(upgradeEl) {
-            upgradeEl.disabled = !owned;
-            upgradeEl.textContent = owned ? "GELİŞTİR" : "ÖNCE SATIN AL";
+            upgradeEl.disabled = !owned || player.weaponLevel >= 2;
+            upgradeEl.textContent = !owned ? "ÖNCE SATIN AL" : (player.weaponLevel >= 2 ? "MAKSİMUM SEVİYE" : "GELİŞTİR");
         }
         if(buyEl) {
             const order = ["Tahta Kılıç","Demir Kılıç","Altın Kılıç","Elmas Kılıç"];
@@ -1191,6 +1258,30 @@ function update() {
     const materialEls = {iron:"ironMaterialText", gold:"goldMaterialText", diamond:"diamondMaterialText"};
     Object.entries(materialEls).forEach(([mat,id])=>{const el=document.getElementById(id);if(el)el.textContent=`${Math.min(5,player[mat+'Pieces'])} / 5`;});
 
+    const spellMaterialEls = {
+      fireball:"fireballShopMaterial", ice:"iceShopMaterial", lightning:"lightningShopMaterial",
+      heal:"healShopMaterial", curse:"curseShopMaterial"
+    };
+    const spellMaterialKeys = {
+      fireball:"fireCorePieces", ice:"iceCorePieces", lightning:"lightningCorePieces",
+      heal:"holyCorePieces", curse:"curseCorePieces"
+    };
+    Object.entries(spellMaterialEls).forEach(([type,id])=>{
+      const el=document.getElementById(id);
+      const key=spellMaterialKeys[type];
+      if(el && key) el.textContent=`${Math.min(5,player[key])} / 5`;
+    });
+
+    Object.keys(spellBaseCosts).forEach(type=>{
+      const level=player.spellLevels[type]||1;
+      const btn=document.getElementById(type+"UpgradeBtn");
+      const matKey=spellMaterialKeys[type];
+      if(btn){
+        btn.disabled=level>=2 || player[matKey]<5 || player.gold<Math.round(spellBaseCosts[type]);
+        btn.textContent=level>=2?"MAKSİMUM SEVİYE":"GELİŞTİR";
+      }
+    });
+
     const weaponConfigs={
       "Tahta Kılıç":{level:"woodSwordLevel",cost:"woodSwordUpgradeCost",buy:null,up:"woodSwordUpgradeBtn",base:100},
       "Demir Kılıç":{level:"ironSwordLevel",cost:"ironSwordUpgradeCost",buy:"ironSwordBuyBtn",up:"ironSwordUpgradeBtn",base:180},
@@ -1203,7 +1294,12 @@ function update() {
       if(costEl)costEl.textContent=owned?Math.round(cfg.base*Math.pow(1.5,Math.max(0,player.weaponLevel-1))):0;
       if(buyEl)buyEl.disabled=owned || ["Demir Kılıç","Altın Kılıç","Elmas Kılıç"].indexOf(name)>["Demir Kılıç","Altın Kılıç","Elmas Kılıç"].indexOf(player.weapon) || player[{"Demir Kılıç":"iron","Altın Kılıç":"gold","Elmas Kılıç":"diamond"}[name]+'Pieces']<5;
       if(buyEl)buyEl.textContent=owned?"SATIN ALINDI":(player[{"Demir Kılıç":"iron","Altın Kılıç":"gold","Elmas Kılıç":"diamond"}[name]+'Pieces']<5?"5 PARÇA GEREKLİ":"SATIN AL");
-      if(upEl)upEl.disabled=!owned; if(upEl&&owned)upEl.textContent=`GELİŞTİR (Lv.${player.weaponLevel} → Lv.${player.weaponLevel+1})`;
+      if(upEl){
+        upEl.disabled=!owned || player.weaponLevel>=2;
+        if(!owned) upEl.textContent="ÖNCE SATIN AL";
+        else if(player.weaponLevel>=2) upEl.textContent="MAKSİMUM SEVİYE";
+        else upEl.textContent=`GELİŞTİR (Lv.1 → Lv.2)`;
+      }
     });
 
     const armorConfigs={
@@ -1326,6 +1422,8 @@ function update() {
 
     }
 
+
+    updateBattleVisual();
 
     updateShopLocks();
 
@@ -1501,7 +1599,7 @@ function goForest() {
         type:e[6],
         hp:e[2] + hpBonus,
         maxHp:e[2] + hpBonus,
-        attack:e[3] + attackBonus,
+        attack:Math.round((e[3] + attackBonus) * 1.20) + random(0,4),
         gold:Math.round(e[4] * (1 + Math.max(0, player.level - 1) * 0.08)),
         xp:Math.round(e[5] * (1 + Math.max(0, player.level - 1) * 0.06)),
         boss:false,
@@ -1548,6 +1646,33 @@ function goForest() {
     update();
 }
 
+function battleAnimate(type, damage, label) {
+    const playerFighter=document.getElementById("playerFighter"), enemyFighter=document.getElementById("enemyFighter"), popup=document.getElementById("damagePopup");
+    if(!playerFighter||!enemyFighter||!popup) return;
+    playerFighter.classList.remove("player-lunge","magic-cast","hit"); enemyFighter.classList.remove("enemy-lunge","hit");
+    void playerFighter.offsetWidth; void enemyFighter.offsetWidth;
+    if(type==="player"){ playerFighter.classList.add("player-lunge"); enemyFighter.classList.add("hit"); popup.className="damage-popup enemy-hit show"; }
+    else if(type==="magic"){ playerFighter.classList.add("magic-cast"); enemyFighter.classList.add("hit"); popup.className="damage-popup magic-hit show"; }
+    else { enemyFighter.classList.add("enemy-lunge"); playerFighter.classList.add("hit"); popup.className="damage-popup player-hit show"; }
+    popup.textContent=`-${damage}${label?" "+label:""}`;
+    setTimeout(()=>popup.classList.remove("show"),720);
+    setTimeout(()=>{playerFighter.classList.remove("player-lunge","magic-cast","hit");enemyFighter.classList.remove("enemy-lunge","hit")},520);
+}
+
+function updateBattleVisual(){
+    const ef=document.getElementById("enemyFighter"), eh=document.getElementById("enemyBattleHp"), eb=document.getElementById("enemyBattleHealth"), ph=document.getElementById("playerBattleHp"), pb=document.getElementById("playerBattleHealth"), banner=document.getElementById("battleBanner");
+    if(ph) ph.textContent=`${Math.max(0,player.hp)} / ${player.maxHp}`;
+    if(pb) pb.style.width=`${Math.max(0,player.hp/player.maxHp*100)}%`;
+    if(enemy){
+        if(ef) ef.style.opacity="1";
+        if(eh) eh.textContent=`${Math.max(0,enemy.hp)} / ${enemy.maxHp}`;
+        if(eb) eb.style.width=`${Math.max(0,enemy.hp/enemy.maxHp*100)}%`;
+        if(banner) banner.textContent=enemy.boss?"🏟️ BOSS SAVAŞI":"⚔️ SAVAŞ BAŞLADI";
+    } else {
+        if(ef) ef.style.opacity=".35"; if(eh) eh.textContent="—"; if(eb) eb.style.width="100%"; if(banner) banner.textContent="🌲 KARANLIK ORMAN";
+    }
+}
+
 function attack() {
 
     if(!enemy) {
@@ -1564,7 +1689,7 @@ function attack() {
     }
 
     let damage =
-        player.attack + random(0,10);
+        Math.round((player.attack + random(0,10)) * (player.weaponDamageMultiplier || 1));
 
 
     if(Math.random() < .15) {
@@ -1577,6 +1702,7 @@ function attack() {
 
 
     enemy.hp -= damage;
+    battleAnimate("player", damage, damage >= player.attack * 1.8 ? "KRİTİK" : "");
 
     log(`⚔️ ${enemy.name}'e ${damage} hasar verdin.`);
 
@@ -1643,6 +1769,7 @@ function castSpell(type) {
         player.mana -= manaCost;
 
         enemy.hp -= damage;
+        battleAnimate("magic", damage, "🔥");
 
         enemy.burning = true;
         player.fireballCharges = 2;
@@ -1676,6 +1803,7 @@ function castSpell(type) {
         player.mana -= manaCost;
 
         enemy.hp -= damage;
+        battleAnimate("magic", damage, "❄️");
 
         enemy.frozen = true;
         player.iceCharges = 2;
@@ -1715,6 +1843,7 @@ function castSpell(type) {
         }
 
         enemy.hp -= damage;
+        battleAnimate("magic", damage, "⚡");
         player.lightningCharges = 4;
 
         log(`⚡ Şimşek ${damage} hasar verdi!`);
@@ -1789,6 +1918,7 @@ function castSpell(type) {
         player.mana -= manaCost;
         player.curseCharges = 4;
         enemy.hp -= damage;
+        battleAnimate("magic", damage, "☠️");
         enemy.cursed = true;
         enemy.curseTurns = 3;
 
@@ -1820,6 +1950,8 @@ function enemyAttack() {
     // Lanetliyken canavarın hiçbir saldırısı veya özel hasarı çalışmaz.
     if(enemy.cursed && enemy.curseTurns > 0) {
         log(`☠️ ${enemy.name} lanetli olduğu için bu tur hiç hasar veremedi!`);
+        const status = document.getElementById("enemyStatus");
+        if(status) status.textContent = "☠️ LANETLİ — Bu tur saldırı yapamadı.";
         enemy.curseTurns--;
         if(enemy.curseTurns <= 0) {
             enemy.cursed = false;
@@ -1830,9 +1962,33 @@ function enemyAttack() {
     }
 
     let enemyDamage = enemy.attack;
+    let eventText = "";
+    const status = document.getElementById("enemyStatus");
+    if(status) status.textContent = "";
 
-    if((enemy.type === "ghost" || enemy.type === "bat") && Math.random() < (enemy.type === "bat" ? 0.20 : 0.25)) {
+    // Her canavar artık sadece normal vuruşa güvenmiyor. Ormanda
+    // rastgele ağır/çok ağır saldırılar sıkça görülebilir.
+    const roll = Math.random();
+    if(roll < 0.08) {
+        const multiplier = random(25,35) / 10;
+        enemyDamage = Math.round(enemyDamage * multiplier);
+        eventText = `☠️ ${enemy.name} YIKICI SALDIRI hazırladı! ${multiplier.toFixed(1)}x hasar`;
+        log(`☠️ YIKICI SALDIRI! ${enemy.name} saldırısını ${multiplier.toFixed(1)}x güçlendirdi!`);
+    } else if(roll < 0.28) {
+        const multiplier = random(15,22) / 10;
+        enemyDamage = Math.round(enemyDamage * multiplier);
+        eventText = `💥 ${enemy.name} GÜÇLÜ SALDIRI yaptı! ${multiplier.toFixed(1)}x hasar`;
+        log(`💥 GÜÇLÜ SALDIRI! ${enemy.name} saldırısını ${multiplier.toFixed(1)}x güçlendirdi!`);
+    } else if(roll < 0.40) {
+        const bonus = random(5,12);
+        enemyDamage += bonus;
+        eventText = `⚡ ${enemy.name} ani hamle yaptı! +${bonus} hasar`;
+        log(`⚡ ANİ HAMLE! ${enemy.name} saldırısına ${bonus} ek hasar kattı.`);
+    }
+
+    if((enemy.type === "ghost" || enemy.type === "bat") && Math.random() < (enemy.type === "bat" ? 0.18 : 0.22)) {
         log(enemy.type === "bat" ? "🦇 Yarasa saldırından sıyrıldı!" : "👻 Hayalet saldırından sıyrıldı!");
+        if(status) status.textContent = enemy.type === "bat" ? "🦇 Yarasa saldırından sıyrıldı." : "👻 Hayalet saldırından sıyrıldı.";
         update();
         return;
     }
@@ -1841,88 +1997,112 @@ function enemyAttack() {
         enemyDamage = Math.max(1, Math.floor(enemyDamage * 0.85));
     }
 
-    if(enemy.type === "bandit" && Math.random() < 0.15) {
+    if(enemy.type === "bandit" && Math.random() < 0.22) {
         enemyDamage *= 2;
-        log("🏴‍☠️ Haydut kritik saldırı yaptı!");
+        eventText = "🏴‍☠️ Haydut kritik saldırı yaptı! 2x hasar";
+        log("🏴‍☠️ HAYDUT KRİTİK SALDIRI! 2x hasar!");
     }
 
     if(enemy.type === "skeleton") {
         enemyDamage = Math.max(1, Math.floor(enemyDamage * 0.85));
     }
 
-    if(enemy.type === "orc" && enemy.hp <= enemy.maxHp * 0.35 && !enemy.enraged) {
+    if(enemy.type === "orc" && enemy.hp <= enemy.maxHp * 0.50 && !enemy.enraged) {
         enemy.enraged = true;
-        enemy.attack += 7;
+        enemy.attack += Math.max(5, Math.round(enemy.attack * 0.25));
         enemyDamage = enemy.attack;
-        log("😡 ORK ÖFKELENDİ! Saldırısı arttı!");
+        eventText = "😡 ORK ÖFKELENDİ! Saldırısı arttı!";
+        log("😡 ORK ÖFKELENDİ! Canı yarıya düşünce saldırısı arttı!");
     }
 
-    if(enemy.type === "wolf" && Math.random() < 0.18) {
-        log("🐺 Kurt ikinci kez saldırdı!");
-        let extraBase = enemyDamage;
-        if(enemy.cursed) extraBase = Math.floor(extraBase * .55);
-        let extra = Math.max(1, extraBase - player.defense + random(0,5));
+    // Tüm canavarların zaman zaman ikinci saldırı yapabilmesi.
+    if(Math.random() < 0.14) {
+        const extraBase = Math.max(1, Math.floor(enemyDamage * (random(45,70) / 100)));
+        const extraDefense = Math.floor(player.defense * 0.65);
+        const extra = Math.max(1, extraBase - extraDefense + random(0,4));
         player.hp -= extra;
-        log(`💢 ${enemy.name} sana ${extra} ek hasar verdi.`);
+        eventText = eventText ? `${eventText} · 🔁 İKİNCİ VURUŞ` : `🔁 ${enemy.name} ikinci kez saldırdı!`;
+        log(`🔁 İKİNCİ VURUŞ! ${enemy.name} sana ${extra} ek hasar verdi.`);
+    }
+
+    if(enemy.type === "wolf" && Math.random() < 0.25) {
+        const extra = Math.max(1, Math.floor(enemyDamage * 0.65) - player.defense + random(0,5));
+        player.hp -= extra;
+        eventText = `🐺 Kurt seri saldırdı! +${extra} hasar`;
+        log(`🐺 KURT SERİ SALDIRISI! ${enemy.name} sana ${extra} ek hasar verdi.`);
     }
 
     if(enemy.frozen)
-        enemyDamage = Math.floor(enemyDamage * .65);
+        enemyDamage = Math.floor(enemyDamage * 0.65);
 
-    const effectiveDefense = enemy.type === "knight" ? Math.floor(player.defense * 0.55) : player.defense;
-    let damage = enemyDamage - effectiveDefense + random(0,5);
-    damage = Math.max(1,damage);
+    // Bazı ani saldırılar savunmanın bir bölümünü deler.
+    let effectiveDefense = enemy.type === "knight" ? Math.floor(player.defense * 0.55) : player.defense;
+    if(Math.random() < 0.12) {
+        effectiveDefense = Math.floor(effectiveDefense * 0.40);
+        eventText = eventText ? `${eventText} · 🛡️ SAVUNMA DELİNDİ` : "🛡️ Canavar savunmanı deldi!";
+        log(`🛡️ SAVUNMA DELİNDİ! ${enemy.name} savunmanın büyük bölümünü aştı.`);
+    }
+
+    let damage = enemyDamage - effectiveDefense + random(0,7);
+    damage = Math.max(2,damage);
 
     player.hp -= damage;
+    battleAnimate("enemy", damage, "");
     log(`💢 ${enemy.name} sana ${damage} hasar verdi.`);
 
-    if(enemy.type === "spider" && !enemy.poisoned && Math.random() < 0.35) {
+    if(eventText && status) status.textContent = eventText;
+
+    if(enemy.type === "spider" && !enemy.poisoned && Math.random() < 0.45) {
         enemy.poisoned = true;
         enemy.poisonTurns = 3;
-        log("☠️ Zehirli Örümcek seni zehirledi! 3 tur zehir hasarı alacaksın.");
+        log("☠️ ZEHİRLİ SALDIRI! Zehir 3 tur boyunca canını azaltacak.");
+        if(status) status.textContent = "☠️ ZEHİRLENDİN! 3 tur boyunca ek hasar alacaksın.";
     }
 
-    if(enemy.type === "elemental" && Math.random() < 0.25) {
-        const burn = random(3,6);
+    if(enemy.type === "elemental" && Math.random() < 0.35) {
+        const burn = random(5,9);
         player.hp -= burn;
-        log(`🔥 Ateş Elementali seni yaktı: ${burn} ek hasar!`);
+        log(`🔥 ATEŞ PATLAMASI! ${enemy.name} seni yaktı: ${burn} ek hasar!`);
+        if(status) status.textContent = `🔥 ATEŞ PATLAMASI! +${burn} ek hasar`;
     }
 
-    if(enemy.type === "troll" && Math.random() < 0.20 && enemy.hp > 0) {
-        const heal = Math.min(12, enemy.maxHp - enemy.hp);
+    if(enemy.type === "troll" && Math.random() < 0.25 && enemy.hp > 0) {
+        const heal = Math.min(16, enemy.maxHp - enemy.hp);
         if(heal > 0) {
             enemy.hp += heal;
             log(`💚 Troll ${heal} can yeniledi!`);
         }
     }
 
-    if(enemy.type === "assassin" && Math.random() < 0.18) {
-        const extra = random(8,14);
+    if(enemy.type === "assassin" && Math.random() < 0.28) {
+        const extra = random(10,18);
         player.hp -= extra;
-        log(`🥷 Gölge Suikastçı gölgelerden vurdu: ${extra} ek hasar!`);
+        log(`🥷 GÖLGEDEN SALDIRI! Gölge Suikastçı ${extra} ek hasar verdi.`);
+        if(status) status.textContent = `🥷 GÖLGEDEN SALDIRI! +${extra} hasar`;
     }
 
     if(enemy.type === "vampire") {
-        const drainHeal = Math.min(Math.max(1, Math.floor(damage * 0.35)), enemy.maxHp - enemy.hp);
+        const drainHeal = Math.min(Math.max(1, Math.floor(damage * 0.45)), enemy.maxHp - enemy.hp);
         if(drainHeal > 0) {
             enemy.hp += drainHeal;
             log(`🧛 Vampir ${drainHeal} can emdi!`);
         }
     }
 
-    if(enemy.type === "mage" && Math.random() < 0.30 && player.mana > 0) {
-        const baseDrain = random(8,15);
+    if(enemy.type === "mage" && Math.random() < 0.38 && player.mana > 0) {
+        const baseDrain = random(10,18);
         const drain = Math.min(player.mana, enemy.cursed ? Math.floor(baseDrain * .55) : baseDrain);
         player.mana -= drain;
-        log(`🧙 Karanlık Büyücü ${drain} mana çaldı!`);
+        log(`🧙 KARANLIK BÜYÜ! ${enemy.name} ${drain} mana çaldı!`);
+        if(status) status.textContent = `🧙 KARANLIK BÜYÜ! -${drain} Mana`;
     }
 
     if(enemy.poisoned && enemy.poisonTurns > 0) {
-        const poison = random(4,7);
+        const poison = random(5,9);
         player.hp -= poison;
         enemy.poisonTurns--;
         log(`☠️ Zehir ${poison} hasar verdi!`);
-
+        if(status) status.textContent = `☠️ ZEHİR! +${poison} hasar`;
         if(enemy.poisonTurns <= 0) {
             enemy.poisoned = false;
             log("🧪 Zehir etkisi sona erdi.");
@@ -1946,7 +2126,8 @@ function enemyAttack() {
 
     if(player.hp <= 0) {
         player.hp = 0;
-        log("💀 ÖLDÜN!");
+        log("💀 ÖLDÜN! Canavarın özel saldırısı seni yere serdi.");
+        if(status) status.textContent = "💀 YENİLDİN — Canavarın özel saldırısı çok ağırdı.";
         setTimeout(gameOver,500);
     }
 
@@ -2011,6 +2192,20 @@ function winBattle() {
         if(mat === 'diamond') { player.diamondPieces++; log(`💎 Elmas Parçası düştü! (${Math.min(5,player.diamondPieces)}/5)`); }
     });
     if(materialDrops.length === 0) log('🧩 Bu canavardan ekipman malzemesi düşmedi.');
+
+    // Büyü çekirdekleri yalnızca belirli canavar türlerinden düşer.
+    const spellDropConfigs = [
+      {key:'fireCorePieces', name:'Ateş Çekirdeği', types:['elemental'], chance:0.45, emoji:'🔥'},
+      {key:'iceCorePieces', name:'Buz Çekirdeği', types:['icegolem'], chance:0.45, emoji:'❄️'},
+      {key:'lightningCorePieces', name:'Şimşek Çekirdeği', types:['mage'], chance:0.45, emoji:'⚡'},
+      {key:'holyCorePieces', name:'Kutsal Çekirdek', types:['vampire'], chance:0.45, emoji:'✨'},
+      {key:'curseCorePieces', name:'Lanet Çekirdeği', types:['ghost','knight'], chance:0.45, emoji:'☠️'}
+    ];
+    const spellDrop = spellDropConfigs.find(cfg => cfg.types.includes(enemy.type));
+    if(spellDrop && Math.random() < spellDrop.chance){
+      player[spellDrop.key]++;
+      log(`${spellDrop.emoji} ${spellDrop.name} düştü! (${Math.min(5,player[spellDrop.key])}/5)`);
+    }
 
     player.gold += enemy.gold;
 
@@ -2383,37 +2578,65 @@ function buyWeapon(name,attack,cost,material) {
     if(player.gold < cost) { log(`❌ ${name} için ${cost} altın gerekli!`); return; }
     player.gold -= cost;
     if(material) player[material + 'Pieces'] -= 5;
-    player.weapon = name; player.weaponLevel = 1; player.attack += attack;
+    player.weapon = name; player.weaponLevel = 1; player.weaponDamageMultiplier = 1; player.attack += attack;
     player.weaponMaxDurability = 8; player.weaponDurability = 8; player.weaponWearCounter = 0;
     log(`⚔️ ${name} satın aldın! -${cost} altın.`); log(`⚔️ +${attack} saldırı! 🧩 5 ${material ? (material==='iron'?'Demir':material==='gold'?'Altın':'Elmas') : ''} parçası kullanıldı.`); update();
 }
 
 function upgradeWeapon() {
-    const configs = {"Tahta Kılıç":{base:100,gain:5,label:"🪵"},"Demir Kılıç":{base:180,gain:6,label:"⚔️"},"Altın Kılıç":{base:350,gain:8,label:"🟡"},"Elmas Kılıç":{base:650,gain:10,label:"💎"}};
+    const configs = {
+        "Tahta Kılıç":{base:100,gain:0,damageBonus:0.02,label:"🪵"},
+        "Demir Kılıç":{base:180,gain:0,damageBonus:0.03,label:"⚔️"},
+        "Altın Kılıç":{base:350,gain:0,damageBonus:0.04,label:"🟡"},
+        "Elmas Kılıç":{base:650,gain:0,damageBonus:0.05,label:"💎"}
+    };
     const cfg=configs[player.weapon]; if(!cfg)return;
-    const cost=Math.round(cfg.base*Math.pow(1.5,Math.max(0,player.weaponLevel-1)));
+    if(player.weaponLevel >= 2){
+        log(`🔒 ${player.weapon} zaten maksimum seviye olan Lv.2'de! Daha fazla geliştirilemez.`);
+        return;
+    }
+    const cost=cfg.base;
     if(player.gold<cost){log(`❌ ${player.weapon} geliştirmesi için ${cost} altın gerekli!`);return;}
-    player.gold-=cost; player.weaponLevel++; player.attack+=cfg.gain;
+    player.gold-=cost;
+    player.weaponLevel=2;
+    player.weaponDamageMultiplier=1+cfg.damageBonus;
     player.weaponMaxDurability = 8;
     player.weaponDurability = Math.min(player.weaponDurability, 8);
-    log(`${cfg.label} ${player.weapon} seviye ${player.weaponLevel} oldu! +${cfg.gain} saldırı.`); log(`💰 -${cost} altın.`); update();
+    log(`${cfg.label} ${player.weapon} seviye 2 oldu! ⚔️ Normal saldırı hasarı +%${cfg.damageBonus*100} arttı.`);
+    log(`💰 -${cost} altın. 🔒 Silah maksimum seviyeye ulaştı.`);
+    update();
 }
 
 function upgradeSpell(type) {
     const baseCosts = {fireball:200, ice:250, lightning:350, heal:300, curse:400};
     const names = {fireball:'Ateş Topu', ice:'Buz Mızrağı', lightning:'Şimşek', heal:'Kutsal Şifa', curse:'Lanet'};
+    const materialNames = {fireball:'Ateş Çekirdeği', ice:'Buz Çekirdeği', lightning:'Şimşek Çekirdeği', heal:'Kutsal Çekirdek', curse:'Lanet Çekirdeği'};
+    const materialKeys = {fireball:'fireCorePieces', ice:'iceCorePieces', lightning:'lightningCorePieces', heal:'holyCorePieces', curse:'curseCorePieces'};
     const level = player.spellLevels[type] || 1;
-    const cost = Math.round(baseCosts[type] * Math.pow(1.45, level - 1));
+    const cost = baseCosts[type];
+    const materialKey = materialKeys[type];
+    const materialName = materialNames[type];
+
+    if(level >= 2){
+        log(`🔒 ${names[type]} zaten maksimum seviye olan Lv.2'de! Daha fazla geliştirilemez.`);
+        return;
+    }
+    if(player[materialKey] < 5){
+        log(`🧩 ${names[type]} Lv.2 için 5 ${materialName} gerekli! Şu an ${player[materialKey]}/5 var.`);
+        return;
+    }
     if(player.gold < cost) {
         log(`❌ ${names[type]} geliştirmesi için ${cost} altın gerekli!`);
         return;
     }
+
     player.gold -= cost;
-    player.spellLevels[type] = level + 1;
-    log(`🔮 ${names[type]} seviye ${level + 1} oldu! -${cost} altın.`);
+    player[materialKey] -= 5;
+    player.spellLevels[type] = 2;
+    log(`🔮 ${names[type]} seviye 2 oldu! ✨ Büyü gücü arttı.`);
+    log(`🧩 5 ${materialName} ve 💰 ${cost} altın kullanıldı. 🔒 Maksimum seviyeye ulaştı.`);
     update();
 }
-
 
 function buyArmor(name,defense,cost,material) {
     const order=["Tahta Zırh","Demir Zırh","Altın Zırh","Elmas Zırh"];
