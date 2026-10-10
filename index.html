@@ -132,6 +132,16 @@ header p {
     border:1px solid #55458a; border-radius:999px; background:rgba(7,7,16,.82); color:#d8caff; font-weight:800;
     letter-spacing:.5px; box-shadow:0 0 20px rgba(111,76,220,.25);
 }
+#sceneTitle {
+    position:absolute;
+    top:39%;
+    left:50%;
+    transform:translate(-50%,-50%);
+    margin:0;
+    z-index:5;
+    white-space:nowrap;
+    pointer-events:none;
+}
 .damage-popup {
     position:absolute; left:50%; top:42%; transform:translate(-50%,0) scale(.6); font-size:38px; font-weight:900; opacity:0;
     pointer-events:none; z-index:8; text-shadow:0 3px 0 #160611,0 0 16px currentColor;
@@ -363,7 +373,18 @@ button:disabled {
 .save-panel{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin:10px 0 18px}
 .save-panel button{border:1px solid #4a3f72;background:#151329;color:#eee;border-radius:9px;padding:8px 12px;cursor:pointer}
 .save-panel button:hover{background:#241d43}
-.turn-status{margin:8px auto 0;padding:7px 12px;border:1px solid #3d3565;border-radius:10px;background:rgba(0,0,0,.28);max-width:520px;text-align:center;font-weight:700;color:#d8d0ff}
+.turn-status{display:none}
+
+.inventory-modal-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin-top:14px}
+.inventory-section{background:linear-gradient(145deg,#19162a,#11111d);border:1px solid #39325b;border-radius:14px;padding:13px}
+.inventory-section h4{margin:0 0 10px;color:#d9ccff;font-size:15px}
+.inventory-item{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:9px 10px;margin:6px 0;background:#12111e;border:1px solid #2f2948;border-radius:10px}
+.inventory-item-main{display:flex;align-items:center;gap:9px;min-width:0}.inventory-item-icon{font-size:24px}.inventory-item-name{font-weight:700}.inventory-item-meta{font-size:11px;color:#9290a5;margin-top:2px}
+.inventory-count{font-weight:800;color:#f0eaff;white-space:nowrap}.inventory-action{width:auto!important;margin:0!important;padding:6px 9px!important;font-size:12px!important}
+.inventory-empty{color:#777;padding:8px 0;font-size:13px}
+.inventory-header{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}.inventory-cap{color:#aaa;font-size:13px}
+@media(max-width:650px){.inventory-modal-grid{grid-template-columns:1fr}}
+
 .inventory-summary{display:flex;gap:12px;flex-wrap:wrap;margin:8px 0;color:#c9c4df}
 .inventory-full{color:#ff9a9a}
 .boss-phase-note{color:#ffcf70;font-size:.9em}
@@ -429,6 +450,11 @@ button:disabled {
 .map-node{min-height:125px;display:flex;flex-direction:column;justify-content:space-between}.map-node button:disabled{opacity:.45;cursor:not-allowed}.rare-glow{animation:rarePulse 1.5s infinite alternate}@keyframes rarePulse{from{box-shadow:0 0 5px rgba(170,100,255,.15)}to{box-shadow:0 0 24px rgba(170,100,255,.55)}}
 #classModal .class-choice{cursor:pointer;text-align:left;transition:.18s}.class-choice:hover{transform:translateY(-2px);border-color:#8c62ff}.class-choice.selected{border-color:#c59cff;box-shadow:0 0 20px rgba(160,100,255,.3)}
 .event-choice{width:100%;margin-top:8px}.save-entry-meta{line-height:1.5}
+
+.next-goal-card{grid-column:1/-1;background:linear-gradient(135deg,rgba(46,32,75,.95),rgba(18,20,38,.95));border:1px solid #665095;border-radius:14px;padding:14px;box-shadow:inset 0 0 25px rgba(120,80,220,.08)}
+.next-goal-card h3{margin:0 0 6px;color:#e1d2ff}.next-goal-card p{margin:4px 0;color:#bdb7cf}.goal-progress{height:9px;background:#12111e;border-radius:99px;overflow:hidden;margin-top:8px}.goal-progress i{display:block;height:100%;background:linear-gradient(90deg,#7b35ff,#4bd6ff);transition:width .25s}
+.rarity-normal{border-color:#403a55!important}.rarity-rare{border-color:#9b65ff!important;box-shadow:0 0 22px rgba(155,101,255,.35)!important}.rarity-epic{border-color:#4ba6ff!important;box-shadow:0 0 28px rgba(75,166,255,.4)!important}.rarity-legendary{border-color:#ffd34e!important;box-shadow:0 0 32px rgba(255,211,78,.42)!important}.rarity-nightmare{border-color:#ff355f!important;box-shadow:0 0 38px rgba(255,53,95,.5)!important;animation:nightmarePulse 1s infinite alternate}@keyframes nightmarePulse{from{filter:brightness(.95)}to{filter:brightness(1.2)}}
+.status-combo{display:inline-block;padding:4px 8px;border-radius:999px;background:#201b34;border:1px solid #514273;color:#e5dcff;font-size:12px;margin:2px}
 </style>
 
 </head>
@@ -520,6 +546,21 @@ button:disabled {
 <div class="exp-modal" id="eventModal"><div class="exp-modal-box"><div class="exp-modal-head"><h2 id="eventTitle">🎲 Gizemli Olay</h2></div><div id="eventContent"></div></div></div>
 <div class="exp-modal" id="classModal"><div class="exp-modal-box"><div class="exp-modal-head"><h2>🧙 KARAKTER SINIFINI SEÇ</h2></div><p style="color:#aaa">Sınıf seçimi kalıcıdır. Seviye başına stat seçimi yoktur.</p><div class="exp-grid" id="classList"></div><button id="classConfirmBtn" onclick="confirmClassChoice()" disabled>SEÇİMİ ONAYLA</button></div></div>
 <div class="exp-modal" id="darkLordModal"><div class="exp-modal-box"><div class="exp-modal-head"><h2>👑 KARANLIK LORD KALESİ</h2><button class="exp-close" onclick="closeExpansionModal('darkLordModal')">✕</button></div><div id="darkLordContent"></div></div></div>
+
+<div class="exp-modal" id="inventoryModal">
+  <div class="exp-modal-box">
+    <div class="exp-modal-head">
+      <h2>🎒 ENVANTERİM</h2>
+      <button class="exp-close" onclick="closeExpansionModal('inventoryModal')">✕</button>
+    </div>
+    <div class="inventory-header">
+      <p style="color:#aaa;margin:8px 0">Sahip olduğun tüm kullanılabilir eşyalar, malzemeler ve özel nesneler.</p>
+      <span class="inventory-cap" id="inventoryModalCap">Loot: 0 / 30</span>
+    </div>
+    <div class="inventory-modal-grid" id="inventoryModalGrid"></div>
+  </div>
+</div>
+<div class="exp-modal" id="ngRiftModal"><div class="exp-modal-box"><div class="exp-modal-head"><h2>🌑 YENİ OYUN+ — KARANLIK YARIK</h2><button class="exp-close" onclick="closeExpansionModal('ngRiftModal')">✕</button></div><div id="ngRiftContent"></div></div></div>
 
 <div class="layout">
 
@@ -619,6 +660,11 @@ style="width:100%">
 
 <button onclick="goForest()">
 🌲 ORMANA GİT
+</button>
+
+
+<button onclick="openInventory()" style="background:linear-gradient(135deg,#241d43,#4b3270)">
+🎒 ENVANTER
 </button>
 
 <button onclick="openWorldMap()">
@@ -1204,7 +1250,12 @@ let player = {
     turnLocked: false,
     lastForestEnemyType: null,
     inventoryLimit: 30,
-    dead: false
+    dead: false,
+    classId:null, classAttackMult:1, classSpellMult:1, classManaMult:1, classDefenseBonus:0, critChance:.15, critMult:2, healMult:1,
+    stats:{kills:0,goldEarned:0,spells:0,iceCasts:0,bossKills:0,rareKills:0,lowHpWins:0,dragonKills:0,lootCollected:0},
+    achievements:{}, quest:null, questProgress:0, questClaimed:false, questStartValue:0,
+    darkKeys:0, secretRooms:0, ngPlus:0, darkLordDefeated:false, traderRefresh:0,
+    spellMastery:{fireball:1,ice:1,lightning:1,heal:1,curse:1}, voidRelics:0, ngRiftClears:0
 };
 
 
@@ -1343,7 +1394,7 @@ function buyCrystalCache(){
 }
 
 function buyTreasureChest(){
-    const cost=250;
+    const cost=ngPrice(250);
     if(player.gold<cost){ log(`❌ Hazine Sandığı için ${cost} altın gerekli!`); return; }
     player.gold-=cost;
     const roll=Math.random();
@@ -1359,7 +1410,7 @@ function buyTreasureChest(){
     update();
 }
 function unlockCave(){
-    const cost=750;
+    const cost=ngPrice(750);
     if(player.caveUnlocked){ log("🕳️ Karanlık Mağara zaten açık!"); return; }
     if(player.level<6){ log("🔒 Karanlık Mağara için Level 6 gerekiyor!"); return; }
     if(player.gold<cost){ log(`❌ Karanlık Mağara için ${cost} altın gerekli!`); return; }
@@ -1416,6 +1467,8 @@ function requiredXP() {
 
 
 function update() {
+
+    if(document.getElementById('inventoryModal')?.style.display==='flex') renderInventory();
 
     player.maxMana = 100;
     player.mana = Math.max(0, Math.min(100, player.mana));
@@ -1996,9 +2049,9 @@ function attack() {
     }
 
 
-    if(Math.random() < .15) {
+    if(Math.random() < (player.critChance || .15)) {
 
-        damage *= 2;
+        damage = Math.round(damage * (player.critMult || 2));
 
         log("💥 KRİTİK VURUŞ!");
 
@@ -2049,6 +2102,8 @@ function castSpell(type) {
 
     let manaCost = 0;
     let damage = 0;
+    const spellPower = player.classSpellMult || 1;
+    const manaEfficiency = player.classManaMult || 1;
 
 
     if(type === "fireball") {
@@ -2059,6 +2114,7 @@ function castSpell(type) {
         }
 
         manaCost = 25;
+        manaCost = Math.max(1, Math.round(manaCost * manaEfficiency));
 
         if(player.mana < manaCost) {
 
@@ -2071,7 +2127,9 @@ function castSpell(type) {
         damage = random(35,50) + (spellLv - 1) * 8;
 
         player.mana -= manaCost;
+        damage = Math.max(1, Math.round(damage * spellPower));
 
+        if(enemy.frozen){ damage += 18; enemy.frozen=false; log("💥 DONMA + ATEŞ KOMBOSU! Buz kırıldı, ek hasar verdin."); }
         enemy.hp -= damage;
         battleAnimate("magic", damage, "🔥");
 
@@ -2093,6 +2151,7 @@ function castSpell(type) {
         }
 
         manaCost = 20;
+        manaCost = Math.max(1, Math.round(manaCost * manaEfficiency));
 
         if(player.mana < manaCost) {
 
@@ -2105,7 +2164,9 @@ function castSpell(type) {
         damage = random(25,40) + (spellLv - 1) * 6;
 
         player.mana -= manaCost;
+        damage = Math.max(1, Math.round(damage * spellPower));
 
+        if(enemy.burning){ damage += 15; enemy.burning=false; log("❄️ BUZ + ATEŞ KOMBOSU! Alev söndü ve ekstra hasar oluştu."); }
         enemy.hp -= damage;
         battleAnimate("magic", damage, "❄️");
 
@@ -2125,6 +2186,7 @@ function castSpell(type) {
         }
 
         manaCost = 35;
+        manaCost = Math.max(1, Math.round(manaCost * manaEfficiency));
 
         if(player.mana < manaCost) {
 
@@ -2137,6 +2199,7 @@ function castSpell(type) {
         damage = random(50,75) + (spellLv - 1) * 10;
 
         player.mana -= manaCost;
+        damage = Math.max(1, Math.round(damage * spellPower));
 
         if(Math.random() < .25) {
 
@@ -2158,6 +2221,7 @@ function castSpell(type) {
     else if(type === "heal") {
 
         manaCost = 30;
+        manaCost = Math.max(1, Math.round(manaCost * manaEfficiency));
 
         if(player.healCharges > 0) {
             log(`⏳ Kutsal Şifa için ${player.healCharges} canavar daha yenmelisin!`);
@@ -2181,7 +2245,7 @@ function castSpell(type) {
         player.mana -= manaCost;
         player.healCharges = 4;
 
-        let heal = 60 + ((player.spellLevels.heal || 1) - 1) * 10;
+        let heal = Math.round((60 + ((player.spellLevels.heal || 1) - 1) * 10) * (player.healMult || 1));
 
         player.hp =
             Math.min(player.maxHp,player.hp + heal);
@@ -2199,6 +2263,7 @@ function castSpell(type) {
     else if(type === "curse") {
 
         manaCost = 40;
+        manaCost = Math.max(1, Math.round(manaCost * manaEfficiency));
 
         if(player.mana < manaCost) {
 
@@ -2221,6 +2286,7 @@ function castSpell(type) {
         damage = random(20,30) + (spellLv - 1) * 5;
         player.mana -= manaCost;
         player.curseCharges = 4;
+        if(enemy.poisoned){ damage += 12; enemy.poisonTurns=0; enemy.poisoned=false; log("☠️ ZEHİR + LANET KOMBOSU! Zehir tüketildi ve ek hasar verdi."); }
         enemy.hp -= damage;
         battleAnimate("magic", damage, "☠️");
         enemy.cursed = true;
@@ -2302,7 +2368,11 @@ function enemyAttack() {
     }
 
     let enemyDamage = enemy.attack;
+    if(player.nextBattleDefenseBuff){ enemyDamage=Math.max(1,Math.round(enemyDamage*(1-player.nextBattleDefenseBuff))); player.nextBattleDefenseBuff=0; log('🔥 Kamp bonusu uygulandı: ilk gelen hasar %20 azaldı.'); }
     let eventText = "";
+    if(enemy.raritySpecial==='shield' && Math.random()<0.20){ enemy.shielded=true; log(`🔵 ${enemy.name} özel nadir yeteneğiyle kalkan oluşturdu!`); }
+    if(enemy.raritySpecial==='lifesteal' && Math.random()<0.18){ const heal=Math.min(enemy.maxHp-enemy.hp,Math.round(enemy.maxHp*.05)); enemy.hp+=heal; if(heal>0) log(`🟡 ${enemy.name} nadir gücüyle ${heal} can yeniledi!`); }
+    if(enemy.raritySpecial==='berserk'){ enemyDamage=Math.round(enemyDamage*(enemy.hp/enemy.maxHp<.5?1.35:1.12)); }
     const status = document.getElementById("enemyStatus");
     if(status) status.textContent = "";
 
@@ -2790,7 +2860,7 @@ function repairWeapon() {
         return;
     }
 
-    const cost = missing * 10;
+    const cost = ngPrice(missing * 10);
     if(player.gold < cost) {
         log(`❌ Tamir için ${cost} altın gerekli!`);
         return;
@@ -2822,7 +2892,8 @@ function buyPotion() {
     }
 
 
-    if(player.gold < 25) {
+    const price=ngPrice(25);
+    if(player.gold < price) {
 
         log("❌ Küçük can iksiri 25 altın.");
 
@@ -2830,7 +2901,7 @@ function buyPotion() {
     }
 
 
-    player.gold -= 25;
+    player.gold -= price;
 
     player.potions++;
 
@@ -2851,7 +2922,8 @@ function buyBigPotion() {
     }
 
 
-    if(player.gold < 75) {
+    const price=ngPrice(75);
+    if(player.gold < price) {
 
         log("❌ Yeterli altının yok!");
 
@@ -2859,7 +2931,7 @@ function buyBigPotion() {
     }
 
 
-    player.gold -= 75;
+    player.gold -= price;
 
     player.bigPotions++;
 
@@ -2880,15 +2952,16 @@ function buyManaPotion() {
     }
 
 
-    if(player.gold < 25) {
+    const price=ngPrice(25);
+    if(player.gold < price) {
 
-        log("❌ Yeterli altının yok!");
+        log(`❌ Küçük mana iksiri ${price} altın.`);
 
         return;
     }
 
 
-    player.gold -= 25;
+    player.gold -= price;
 
     player.manaPotions++;
 
@@ -2909,15 +2982,16 @@ function buyBigManaPotion() {
     }
 
 
-    if(player.gold < 75) {
+    const price=ngPrice(75);
+    if(player.gold < price) {
 
-        log("❌ Yeterli altının yok!");
+        log(`❌ Büyük mana iksiri ${price} altın.`);
 
         return;
     }
 
 
-    player.gold -= 75;
+    player.gold -= price;
 
     player.bigManaPotions++;
 
@@ -2938,7 +3012,8 @@ function buySuperPotion() {
     }
 
 
-    if(player.gold < 200) {
+    const price=ngPrice(200);
+    if(player.gold < price) {
 
         log("❌ Yeterli altının yok!");
 
@@ -2946,7 +3021,7 @@ function buySuperPotion() {
     }
 
 
-    player.gold -= 200;
+    player.gold -= price;
 
     player.superPotions++;
 
@@ -2966,6 +3041,7 @@ function buyWeapon(name,attack,cost,material) {
         const pieces = player[material + 'Pieces'];
         if(pieces < 5) { log(`🔒 ${name} için 5 parça gerekli! Şu an ${pieces}/5 parçan var.`); return; }
     }
+    cost = ngPrice(cost);
     if(player.gold < cost) { log(`❌ ${name} için ${cost} altın gerekli!`); return; }
     player.gold -= cost;
     if(material) player[material + 'Pieces'] -= 5;
@@ -2986,7 +3062,7 @@ function upgradeWeapon() {
         log(`🔒 ${player.weapon} zaten maksimum seviye olan Lv.2'de! Daha fazla geliştirilemez.`);
         return;
     }
-    const cost=cfg.base;
+    let cost=ngPrice(cfg.base);
     if(player.gold<cost){log(`❌ ${player.weapon} geliştirmesi için ${cost} altın gerekli!`);return;}
     player.gold-=cost;
     player.weaponLevel=2;
@@ -3004,7 +3080,7 @@ function upgradeSpell(type) {
     const materialNames = {fireball:'Ateş Çekirdeği', ice:'Buz Çekirdeği', lightning:'Şimşek Çekirdeği', heal:'Kutsal Çekirdek', curse:'Lanet Çekirdeği'};
     const materialKeys = {fireball:'fireCorePieces', ice:'iceCorePieces', lightning:'lightningCorePieces', heal:'holyCorePieces', curse:'curseCorePieces'};
     const level = player.spellLevels[type] || 1;
-    const cost = baseCosts[type];
+    const cost = ngPrice(baseCosts[type]);
     const materialKey = materialKeys[type];
     const materialName = materialNames[type];
 
@@ -3035,8 +3111,9 @@ function buyArmor(name,defense,cost,material) {
     if(targetIndex<=currentIndex){log(`🛡️ ${name} zaten sahip olduğun veya daha düşük bir zırh!`);return;}
     const pieces=player[material+'Pieces'];
     if(pieces<5){log(`🔒 ${name} için 5 parça gerekli! Şu an ${pieces}/5 parçan var.`);return;}
+    cost=ngPrice(cost);
     if(player.gold<cost){log(`❌ ${name} için ${cost} altın gerekli!`);return;}
-    player.gold-=cost; player[material+'Pieces']-=5; player.armor=name; player.armorLevel=1; player.defense=defense;
+    player.gold-=cost; player[material+'Pieces']-=5; player.armor=name; player.armorLevel=1; player.defense=defense+(player.classDefenseBonus||0);
     log(`🛡️ ${name} satın aldın! Seviye 1 ile başladın. +${defense} savunma.`);
     log(`🧩 5 ${material==='iron'?'Demir':material==='gold'?'Altın':'Elmas'} parçası kullanıldı.`); update();
 }
@@ -3261,7 +3338,7 @@ function saveGame(manual=false){
 
 function restoreSaveData(data,manualMessage=''){
     if(!data || !data.player) throw new Error('invalid save');
-    const defaults={dead:false,hp:100,maxHp:100,mana:100,maxMana:100,attack:10,defense:5,gold:100,level:1,xp:0,potions:3,manaPotions:2,bigPotions:0,bigManaPotions:0,superPotions:0,weapon:'Tahta Kılıç',weaponLevel:1,weaponDurability:8,weaponMaxDurability:8,weaponWearCounter:0,armor:'Tahta Zırh',armorLevel:1,ironPieces:0,goldPieces:0,diamondPieces:0,fireCorePieces:0,iceCorePieces:0,lightningCorePieces:0,holyCorePieces:0,curseCorePieces:0,spellLevels:{fireball:1,ice:1,lightning:1,heal:1,curse:1},curseCharges:0,escapeCharges:0,fireballCharges:0,iceCharges:0,lightningCharges:0,healCharges:0,loot:{},darkCrystals:0,caveUnlocked:false,turnNumber:0,turnLocked:false,lastForestEnemyType:null,inventoryLimit:30};
+    const defaults={dead:false,hp:100,maxHp:100,mana:100,maxMana:100,attack:10,defense:5,gold:100,level:1,xp:0,potions:3,manaPotions:2,bigPotions:0,bigManaPotions:0,superPotions:0,weapon:'Tahta Kılıç',weaponLevel:1,weaponDurability:8,weaponMaxDurability:8,weaponWearCounter:0,armor:'Tahta Zırh',armorLevel:1,ironPieces:0,goldPieces:0,diamondPieces:0,fireCorePieces:0,iceCorePieces:0,lightningCorePieces:0,holyCorePieces:0,curseCorePieces:0,spellLevels:{fireball:1,ice:1,lightning:1,heal:1,curse:1},curseCharges:0,escapeCharges:0,fireballCharges:0,iceCharges:0,lightningCharges:0,healCharges:0,loot:{},darkCrystals:0,caveUnlocked:false,turnNumber:0,turnLocked:false,lastForestEnemyType:null,inventoryLimit:30,classId:null,classAttackMult:1,classSpellMult:1,classManaMult:1,classDefenseBonus:0,critChance:.15,critMult:2,healMult:1,stats:{kills:0,goldEarned:0,spells:0,iceCasts:0,bossKills:0,rareKills:0,lowHpWins:0,dragonKills:0,lootCollected:0},achievements:{},quest:null,questProgress:0,questClaimed:false,questStartValue:0,darkKeys:0,secretRooms:0,ngPlus:0,darkLordDefeated:false,traderRefresh:0,spellMastery:{fireball:1,ice:1,lightning:1,heal:1,curse:1},voidRelics:0,ngRiftClears:0};
     const merged={...defaults,...data.player,spellLevels:{...defaults.spellLevels,...(data.player.spellLevels||{})},loot:{...(data.player.loot||{})}};
     Object.keys(player).forEach(k=>delete player[k]);
     Object.assign(player,merged);
@@ -3321,7 +3398,7 @@ function renderSaveList(){
         return `<div class="save-entry">
             <div class="save-entry-info">
                 <div class="save-entry-name">💾 ${safeName}</div>
-                <div class="save-entry-meta">Seviye ${p.level||1} • ${p.gold||0} altın • ${formatSaveDate(s.savedAt)}</div>
+                <div class="save-entry-meta">Lv.${p.level||1} • 💰 ${p.gold||0} • ❤️ ${p.hp??100}/${p.maxHp??100} • 🔵 ${p.mana??100}/${p.maxMana??100}<br>🗺️ ${p.caveUnlocked?'Lanetli Mağara':'Karanlık Orman'} • 🌑 NG+ ${p.ngPlus||0} • ${formatSaveDate(s.savedAt)}</div>
             </div>
             <div class="save-entry-actions">
                 <button onclick="loadNamedSave('${String(s.id).replace(/'/g,"\\'")}')">▶ Yükle</button>
@@ -3384,6 +3461,7 @@ const ACHIEVEMENTS = [
  {id:'boss5',name:'Boss Avcısı',desc:'5 boss yen.',check:s=>s.bossKills>=5,reward:800},
  {id:'rare5',name:'Nadir Avcı',desc:'5 nadir veya daha iyi düşman yen.',check:s=>s.rareKills>=5,reward:600},
  {id:'lowHp',name:'Son Nefes',desc:'%20 HP altında bir savaşı kazan.',check:s=>s.lowHpWins>=1,reward:250},
+ {id:'ngrift',name:'Yarık Avcısı',desc:'NG+ Karanlık Yarığını temizle.',check:s=>(s.ngRiftClears||0)>=1,reward:1500},
  {id:'dragon',name:'Ejderha Katili',desc:'Ejderhayı yen.',check:s=>s.dragonKills>=1,reward:1000}
 ];
 const QUEST_POOL = [
@@ -3407,15 +3485,17 @@ const REGION_DEFS=[
 function ensureExpansionState(){
  player.classId=player.classId||null; player.classAttackMult=player.classAttackMult||1; player.classSpellMult=player.classSpellMult||1; player.classManaMult=player.classManaMult||1; player.classDefenseBonus=player.classDefenseBonus||0; player.critChance=player.critChance||.15; player.critMult=player.critMult||2; player.healMult=player.healMult||1;
  player.stats=player.stats||{kills:0,goldEarned:0,spells:0,iceCasts:0,bossKills:0,rareKills:0,lowHpWins:0,dragonKills:0,lootCollected:0};
- player.achievements=player.achievements||{}; player.quest=player.quest||null; player.questProgress=player.questProgress||0; player.questClaimed=player.questClaimed||false; player.darkKeys=player.darkKeys||0; player.secretRooms=player.secretRooms||0; player.ngPlus=player.ngPlus||0; player.darkLordDefeated=player.darkLordDefeated||false; player.traderRefresh=player.traderRefresh||0;
+ player.stats={kills:0,goldEarned:0,spells:0,iceCasts:0,bossKills:0,rareKills:0,lowHpWins:0,dragonKills:0,lootCollected:0,...player.stats};
+ player.achievements=player.achievements||{}; player.quest=player.quest||null; player.questProgress=player.questProgress||0; player.questClaimed=player.questClaimed||false; player.questStartValue=player.questStartValue||0; player.darkKeys=player.darkKeys||0; player.secretRooms=player.secretRooms||0; player.ngPlus=player.ngPlus||0; player.darkLordDefeated=player.darkLordDefeated||false; player.traderRefresh=player.traderRefresh||0;
  player.spellMastery=player.spellMastery||{fireball:1,ice:1,lightning:1,heal:1,curse:1};
  if(player.classId && CLASS_DEFS[player.classId]) CLASS_DEFS[player.classId].apply();
  if(!player.quest) assignQuest();
 }
+function qAbsoluteValue(type){ const st=player.stats; if(type==='kills')return st.kills; if(type==='gold')return st.goldEarned; if(type==='spells')return st.spells; if(type==='ice')return st.iceCasts; if(type==='rare')return st.rareKills; if(type==='boss')return st.bossKills; if(type==='loot')return st.lootCollected; return 0; }
 function assignQuest(){
- const available=QUEST_POOL.filter(q=>player.level>=1); const q=available[Math.floor(Math.random()*available.length)]; player.quest=q; player.questProgress=0; player.questClaimed=false;
+ const available=QUEST_POOL.filter(q=>player.level>=1); const q=available[Math.floor(Math.random()*available.length)]; player.quest={...q}; player.questStartValue=qAbsoluteValue(q.type); player.questProgress=0; player.questClaimed=false;
 }
-function qProgressValue(q){ if(!q)return 0; const st=player.stats; if(q.type==='kills')return st.kills; if(q.type==='gold')return st.goldEarned; if(q.type==='spells')return st.spells; if(q.type==='ice')return st.iceCasts; if(q.type==='rare')return st.rareKills; if(q.type==='boss')return st.bossKills; if(q.type==='loot')return st.lootCollected; return 0; }
+function qProgressValue(q){ if(!q)return 0; return Math.max(0,qAbsoluteValue(q.type)-(player.questStartValue||0)); }
 function updateQuest(){ if(!player.quest)return; player.questProgress=Math.min(player.quest.target,qProgressValue(player.quest)); if(player.questProgress>=player.quest.target&&!player.questClaimed){player.questClaimed=true;player.gold+=player.quest.rewardGold;log(`🎯 GÖREV TAMAMLANDI: ${player.quest.name}! +${player.quest.rewardGold} altın, +${player.quest.rewardXp} XP`);gainXP(player.quest.rewardXp);} }
 function claimQuest(){ if(!player.quest)return; updateQuest(); if(!player.questClaimed||player.questProgress<player.quest.target){log(`🎯 Görev henüz tamamlanmadı: ${player.questProgress}/${player.quest.target}`);return;} log(`🎁 ${player.quest.name} tamamlandı. Yeni görev alındı!`);assignQuest();update(); }
 function openQuestManager(){updateQuest();const box=document.getElementById('questList');const q=player.quest;if(!q){box.innerHTML='<p>Görev yok.</p>';return;}const pct=Math.round(player.questProgress/q.target*100);box.innerHTML=`<div class="exp-card"><h4>🎯 ${q.name}</h4><p>${q.desc}</p><p>İlerleme: <b>${player.questProgress}/${q.target}</b></p><div class="exp-progress"><i style="width:${pct}%"></i></div><p>Ödül: 💰 ${q.rewardGold} + ⭐ ${q.rewardXp} XP</p><button onclick="claimQuest()" ${player.questProgress<q.target?'disabled':''}>${player.questClaimed?'YENİ GÖREV AL':'ÖDÜLÜ AL'}</button></div>`;document.getElementById('questModal').style.display='flex';}
@@ -3431,13 +3511,68 @@ function openWorldMap(){renderWorldMap();document.getElementById('worldMapModal'
 function renderWorldMap(){const box=document.getElementById('worldMapGrid');box.innerHTML=REGION_DEFS.map(r=>{let unlocked=player.level>=r.req;if(r.id==='cave')unlocked=unlocked&&player.caveUnlocked;if(r.id==='castle')unlocked=unlocked&&player.darkCrystals>=5;return `<div class="exp-card map-node ${unlocked?'':'exp-locked'}"><div><h4>${r.emoji} ${r.name}</h4><p>${r.desc}</p></div><button ${unlocked?'':'disabled'} onclick="${r.action}">${unlocked?'GİR':'🔒 Lv.'+r.req}</button></div>`}).join('');}
 function randomEvent(){
  const events=[
-  {title:'🧙 Gezgin Büyücü',text:'Büyücü senden 80 altın karşılığında gizemli bir enerji istiyor.',buttons:[['80 altın ver','eventPayMage'],['Reddet','closeEvent']]},
-  {title:'💰 Terk Edilmiş Hazine',text:'Yerde mühürlü bir sandık buldun. Açmak için 40 altın harca.',buttons:[['40 altın ver','eventChest'],['Bırak','closeEvent']]},
-  {title:'🩸 Lanetli Sunak',text:'Sunak sana 1 Karanlık Kristal karşılığında güçlü bir ödül teklif ediyor.',buttons:[['Kristal ver','eventAltar'],['Uzaklaş','closeEvent']]},
-  {title:'🗝️ Paslı Anahtar',text:'Toprakta eski bir anahtar buldun. Gizli odaların kilidini açabilir.',buttons:[['Anahtarı al','eventKey'],['Bırak','closeEvent']]}
+  ['mage','🧙 Gezgin Büyücü','80 altın karşılığında rastgele bir büyü çekirdeği ve 25 XP verir.','80 altın ver','Reddet'],
+  ['chest','💰 Terk Edilmiş Hazine','40 altın ödeyerek mühürlü hazineyi aç.','Hazineyi aç','Bırak'],
+  ['altar','🩸 Lanetli Sunak','1 Karanlık Kristal karşılığında 250 altın ve 100 XP kazan.','Kristali ver','Uzaklaş'],
+  ['key','🗝️ Paslı Anahtar','Eski bir anahtar buldun.','Anahtarı al','Bırak'],
+  ['heal','🌿 Şifalı Pınar','Pınardan içersen canın ve manan tamamen yenilenir.','İç','Geç'],
+  ['ambush','👺 Goblin Pususu','Hızlı davranırsan 100 altın kazanırsın; başarısız olursan 15 can kaybedersin.','Karşı koy','Kaç'],
+  ['miner','⛏️ Terk Edilmiş Maden','Madenden 1–2 rastgele metal parçası çıkarabilirsin.','Kaz','Bırak'],
+  ['merchant','🧳 Gezgin Çantası','Gezgin sana 120 altına gizli bir sandık satıyor.','Satın al','Reddet'],
+  ['ghost','👻 Sessiz Hayalet','Hayalet senden 20 HP ister; karşılığında 1 Kutsal Çekirdek verir.','Kabul et','Reddet'],
+  ['dragon','🐉 Ejderha İzleri','İzleri takip edersen 80 XP ve 150 altın bulabilirsin.','Takip et','Uzaklaş'],
+  ['fountain','⛲ Altın Pınarı','10 altın bırak; pınar rastgele 30–180 altın geri verebilir.','10 altın at','Geç'],
+  ['altar2','🕯️ Karanlık Mum','Mumu yakmak 1 canavar bekleme süresini sıfırlar, ama 10 HP götürür.','Yak','Söndür'],
+  ['book','📜 Eski Büyü Kitabı','Kitabı çözersen rastgele büyü çekirdeği kazanırsın.','Oku','Bırak'],
+  ['arena','⚔️ Eski Savaşçı','Savaşçıya saygı gösterirsen 50 XP; düelloya girersen 100 XP kazanırsın ama 20 HP kaybedebilirsin.','Düello','Saygı göster'],
+  ['crystal','💎 Parlayan Kristal','Kristali kazımak %50 ihtimalle 1 Karanlık Kristal verir; aksi halde 10 HP kaybedersin.','Kazı','Bırak'],
+  ['wolf','🐺 Yaralı Kurt','Kurda yardım edersen 60 XP ve 30 altın kazanırsın.','Yardım et','Geç'],
+  ['trap','🪤 Eski Tuzak','Tuzak kapanmadan fark ettin. Onu söküp 1 Demir Parçası alabilirsin.','Sök','Uzaklaş'],
+  ['fortune','🔮 Talih Sikkesi','Sikkeden yazı gelirse 200 altın, tura gelirse 20 altın kazanırsın.','At','Bırak'],
+  ['darkdeal','😈 Karanlık Pazarlık','50 HP karşılığında 400 altın alabilirsin.','Anlaş','Reddet'],
+  ['camp','🔥 Gezgin Kampı','Dinlenirsen bir sonraki savaşın ilk normal hasarı %20 azalır.','Dinlen','Geç'],
+  ['scout','🦉 Gece Gözcüsü','Gözcü sana bir sonraki düşmanın nadir çıkma şansını artıran bilgi verir.','Dinle','Geç'],
+  ['well','🕳️ Fısıldayan Kuyu','Kuyudan 1 anahtar veya 100 altın çıkabilir.','Elini uzat','Uzaklaş'],
+  ['smith','🔨 Gezgin Demirci','60 altın ödeyerek silahının dayanıklılığını tamamen doldurabilirsin.','Tamir et','Reddet'],
+  ['star','🌠 Düşen Yıldız','Yıldızı toplarsan 100 XP ve 1 rastgele çekirdek kazanırsın.','Topla','Bırak']
  ];
- const e=events[Math.floor(Math.random()*events.length)];document.getElementById('eventTitle').textContent=e.title;document.getElementById('eventContent').innerHTML=`<p style="color:#ccc">${e.text}</p>`+e.buttons.map(b=>`<button class="event-choice" onclick="${b[1]}()">${b[0]}</button>`).join('');document.getElementById('eventModal').style.display='flex';
+ const e=events[Math.floor(Math.random()*events.length)];
+ document.getElementById('eventTitle').textContent=e[1];
+ document.getElementById('eventContent').innerHTML=`<p style="color:#ccc">${e[2]}</p><button class="event-choice" onclick="resolveRandomEvent('${e[0]}',true)">${e[3]}</button><button class="event-choice" onclick="resolveRandomEvent('${e[0]}',false)">${e[4]}</button>`;
+ document.getElementById('eventModal').style.display='flex';
 }
+function resolveRandomEvent(id,yes){
+ const core=['fireCorePieces','iceCorePieces','lightningCorePieces','holyCorePieces','curseCorePieces'];
+ if(!yes){log('🎲 Olayı geçtin.');closeEvent();return;}
+ switch(id){
+  case 'mage': if(player.gold<80){log('❌ Yeterli altının yok.');break;} player.gold-=80;player[core[random(0,4)]]++;gainXP(25);log('🧙 Büyücüyle anlaşma yaptın.');break;
+  case 'chest': if(player.gold<40){log('❌ 40 altının yok.');break;} player.gold-=40; if(Math.random()<.5)player.gold+=random(90,180);else if(Math.random()<.6)player.darkKeys++;else player.darkCrystals++;log('💰 Terk edilmiş hazine açıldı.');break;
+  case 'altar': if(player.darkCrystals<1){log('❌ Karanlık Kristalin yok.');break;} player.darkCrystals--;player.gold+=250;gainXP(100);log('🩸 Sunak ödülünü verdi.');break;
+  case 'key': player.darkKeys++;log('🗝️ Anahtar kazandın.');break;
+  case 'heal': player.hp=player.maxHp;player.mana=player.maxMana;log('🌿 Şifalı pınar seni tamamen iyileştirdi.');break;
+  case 'ambush': if(Math.random()<.7){player.gold+=100;gainXP(40);log('👺 Pusuya karşı koydun: +100 altın.');}else{player.hp=Math.max(1,player.hp-15);log('👺 Pusudan yara aldın: -15 HP.');}break;
+  case 'miner': {const m=['ironPieces','goldPieces','diamondPieces'][random(0,2)];player[m]+=random(1,2);log(`⛏️ Madenden ${m} parçası buldun.`);break;}
+  case 'merchant': if(player.gold<120){log('❌ 120 altının yok.');break;}player.gold-=120;player[core[random(0,4)]]+=2;log('🧳 Gizli çantadan 2 büyü çekirdeği çıktı.');break;
+  case 'ghost': if(player.hp<=20){log('❌ Hayalet için yeterli canın yok.');break;}player.hp-=20;player.holyCorePieces++;log('👻 Hayalet teşekkür etti: +1 Kutsal Çekirdek.');break;
+  case 'dragon': player.gold+=150;gainXP(80);log('🐉 İzlerin sonunda küçük bir hazine buldun.');break;
+  case 'fountain': if(player.gold<10){log('❌ 10 altının yok.');break;}player.gold-=10;const fg=random(30,180);player.gold+=fg;log(`⛲ Pınar ${fg} altın geri verdi.`);break;
+  case 'altar2': player.hp=Math.max(1,player.hp-10); player.fireballCharges=player.iceCharges=player.lightningCharges=player.healCharges=player.curseCharges=0;log('🕯️ Karanlık mum yakıldı. Büyü beklemeleri sıfırlandı.');break;
+  case 'book': player[core[random(0,4)]]++;gainXP(50);log('📜 Kitaptan bilgi kazandın ve 1 çekirdek buldun.');break;
+  case 'arena': if(player.hp>20)player.hp-=20;gainXP(100);log('⚔️ Eski savaşçıyla düello yaptın: +100 XP.');break;
+  case 'crystal': if(Math.random()<.5){player.darkCrystals++;log('💎 Kristalden Karanlık Kristal çıkardın.');}else{player.hp=Math.max(1,player.hp-10);log('💎 Kristal patladı: -10 HP.');}break;
+  case 'wolf':player.gold+=30;gainXP(60);log('🐺 Kurda yardım ettin.');break;
+  case 'trap':player.ironPieces++;log('🪤 Tuzaktan 1 Demir Parçası söktün.');break;
+  case 'fortune':{const f=Math.random()<.5?200:20;player.gold+=f;log(`🔮 Talih Sikkesi: +${f} altın.`);break;}
+  case 'darkdeal':if(player.hp<=50){log('❌ 50 HP ödeyemezsin.');break;}player.hp-=50;player.gold+=400;log('😈 Karanlık pazarlık yapıldı: +400 altın, -50 HP.');break;
+  case 'camp':player.nextBattleDefenseBuff=0.20;log('🔥 Kamp kurdun. Bir sonraki savaşın ilk saldırısı %20 daha hafif olacak.');break;
+  case 'scout':player.rareBoost=(player.rareBoost||0)+0.12;log('🦉 Gözcü bilgisi: sonraki karşılaşmada nadir şansı arttı.');break;
+  case 'well':if(Math.random()<.5){player.darkKeys++;log('🕳️ Kuyudan anahtar çıktı.');}else{player.gold+=100;log('🕳️ Kuyudan 100 altın çıktı.');}break;
+  case 'smith':{const c=ngPrice(60);if(player.gold<c){log(`❌ ${c} altın gerekiyor.`);break;}player.gold-=c;player.weaponDurability=player.weaponMaxDurability;player.weaponWearCounter=0;log('🔨 Gezgin demirci silahını tamir etti.');break;}
+  case 'star':player[core[random(0,4)]]++;gainXP(100);log('🌠 Düşen yıldızdan 1 çekirdek aldın.');break;
+ }
+ closeEvent();
+}
+
 function closeEvent(){closeExpansionModal('eventModal');update();}
 function eventPayMage(){if(player.gold<80){log('❌ Yeterli altının yok.');closeEvent();return;}player.gold-=80;player[(['fireCorePieces','iceCorePieces','lightningCorePieces','holyCorePieces','curseCorePieces'][random(0,4)])]++;log('🧙 Büyücüye 80 altın verdin. Rastgele büyü çekirdeği kazandın!');closeEvent();}
 function eventChest(){if(player.gold<40){log('❌ Hazine için 40 altın gerekiyor.');closeEvent();return;}player.gold-=40;const roll=Math.random();if(roll<.5){player.gold+=random(90,180);log('💰 Hazineyi açtın ve altın buldun!');}else if(roll<.8){player.darkKeys++;log('🗝️ Hazine bir gizli oda anahtarı verdi!');}else{player.darkCrystals++;log('💎 Hazine Karanlık Kristal içeriyordu!');}closeEvent();}
@@ -3447,28 +3582,84 @@ function openTrader(){if(player.level<2){log('🔒 Gezgin tüccar için Level 2 
 function refreshTrader(){player.traderRefresh=Date.now();renderTrader();}
 function traderItems(){const pool=[['🧪','Süper İksir',150,'superPotions',1],['💎','Karanlık Kristal',260,'darkCrystals',1],['🔥','Ateş Çekirdeği',180,'fireCorePieces',1],['❄️','Buz Çekirdeği',180,'iceCorePieces',1],['⚡','Şimşek Çekirdeği',180,'lightningCorePieces',1],['✨','Kutsal Çekirdek',180,'holyCorePieces',1],['☠️','Lanet Çekirdeği',180,'curseCorePieces',1],['🗝️','Gizli Oda Anahtarı',220,'darkKeys',1]];let seed=Math.floor((player.traderRefresh||0)/3600000);return pool.sort((a,b)=>((a[1].length*17+seed*13)%97)-((b[1].length*17+seed*13)%97)).slice(0,5);}
 function renderTrader(){const box=document.getElementById('traderList');box.innerHTML=traderItems().map((i,n)=>`<div class="exp-card"><h4>${i[0]} ${i[1]}</h4><p>💰 ${i[2]} altın</p><button onclick="buyTraderItem(${n})">SATIN AL</button></div>`).join('')+`<div class="exp-card"><h4>🔄 Yenile</h4><p>Yeni ürünler için 100 altın.</p><button onclick="buyTraderRefresh()">YENİLE</button></div>`;document.getElementById('traderTimer').textContent='Stok her saat değişir. Güncel ürünler kişiye özeldir.';}
-function buyTraderItem(index){const i=traderItems()[index];if(!i)return;if(player.gold<i[2]){log('❌ Tüccardan alışveriş için yeterli altının yok.');return;}player.gold-=i[2];player[i[3]]=(player[i[3]]||0)+i[4];log(`🧙 Gezgin tüccardan ${i[0]} ${i[1]} aldın: -${i[2]} altın.`);renderTrader();update();}
-function buyTraderRefresh(){if(player.gold<100){log('❌ Yenilemek için 100 altın gerekiyor.');return;}player.gold-=100;player.traderRefresh=Date.now();log('🧙 Gezgin tüccarın malları yenilendi.');renderTrader();update();}
+function buyTraderItem(index){const i=traderItems()[index];if(!i)return;if(player.gold<ngPrice(i[2])){log('❌ Tüccardan alışveriş için yeterli altının yok.');return;}const price=ngPrice(i[2]); player.gold-=price;player[i[3]]=(player[i[3]]||0)+i[4];log(`🧙 Gezgin tüccardan ${i[0]} ${i[1]} aldın: -${i[2]} altın.`);renderTrader();update();}
+function buyTraderRefresh(){const price=ngPrice(100);if(player.gold<price){log(`❌ Yenilemek için ${price} altın gerekiyor.`);return;}player.gold-=price;player.traderRefresh=Date.now();log('🧙 Gezgin tüccarın malları yenilendi.');renderTrader();update();}
 function openSecretRoom(){if(player.level<4){log('🔒 Gizli oda için Level 4 gerekiyor.');return;}const box=document.getElementById('secretContent');if(player.darkKeys<=0&&player.darkCrystals<3){box.innerHTML='<div class="exp-card"><h4>🔒 Kilitli</h4><p>1 🗝️ Anahtar veya 3 💎 Karanlık Kristal gerekiyor.</p><button onclick="closeExpansionModal(\'secretModal\')">KAPAT</button></div>';}else{box.innerHTML='<div class="exp-card"><h4>🗝️ Gizli Oda Hazır</h4><p>Odayı aç ve rastgele büyük bir ödül al.</p><button onclick="claimSecretRoom()">ODAYI AÇ</button></div>';}document.getElementById('secretModal').style.display='flex';}
 function claimSecretRoom(){if(player.darkKeys>0)player.darkKeys--;else if(player.darkCrystals>=3)player.darkCrystals-=3;else return;player.secretRooms++;const r=Math.random();if(r<.35){player.gold+=random(400,900);log('🗝️ Gizli oda: büyük altın hazinesi buldun!');}else if(r<.6){player.darkCrystals+=random(2,4);log('🗝️ Gizli oda: Karanlık Kristaller buldun!');}else if(r<.82){player.diamondPieces=Math.min(5,player.diamondPieces+random(2,5));log('🗝️ Gizli oda: Elmas parçaları buldun!');}else{player.darkKeys++;player.superPotions++;log('🗝️ Gizli oda: gizemli ödül — anahtar + süper iksir!');}closeEvent();closeExpansionModal('secretModal');update();}
 const MASTERY_COSTS={2:300,3:650,4:1300};
 const MASTERY_MATS={fireball:'fireCorePieces',ice:'iceCorePieces',lightning:'lightningCorePieces',heal:'holyCorePieces',curse:'curseCorePieces'};
 function openSpellMastery(){const names={fireball:'🔥 Ateş Topu',ice:'❄️ Buz Mızrağı',lightning:'⚡ Şimşek',heal:'✨ Kutsal Şifa',curse:'☠️ Lanet'};document.getElementById('spellMasteryList').innerHTML=Object.keys(names).map(t=>{const lv=player.spellMastery[t]||player.spellLevels[t]||1;const next=Math.min(4,lv+1);const cost=MASTERY_COSTS[lv+1]||0;const mat=MASTERY_MATS[t];return `<div class="exp-card"><h4>${names[t]}</h4><p>Ustalık Lv.${lv} / 4</p><p>Sonraki: +${Math.max(0,lv*5)} ek büyü etkisi</p><p>Gerekli: ${cost} altın + 3 ${mat}</p><button onclick="upgradeSpellMastery('${t}')" ${lv>=4?'disabled':''}>${lv>=4?'MAKSİMUM':'GELİŞTİR'}</button></div>`}).join('');document.getElementById('spellMasteryModal').style.display='flex';}
-function upgradeSpellMastery(type){const lv=player.spellMastery[type]||1;if(lv>=4)return;const cost=MASTERY_COSTS[lv+1],mat=MASTERY_MATS[type];if(player.gold<cost){log(`❌ Büyü ustalığı için ${cost} altın gerekiyor.`);return;}if((player[mat]||0)<3){log(`❌ Bu büyü için 3 çekirdek gerekiyor.`);return;}player.gold-=cost;player[mat]-=3;player.spellMastery[type]=lv+1;player.spellLevels[type]=Math.max(player.spellLevels[type]||1,lv+1);log(`🔮 ${type} büyüsü Ustalık Lv.${lv+1} oldu!`);openSpellMastery();update();}
+function upgradeSpellMastery(type){const lv=player.spellMastery[type]||1;if(lv>=4)return;const cost=ngPrice(MASTERY_COSTS[lv+1]),mat=MASTERY_MATS[type];if(player.gold<cost){log(`❌ Büyü ustalığı için ${cost} altın gerekiyor.`);return;}if((player[mat]||0)<3){log(`❌ Bu büyü için 3 çekirdek gerekiyor.`);return;}player.gold-=cost;player[mat]-=3;player.spellMastery[type]=lv+1;player.spellLevels[type]=Math.max(player.spellLevels[type]||1,lv+1);log(`🔮 ${type} büyüsü Ustalık Lv.${lv+1} oldu!`);openSpellMastery();update();}
 function openDarkLord(){if(player.level<20||player.darkCrystals<5){document.getElementById('darkLordContent').innerHTML='<div class="exp-card"><h4>🔒 Kale Kilitli</h4><p>Seviye 20 ve 5 Karanlık Kristal gerekiyor.</p></div>';}else{document.getElementById('darkLordContent').innerHTML=`<div class="exp-card"><h4>👑 KARANLIK LORD</h4><p>❤️ 2200 Can · ⚔️ 95 Saldırı · 💰 3500 altın · ⭐ 3000 XP</p><p>3 fazlı savaş. Zaferden sonra Yeni Oyun+ açılır.</p><button onclick="startDarkLord()">⚔️ SAVAŞA GİR — 1000 ALTIN</button></div>`;}document.getElementById('darkLordModal').style.display='flex';}
-function startDarkLord(){if(player.gold<1000){log('❌ Kaleye giriş için 1000 altın gerekiyor.');return;}if(enemy){log('⚠️ Zaten savaştasın.');return;}player.gold-=1000;player.darkCrystals-=5;enemy={name:'Karanlık Lord',emoji:'👑',hp:2200,maxHp:2200,attack:95,gold:3500,xp:3000,boss:true,type:'darklord',bossPhase:1,bossSpecialCooldown:0,burning:false,frozen:false,cursed:false,curseTurns:0,poisoned:false,poisonTurns:0,enraged:false,weakened:false,cave:false};closeExpansionModal('darkLordModal');document.getElementById('enemyArea').style.display='block';document.getElementById('enemyEmoji').textContent='👑';document.getElementById('enemyName').textContent='👑 Karanlık Lord';document.getElementById('sceneTitle').textContent='👑 KARANLIK LORD KALESİ';log('👑 KARANLIK LORD SAVAŞI BAŞLADI!');update();}
-function applyRareEnemy(){if(!enemy||enemy.boss||enemy.rarity)return;if(Math.random()>.08)return;const tiers=[['Nadir','🟣',1.35,1.18,1.7],['Destansı','🔵',1.65,1.35,2.2],['Efsanevi','🟡',2.05,1.55,3.2]];let r=Math.random(),t=r<.70?tiers[0]:r<.93?tiers[1]:tiers[2];enemy.rarity=t[0];enemy.rarityEmoji=t[1];enemy.maxHp=Math.round(enemy.maxHp*t[2]);enemy.hp=enemy.maxHp;enemy.attack=Math.round(enemy.attack*t[3]);enemy.gold=Math.round(enemy.gold*t[4]);enemy.xp=Math.round(enemy.xp*t[4]);enemy.rareRewardMult=t[4];log(`${t[1]} ${t[0]} DÜŞMAN! ${enemy.name} güçlendi ve ödülleri arttı.`);document.getElementById('enemyName').textContent=`${t[1]} ${enemy.name} [${t[0]}]`;document.getElementById('enemyFighter').classList.add('rare-glow');}
+function startDarkLord(){const entryCost=ngPrice(1000);if(player.gold<entryCost){log(`❌ Kaleye giriş için ${entryCost} altın gerekiyor.`);return;} if(enemy){log('⚠️ Zaten savaştasın.');return;}player.gold-=entryCost;player.darkCrystals-=5;enemy={name:'Karanlık Lord',emoji:'👑',hp:2200,maxHp:2200,attack:95,gold:3500,xp:3000,boss:true,type:'darklord',bossPhase:1,bossSpecialCooldown:0,burning:false,frozen:false,cursed:false,curseTurns:0,poisoned:false,poisonTurns:0,enraged:false,weakened:false,cave:false};closeExpansionModal('darkLordModal');document.getElementById('enemyArea').style.display='block';document.getElementById('enemyEmoji').textContent='👑';document.getElementById('enemyName').textContent='👑 Karanlık Lord';document.getElementById('sceneTitle').textContent='👑 KARANLIK LORD KALESİ';log('👑 KARANLIK LORD SAVAŞI BAŞLADI!');update();}
+function applyRareEnemy(){if(!enemy||enemy.boss||enemy.rarity)return;const rareChance=Math.min(.30,.08+(player.rareBoost||0)); if(Math.random()>rareChance){player.rareBoost=0;return;} player.rareBoost=0;const tiers=[['Nadir','🟣',1.35,1.18,1.7,'rarity-rare'],['Destansı','🔵',1.65,1.35,2.2,'rarity-epic'],['Efsanevi','🟡',2.05,1.55,3.2,'rarity-legendary'],['KÂBUS','🔴',2.75,1.85,5.0,'rarity-nightmare']];let r=Math.random(),t=r<.68?tiers[0]:r<.90?tiers[1]:r<.99?tiers[2]:tiers[3];enemy.rarity=t[0];enemy.rarityEmoji=t[1];enemy.maxHp=Math.round(enemy.maxHp*t[2]);enemy.hp=enemy.maxHp;enemy.attack=Math.round(enemy.attack*t[3]);enemy.gold=Math.round(enemy.gold*t[4]);enemy.xp=Math.round(enemy.xp*t[4]);enemy.rareRewardMult=t[4];enemy.rarityClass=t[5];enemy.raritySpecial=t[0]==='KÂBUS'?'berserk':(t[0]==='Efsanevi'?'lifesteal':(t[0]==='Destansı'?'shield':null));log(`${t[1]} ${t[0]} DÜŞMAN! ${enemy.name} güçlendi ve ödülleri arttı.`);document.getElementById('enemyName').textContent=`${t[1]} ${enemy.name} [${t[0]}]`;const fighter=document.getElementById('enemyFighter'); fighter.classList.remove('rare-glow','rarity-rare','rarity-epic','rarity-legendary','rarity-nightmare'); fighter.classList.add('rare-glow',t[5]);}
 function registerBattleStats(defeated){const st=player.stats;st.kills++;st.goldEarned+=defeated.gold||0;if(defeated.boss)st.bossKills++;if(defeated.rarity)st.rareKills++;if(defeated.name==='Ejderha')st.dragonKills++;if(player.hp>0&&player.hp/player.maxHp<=.20)st.lowHpWins++;updateQuest();checkAchievements();}
 function wrapExpansionHooks(){
  const oldGoForest=goForest; goForest=function(){if(enemy){oldGoForest();return;}if(player.level>=2&&Math.random()<.14){randomEvent();return;}oldGoForest();if(enemy&&player.ngPlus){const m=1+player.ngPlus*.12;enemy.maxHp=Math.round(enemy.maxHp*m);enemy.hp=enemy.maxHp;enemy.attack=Math.round(enemy.attack*m);enemy.gold=Math.round(enemy.gold*(1+player.ngPlus*.08));enemy.xp=Math.round(enemy.xp*(1+player.ngPlus*.08));}applyRareEnemy();update();};
- const oldWinBattle=winBattle; winBattle=function(){const defeated=enemy?JSON.parse(JSON.stringify(enemy)):null;oldWinBattle();if(defeated){registerBattleStats(defeated);if(defeated.type==='darklord'){player.darkLordDefeated=true;log('🌑 KARANLIK LORD YENİLDİ! YENİ OYUN+ AÇILDI. Düşmanlar artık daha tehlikeli.');setTimeout(()=>{if(confirm('Yeni Oyun+ başlatılsın mı? Mevcut ekipmanın korunacak.')) startNewGamePlus();},200);}}update();};
+ const oldWinBattle=winBattle; winBattle=function(){const defeated=enemy?JSON.parse(JSON.stringify(enemy)):null;oldWinBattle();if(defeated){registerBattleStats(defeated);if(defeated.type==='darklord'){player.darkLordDefeated=true;log('🌑 KARANLIK LORD YENİLDİ! YENİ OYUN+ AÇILDI. Düşmanlar artık daha tehlikeli.');setTimeout(()=>{if(confirm('Yeni Oyun+ başlatılsın mı? Mevcut ekipmanın korunacak.')) startNewGamePlus();},200);}if(defeated.type==='riftguardian'){player.voidRelics=(player.voidRelics||0)+1;player.ngRiftClears=(player.ngRiftClears||0)+1;player.gold+=ngPrice(900);log('🪬 YARIK TEMİZLENDİ! Boşluk Kalıntısı x1 ve giriş ücretinin bir kısmı geri kazanıldı.');}}update();};
  const oldAttack=attack; attack=function(){if(enemy&&(player.classId==='warrior'||player.classId==='assassin')){const old=player.weaponDamageMultiplier;player.weaponDamageMultiplier=(old||1)*(player.classAttackMult||1);oldAttack();player.weaponDamageMultiplier=old;}else{oldAttack();}};
- const oldCastSpell=castSpell; castSpell=function(type){if(enemy){player.stats.spells++;if(type==='ice')player.stats.iceCasts++;}const before=player.mana;const oldLv=player.spellLevels[type];if(player.classId==='mage'&&oldLv){player.spellLevels[type]=oldLv+1;}oldCastSpell(type);player.spellLevels[type]=oldLv;if(player.classId==='mage'&&before>player.mana){const spent=before-player.mana;player.mana=Math.min(player.maxMana,before-Math.round(spent*.10));}updateQuest();checkAchievements();};
+ const oldCastSpell=castSpell; castSpell=function(type){if(enemy){player.stats.spells++;if(type==='ice')player.stats.iceCasts++;}const before=player.mana;oldCastSpell(type);if(player.classId==='mage'&&before>player.mana){const spent=before-player.mana;player.mana=Math.min(player.maxMana,before-Math.round(spent*.10));}updateQuest();checkAchievements();};
  const oldAddLoot=addLoot; addLoot=function(id,amount=1){const kept=oldAddLoot(id,amount);if(kept){player.stats.lootCollected=(player.stats.lootCollected||0)+kept;updateQuest();}return kept;};
  const oldGoCave=goCave; goCave=function(){oldGoCave();if(enemy&&player.ngPlus){const m=1+player.ngPlus*.12;enemy.maxHp=Math.round(enemy.maxHp*m);enemy.hp=enemy.maxHp;enemy.attack=Math.round(enemy.attack*m);enemy.gold=Math.round(enemy.gold*(1+player.ngPlus*.08));enemy.xp=Math.round(enemy.xp*(1+player.ngPlus*.08));}applyRareEnemy();update();};
 }
-function startNewGamePlus(){player.ngPlus++;player.level=1;player.xp=0;player.gold=500;player.hp=player.maxHp;player.mana=player.maxMana;player.caveUnlocked=false;enemy=null;player.lastForestEnemyType=null;player.dead=false;log(`🌑 YENİ OYUN+ ${player.ngPlus} başladı! Düşmanlar artık ${100+player.ngPlus*12}% güçle ölçeklenecek.`);update();}
-function renderExpansionDashboard(){ensureExpansionState();updateClassUI();const q=player.quest;if(q){updateQuest();const pct=Math.round(player.questProgress/q.target*100);const el=document.getElementById('questMini');if(el)el.innerHTML=`<div class="exp-card"><b>🎯 ${q.name}</b> — ${player.questProgress}/${q.target}<div class="exp-progress"><i style="width:${pct}%"></i></div></div>`;}}
+function startNewGamePlus(){player.ngPlus++;player.level=1;player.xp=0;player.gold=500;player.caveUnlocked=false;player.rareBoost=0;player.nextBattleDefenseBuff=0;player.hp=player.maxHp;player.mana=player.maxMana;enemy=null;player.lastForestEnemyType=null;player.dead=false;log(`🌑 YENİ OYUN+ ${player.ngPlus} başladı! Düşmanlar artık ${100+player.ngPlus*12}% güçle ölçeklenecek.`);update();}
+function ngPrice(base){return Math.round(base*(1+0.18*(player.ngPlus||0)));}
+
+function openInventory(){renderInventory();document.getElementById('inventoryModal').style.display='flex';}
+function inventoryItem(icon,name,count,meta='',action='',disabled=false){
+  const btn=action?`<button class="inventory-action" onclick="${action}" ${disabled?'disabled':''}>${action.includes('sellLoot')?'SAT':'KULLAN'}</button>`:'';
+  return `<div class="inventory-item"><div class="inventory-item-main"><span class="inventory-item-icon">${icon}</span><div><div class="inventory-item-name">${name}</div><div class="inventory-item-meta">${meta}</div></div></div><div style="display:flex;align-items:center;gap:7px">${btn}<span class="inventory-count">x${count}</span></div></div>`;
+}
+function renderInventory(){
+ const grid=document.getElementById('inventoryModalGrid'); if(!grid)return;
+ const lootCount=getLootCount(), limit=player.inventoryLimit||30;
+ document.getElementById('inventoryModalCap').textContent=`Loot: ${lootCount} / ${limit} · 💎 Kristal: ${player.darkCrystals||0} · 🗝️ Anahtar: ${player.darkKeys||0}`;
+ const potions=[
+  ['🧪','Küçük Can İksiri',player.potions||0,'+50 Can',"drinkPotion()"],
+  ['❤️','Büyük Can İksiri',player.bigPotions||0,'+120 Can',"drinkBigPotion()"],
+  ['🔵','Küçük Mana İksiri',player.manaPotions||0,'+50 Mana',"restoreMana()"],
+  ['💙','Büyük Mana İksiri',player.bigManaPotions||0,'+120 Mana',"restoreBigMana()"],
+  ['⚡','Süper İksir',player.superPotions||0,'+200 Can · +100 Mana',"useSuperPotion()"]
+ ];
+ const materials=[['⚙️','Demir Parçası',player.ironPieces||0,'5 adet ekipman için'],['🟡','Altın Parçası',player.goldPieces||0,'5 adet ekipman için'],['💎','Elmas Parçası',player.diamondPieces||0,'5 adet ekipman için'],['🔥','Ateş Çekirdeği',player.fireCorePieces||0,'Büyü ustalığı'],['❄️','Buz Çekirdeği',player.iceCorePieces||0,'Büyü ustalığı'],['⚡','Şimşek Çekirdeği',player.lightningCorePieces||0,'Büyü ustalığı'],['✨','Kutsal Çekirdek',player.holyCorePieces||0,'Büyü ustalığı'],['☠️','Lanet Çekirdeği',player.curseCorePieces||0,'Büyü ustalığı']];
+ const special=[['💎','Karanlık Kristal',player.darkCrystals||0,'Özel sandıklar ve Karanlık Lord'],['🗝️','Gizli Oda Anahtarı',player.darkKeys||0,'Gizli odaları açar'],['🪬','Boşluk Kalıntısı',player.voidRelics||0,'NG+ Karanlık Yarık ödülü']];
+ let html='<div class="inventory-section"><h4>🧪 İksirler</h4>'+potions.map(x=>inventoryItem(x[0],x[1],x[2],x[3],x[4],x[2]<=0)).join('')+'</div>';
+ html+='<div class="inventory-section"><h4>🧩 Malzemeler & Çekirdekler</h4>'+materials.map(x=>inventoryItem(x[0],x[1],x[2],x[3])).join('')+'</div>';
+ html+='<div class="inventory-section"><h4>🗝️ Özel Eşyalar</h4>'+special.map(x=>inventoryItem(x[0],x[1],x[2],x[3])).join('')+'</div>';
+ html+='<div class="inventory-section"><h4>🎁 Ganimetler</h4>';
+ let hasLoot=false; LOOT_TABLE.forEach(item=>{const n=player.loot[item.id]||0;if(n>0){hasLoot=true;html+=inventoryItem(item.emoji,item.name,n,`Birim satış: ${item.value} altın`,`sellLoot('${item.id}')`);}});
+ if(!hasLoot)html+='<div class="inventory-empty">Henüz ganimet yok.</div>';
+ html+='</div>';
+ grid.innerHTML=html;
+}
+
+function renderNextGoal(){
+ const el=document.getElementById('nextGoalCard'); if(!el)return;
+ let title='',desc='',pct=0;
+ if(!player.classId){title='🧙 Sınıfını seç';desc='Oyun tarzını belirlemek için dört sınıftan birini seç.';pct=0;}
+ else if(player.level<3){title='🏟️ Arena\'yı aç';desc=`Seviye 3 ol. Şu an Seviye ${player.level}.`;pct=Math.min(100,player.level/3*100);}
+ else if(!player.caveUnlocked && player.level>=6){title='🕳️ Karanlık Mağara\'yı aç';desc=`750 altın biriktir. Şu an ${player.gold} altın.`;pct=Math.min(100,player.gold/750*100);}
+ else if(player.level<12){title='🐉 Ejderha\'ya hazırlan';desc=`Seviye 12'ye ulaş. Şu an Seviye ${player.level}.`;pct=Math.min(100,player.level/12*100);}
+ else if(player.level<20){title='👑 Karanlık Lord Kalesi';desc=`Seviye 20 + 5 Karanlık Kristal gerekiyor. Kristal: ${player.darkCrystals}/5`;pct=Math.min(100,player.level/20*100,player.darkCrystals/5*100);}
+ else if(!player.darkLordDefeated){title='👑 Karanlık Lord\'u yen';desc='Kalenin kapısını aç ve üç fazlı final savaşını tamamla.';pct=90;}
+ else if((player.ngPlus||0)<1){title='🌑 Yeni Oyun+\'a geç';desc='Finalden sonra NG+ ile özel içerik ve daha yüksek ödüller açılır.';pct=100;}
+ else {title='🌑 NG+ Yarığını temizle';desc=`Karanlık Yarık özel ödüller verir. Temizlenen yarık: ${player.ngRiftClears||0}`;pct=100;}
+ el.innerHTML=`<h3>🎯 Sonraki Hedefin: ${title}</h3><p>${desc}</p><div class="goal-progress"><i style="width:${Math.max(0,Math.min(100,pct))}%"></i></div>`;
+}
+function openNGRift(){
+ const box=document.getElementById('ngRiftContent');
+ if(!player.ngPlus){box.innerHTML='<div class="exp-card"><h4>🔒 Kilitli</h4><p>Önce Karanlık Lord\'u yenip Yeni Oyun+ açmalısın.</p></div>';document.getElementById('ngRiftModal').style.display='flex';return;}
+ const cost=ngPrice(900);
+ box.innerHTML=`<div class="exp-card"><h4>🌑 Yarık Muhafızı</h4><p>❤️ 1400 + NG+ ölçekleme · ⚔️ 75 + ölçekleme · 💰 ${ngPrice(2200)} ödül</p><p>Zafer: 🪬 Boşluk Kalıntısı + özel başarı ilerlemesi.</p><p>Giriş ücreti: 💰 ${cost}</p><button onclick="startNGRift()" ${enemy?'disabled':''}>⚔️ YARIĞA GİR</button></div>`;
+ document.getElementById('ngRiftModal').style.display='flex';
+}
+function startNGRift(){
+ const cost=ngPrice(900); if(player.ngPlus<1)return; if(enemy){log('⚠️ Önce mevcut savaşını bitir.');return;} if(player.gold<cost){log(`❌ Yarığa giriş için ${cost} altın gerekiyor.`);return;}
+ player.gold-=cost; const scale=1+(player.ngPlus||0)*.18;
+ enemy={name:'Yarık Muhafızı',emoji:'🪬',hp:Math.round(1400*scale),maxHp:Math.round(1400*scale),attack:Math.round(75*scale),gold:ngPrice(2200),xp:Math.round(1800*scale),boss:true,type:'riftguardian',bossPhase:1,bossSpecialCooldown:0,burning:false,frozen:false,cursed:false,curseTurns:0,poisoned:false,poisonTurns:0,enraged:false,weakened:false,cave:false,rift:true};
+ closeExpansionModal('ngRiftModal'); document.getElementById('enemyArea').style.display='block'; document.getElementById('enemyEmoji').textContent='🪬'; document.getElementById('enemyName').textContent='🌑 Yarık Muhafızı'; document.getElementById('sceneTitle').textContent='🌑 KARANLIK YARIK'; log(`🌑 NG+ ${player.ngPlus} Yarık Muhafızı savaşı başladı!`); update();
+}
+function renderExpansionDashboard(){ensureExpansionState();updateClassUI();renderNextGoal();const rb=document.getElementById('ngRiftBtn');if(rb){rb.style.display=player.ngPlus?'block':'none';} const q=player.quest;if(q){updateQuest();const pct=Math.round(player.questProgress/q.target*100);const el=document.getElementById('questMini');if(el)el.innerHTML=`<div class="exp-card"><b>🎯 ${q.name}</b> — ${player.questProgress}/${q.target}<div class="exp-progress"><i style="width:${pct}%"></i></div></div>`;}}
 ensureExpansionState();wrapExpansionHooks();
 
 const hadSave=loadGame(false);
