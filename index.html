@@ -531,6 +531,18 @@ style="width:100%">
 🔵 MANA KULLAN (0)
 </button>
 
+<button id="drinkBigPotionBtn" onclick="drinkBigPotion()">
+❤️ BÜYÜK İKSİR (0)
+</button>
+
+<button id="restoreBigManaBtn" onclick="restoreBigMana()">
+💙 BÜYÜK MANA (0)
+</button>
+
+<button id="useSuperPotionBtn" onclick="useSuperPotion()">
+⚡ SÜPER İKSİR (0)
+</button>
+
 <button onclick="goForest()">
 🌲 ORMANA GİT
 </button>
@@ -937,10 +949,10 @@ SATIN AL
 
 <h3>Arena Savaşçısı</h3>
 
-<p>❤️ 120 Can | ⚔️ 20 Saldırı</p>
+<p>❤️ 240 Can | ⚔️ 30 Saldırı</p>
 <p>🔓 Level 3</p>
 
-<button onclick="startBoss('Arena Savaşçısı','🗡️',240,30,180,150,3)">
+<button onclick="startBoss('arenaWarrior')">
 SAVAŞ
 </button>
 
@@ -952,10 +964,10 @@ SAVAŞ
 
 <h3>Ork Şefi</h3>
 
-<p>❤️ 250 Can | ⚔️ 30 Saldırı</p>
+<p>❤️ 450 Can | ⚔️ 42 Saldırı</p>
 <p>🔓 Level 5</p>
 
-<button onclick="startBoss('Ork Şefi','👹',450,42,400,320,5)">
+<button onclick="startBoss('orcChief')">
 SAVAŞ
 </button>
 
@@ -967,10 +979,10 @@ SAVAŞ
 
     <h3>Goblin Kralı</h3>
 
-    <p>❤️ 180 Can | ⚔️ 24 Saldırı</p>
+    <p>❤️ 320 Can | ⚔️ 34 Saldırı</p>
     <p>🔓 Level 5</p>
 
-    <button onclick="startBoss('Goblin Kralı','👑',320,34,350,280,5)">
+    <button onclick="startBoss('goblinKing')">
     SAVAŞ
     </button>
 
@@ -983,10 +995,10 @@ SAVAŞ
 
 <h3>Cehennem Lordu</h3>
 
-<p>❤️ 450 Can | ⚔️ 40 Saldırı</p>
+<p>❤️ 750 Can | ⚔️ 55 Saldırı</p>
 <p>🔓 Level 8</p>
 
-<button onclick="startBoss('Cehennem Lordu','🔥',750,55,800,650,8)">
+<button onclick="startBoss('hellLord')">
 SAVAŞ
 </button>
 
@@ -998,10 +1010,10 @@ SAVAŞ
 
 <h3>Ejderha</h3>
 
-<p>❤️ 800 Can | ⚔️ 55 Saldırı</p>
+<p>❤️ 1400 Can | ⚔️ 72 Saldırı</p>
 <p>🔓 Level 12</p>
 
-<button onclick="startBoss('Ejderha','🐉',1400,72,2500,1800,12)">
+<button onclick="startBoss('dragon')">
 SAVAŞ
 </button>
 
@@ -1062,7 +1074,14 @@ let player = {
     fireballCharges: 0,
     iceCharges: 0,
     lightningCharges: 0,
-    healCharges: 0
+    healCharges: 0,
+    weaponDamageMultiplier: 1,
+    healCooldown: 0,
+    lastForestEnemyType: null,
+    bossPhase: false,
+    poisoned: false,
+    burning: false,
+    frozen: false
 };
 
 
@@ -1121,6 +1140,38 @@ const enemies = [
     ["Cehennem Yırtıcısı","🐲",265,44,240,275,"abyss",10]
 ];
 
+const MAX_EQUIPMENT_LEVEL = 2;
+const MAX_LOG_ENTRIES = 120;
+
+const WEAPON_CONFIGS = {
+    "Tahta Kılıç": { baseUpgrade:100, damageBonus:0.02, wearEvery:2, maxDurability:8, label:"🪵" },
+    "Demir Kılıç": { baseUpgrade:180, damageBonus:0.03, wearEvery:5, maxDurability:8, label:"⚔️" },
+    "Altın Kılıç": { baseUpgrade:350, damageBonus:0.04, wearEvery:8, maxDurability:8, label:"🟡" },
+    "Elmas Kılıç": { baseUpgrade:650, damageBonus:0.05, wearEvery:12, maxDurability:8, label:"💎" }
+};
+
+const ARMOR_CONFIGS = {
+    "Tahta Zırh": { baseUpgrade:120, gain:3, label:"🪵", maxLevel:2 },
+    "Demir Zırh": { baseUpgrade:250, gain:5, label:"⚙️", maxLevel:2 },
+    "Altın Zırh": { baseUpgrade:450, gain:8, label:"🟡", maxLevel:2 },
+    "Elmas Zırh": { baseUpgrade:750, gain:12, label:"💎", maxLevel:2 }
+};
+
+const SPELL_CONFIGS = {
+    fireball:{ baseCost:200, materialKey:"fireCorePieces", name:"Ateş Topu", materialName:"Ateş Çekirdeği" },
+    ice:{ baseCost:250, materialKey:"iceCorePieces", name:"Buz Mızrağı", materialName:"Buz Çekirdeği" },
+    lightning:{ baseCost:350, materialKey:"lightningCorePieces", name:"Şimşek", materialName:"Şimşek Çekirdeği" },
+    heal:{ baseCost:300, materialKey:"holyCorePieces", name:"Kutsal Şifa", materialName:"Kutsal Çekirdek" },
+    curse:{ baseCost:400, materialKey:"curseCorePieces", name:"Lanet", materialName:"Lanet Çekirdeği" }
+};
+
+const BOSS_CONFIGS = {
+    arenaWarrior:{ name:"Arena Savaşçısı", emoji:"🗡️", hp:240, attack:30, gold:180, xp:150, levelRequired:3 },
+    orcChief:{ name:"Ork Şefi", emoji:"👹", hp:450, attack:42, gold:400, xp:320, levelRequired:5 },
+    goblinKing:{ name:"Goblin Kralı", emoji:"👑", hp:320, attack:34, gold:350, xp:280, levelRequired:5 },
+    hellLord:{ name:"Cehennem Lordu", emoji:"🔥", hp:750, attack:55, gold:800, xp:650, levelRequired:8 },
+    dragon:{ name:"Ejderha", emoji:"🐉", hp:1400, attack:72, gold:2500, xp:1800, levelRequired:12 }
+};
 
 function log(text) {
 
@@ -1131,6 +1182,10 @@ function log(text) {
     p.textContent = text;
 
     box.appendChild(p);
+
+    while(box.children.length > MAX_LOG_ENTRIES) {
+        box.removeChild(box.firstElementChild);
+    }
 
     box.scrollTop = box.scrollHeight;
 }
@@ -1199,7 +1254,7 @@ function update() {
     document.getElementById("weaponLevelText").textContent =
         player.weaponLevel;
 
-    const spellBaseCosts = {fireball:200, ice:250, lightning:350, heal:300, curse:400};
+    const spellBaseCosts = Object.fromEntries(Object.entries(SPELL_CONFIGS).map(([type,cfg]) => [type,cfg.baseCost]));
     Object.keys(spellBaseCosts).forEach(type => {
         const level = player.spellLevels[type] || 1;
         const cost = Math.round(spellBaseCosts[type] * Math.pow(1.45, level - 1));
@@ -1210,10 +1265,10 @@ function update() {
     });
 
     const swordConfigs = {
-        "Tahta Kılıç": {levelId:"woodSwordLevel", upgradeId:"woodSwordUpgradeBtn", costId:"woodSwordUpgradeCost", baseUpgrade:100, gain:5, maxDurability:2},
-        "Demir Kılıç": {buyId:"ironSwordBuyBtn", levelId:"ironSwordLevel", upgradeId:"ironSwordUpgradeBtn", costId:"ironSwordUpgradeCost", baseUpgrade:180, gain:6, maxDurability:3},
-        "Altın Kılıç": {buyId:"goldSwordBuyBtn", levelId:"goldSwordLevel", upgradeId:"goldSwordUpgradeBtn", costId:"goldSwordUpgradeCost", baseUpgrade:350, gain:8, maxDurability:4},
-        "Elmas Kılıç": {buyId:"diamondSwordBuyBtn", levelId:"diamondSwordLevel", upgradeId:"diamondSwordUpgradeBtn", costId:"diamondSwordUpgradeCost", baseUpgrade:650, gain:10, maxDurability:5}
+        "Tahta Kılıç": {levelId:"woodSwordLevel", upgradeId:"woodSwordUpgradeBtn", costId:"woodSwordUpgradeCost", baseUpgrade:WEAPON_CONFIGS["Tahta Kılıç"].baseUpgrade},
+        "Demir Kılıç": {buyId:"ironSwordBuyBtn", levelId:"ironSwordLevel", upgradeId:"ironSwordUpgradeBtn", costId:"ironSwordUpgradeCost", baseUpgrade:WEAPON_CONFIGS["Demir Kılıç"].baseUpgrade},
+        "Altın Kılıç": {buyId:"goldSwordBuyBtn", levelId:"goldSwordLevel", upgradeId:"goldSwordUpgradeBtn", costId:"goldSwordUpgradeCost", baseUpgrade:WEAPON_CONFIGS["Altın Kılıç"].baseUpgrade},
+        "Elmas Kılıç": {buyId:"diamondSwordBuyBtn", levelId:"diamondSwordLevel", upgradeId:"diamondSwordUpgradeBtn", costId:"diamondSwordUpgradeCost", baseUpgrade:WEAPON_CONFIGS["Elmas Kılıç"].baseUpgrade}
     };
     Object.entries(swordConfigs).forEach(([name,cfg]) => {
         const owned = player.weapon === name;
@@ -1223,8 +1278,8 @@ function update() {
         const buyEl = cfg.buyId ? document.getElementById(cfg.buyId) : null;
         if(levelEl) levelEl.textContent = owned ? player.weaponLevel : (name === "Tahta Kılıç" ? 1 : "Kilitli");
         if(upgradeEl) {
-            upgradeEl.disabled = !owned || player.weaponLevel >= 2;
-            upgradeEl.textContent = !owned ? "ÖNCE SATIN AL" : (player.weaponLevel >= 2 ? "MAKSİMUM SEVİYE" : "GELİŞTİR");
+            upgradeEl.disabled = !owned || player.weaponLevel >= MAX_EQUIPMENT_LEVEL;
+            upgradeEl.textContent = !owned ? "ÖNCE SATIN AL" : (player.weaponLevel >= MAX_EQUIPMENT_LEVEL ? "MAKSİMUM SEVİYE" : "GELİŞTİR");
         }
         if(buyEl) {
             const order = ["Tahta Kılıç","Demir Kılıç","Altın Kılıç","Elmas Kılıç"];
@@ -1303,17 +1358,23 @@ function update() {
     });
 
     const armorConfigs={
-      "Tahta Zırh":{level:"woodArmorLevelText",cost:"woodArmorUpgradeCost",buy:null,up:"woodArmorUpgradeBtn",base:120},
-      "Demir Zırh":{level:"ironArmorLevelText",cost:"ironArmorUpgradeCost",buy:"ironArmorBuyBtn",up:"ironArmorUpgradeBtn",base:250},
-      "Altın Zırh":{level:"goldArmorLevelText",cost:"goldArmorUpgradeCost",buy:"goldArmorBuyBtn",up:"goldArmorUpgradeBtn",base:450},
-      "Elmas Zırh":{level:"diamondArmorLevelText",cost:"diamondArmorUpgradeCost",buy:"diamondArmorBuyBtn",up:"diamondArmorUpgradeBtn",base:750}
+      "Tahta Zırh":{level:"woodArmorLevelText",cost:"woodArmorUpgradeCost",buy:null,up:"woodArmorUpgradeBtn",base:ARMOR_CONFIGS["Tahta Zırh"].baseUpgrade},
+      "Demir Zırh":{level:"ironArmorLevelText",cost:"ironArmorUpgradeCost",buy:"ironArmorBuyBtn",up:"ironArmorUpgradeBtn",base:ARMOR_CONFIGS["Demir Zırh"].baseUpgrade},
+      "Altın Zırh":{level:"goldArmorLevelText",cost:"goldArmorUpgradeCost",buy:"goldArmorBuyBtn",up:"goldArmorUpgradeBtn",base:ARMOR_CONFIGS["Altın Zırh"].baseUpgrade},
+      "Elmas Zırh":{level:"diamondArmorLevelText",cost:"diamondArmorUpgradeCost",buy:"diamondArmorBuyBtn",up:"diamondArmorUpgradeBtn",base:ARMOR_CONFIGS["Elmas Zırh"].baseUpgrade}
     };
     Object.entries(armorConfigs).forEach(([name,cfg])=>{
       const owned=player.armor===name, levelEl=document.getElementById(cfg.level), costEl=document.getElementById(cfg.cost), buyEl=cfg.buy&&document.getElementById(cfg.buy), upEl=document.getElementById(cfg.up);
       if(levelEl)levelEl.textContent=owned?`Lv.${player.armorLevel}`:(name==='Tahta Zırh'?'1':'Kilitli');
       if(costEl)costEl.textContent=owned?Math.round(cfg.base*Math.pow(1.5,Math.max(0,player.armorLevel-1))):0;
       if(buyEl){const mat={"Demir Zırh":"iron","Altın Zırh":"gold","Elmas Zırh":"diamond"}[name]; const pieces=player[mat+'Pieces']; buyEl.disabled=owned||pieces<5; buyEl.textContent=owned?"SATIN ALINDI":(pieces<5?"5 PARÇA GEREKLİ":"SATIN AL");}
-      if(upEl){upEl.disabled=!owned; if(owned)upEl.textContent=`GELİŞTİR (Lv.${player.armorLevel} → Lv.${player.armorLevel+1})`;}
+      if(upEl){
+        const maxed=owned && player.armorLevel>=MAX_EQUIPMENT_LEVEL;
+        upEl.disabled=!owned || maxed || player.gold < Math.round(cfg.base*Math.pow(1.5,Math.max(0,player.armorLevel-1)));
+        if(!owned) upEl.textContent="ÖNCE SATIN AL";
+        else if(maxed) upEl.textContent="MAKSİMUM SEVİYE";
+        else upEl.textContent=`GELİŞTİR (Lv.${player.armorLevel} → Lv.${player.armorLevel+1})`;
+    }
     });
 
     document.getElementById("potionText").textContent =
@@ -1328,6 +1389,13 @@ function update() {
 
     document.getElementById("restoreManaBtn").textContent =
         `🔵 MANA UYGULA (${Math.max(0, player.manaPotions)})`;
+
+    const bigPotionBtn=document.getElementById("drinkBigPotionBtn");
+    const bigManaBtn=document.getElementById("restoreBigManaBtn");
+    const superPotionBtn=document.getElementById("useSuperPotionBtn");
+    if(bigPotionBtn) bigPotionBtn.textContent=`❤️ BÜYÜK İKSİR (${Math.max(0,player.bigPotions)})`;
+    if(bigManaBtn) bigManaBtn.textContent=`💙 BÜYÜK MANA (${Math.max(0,player.bigManaPotions)})`;
+    if(superPotionBtn) superPotionBtn.textContent=`⚡ SÜPER İKSİR (${Math.max(0,player.superPotions)})`;
 
     const spellButtons = {
         fireball: player.fireballCharges,
@@ -1565,6 +1633,21 @@ function escapeBattle() {
     update();
 }
 
+function advanceBattleCooldowns() {
+    const cooldowns = [
+        ["fireballCharges", "🔥 Ateş Topu"], ["iceCharges", "❄️ Buz Mızrağı"],
+        ["lightningCharges", "⚡ Şimşek"], ["healCharges", "✨ Kutsal Şifa"],
+        ["escapeCharges", "🏃 Kaçış"], ["curseCharges", "☠️ Lanet"]
+    ];
+    cooldowns.forEach(([key,label])=>{
+        if(player[key] > 0){
+            player[key]--;
+            if(player[key] === 0) log(`${label} tekrar hazır!`);
+            else log(`${label} beklemesi: ${player[key]} canavar kaldı.`);
+        }
+    });
+}
+
 function goForest() {
 
     if(player.weaponDurability <= 0) { log("🔨 Silahın kırık! Yeni savaşa girmeden önce marketten tamir etmelisin."); return; }
@@ -1612,6 +1695,8 @@ function goForest() {
         enraged:false,
         weakened:false
     };
+
+    advanceBattleCooldowns();
 
     document.getElementById("enemyArea").style.display = "block";
     document.getElementById("enemyEmoji").textContent = enemy.emoji;
@@ -1722,8 +1807,6 @@ function attack() {
 
 
     enemyAttack();
-
-    update();
 
 }
 
@@ -2115,6 +2198,13 @@ function enemyAttack() {
         log(`🔥 Yanma ${burn} hasar verdi!`);
     }
 
+    if(enemy && enemy.hp <= 0) {
+        enemy.hp = 0;
+        log(`🔥 ${enemy.name} yanma etkisiyle yenildi!`);
+        winBattle();
+        return;
+    }
+
     // Bosslar normal yaratıklardan daha serttir: belli aralıklarla ekstra baskı kurarlar.
     if(enemy && enemy.boss && !enemy.cursed && enemy.hp > 0) {
         if(enemy.type === "boss" && Math.random() < 0.25) {
@@ -2135,39 +2225,13 @@ function enemyAttack() {
 }
 
 function getWeaponCreatureDurability() {
-    const base = {
-        "Tahta Kılıç": 2,
-        "Demir Kılıç": 5,
-        "Altın Kılıç": 8,
-        "Elmas Kılıç": 12
-    };
-    const materialBase = base[player.weapon] || 2;
-    return materialBase + Math.max(0, player.weaponLevel - 1);
+    return WEAPON_CONFIGS[player.weapon]?.wearEvery || 2;
 }
 
 function winBattle() {
 
-    const cooldowns = [
-        ["fireballCharges", "🔥 Ateş Topu"],
-        ["iceCharges", "❄️ Buz Mızrağı"],
-        ["lightningCharges", "⚡ Şimşek"],
-        ["healCharges", "✨ Kutsal Şifa"],
-        ["escapeCharges", "🏃 Kaçış"]
-    ];
-
-    cooldowns.forEach(([key, label]) => {
-        if(player[key] > 0) {
-            player[key]--;
-            if(player[key] > 0) log(`${label} beklemesi: ${player[key]} canavar kaldı.`);
-            else log(`${label} tekrar hazır!`);
-        }
-    });
-
-    // Lanet cooldownu turla değil, yenilen yaratık sayısıyla ilerler.
-    if(player.curseCharges > 0) {
-        player.curseCharges--;
-        log(`☠️ Lanet yükü azaldı: ${player.curseCharges} yaratık kaldı.`);
-    }
+    // Cooldownlar mevcut savaşı bitirince değil, bir sonraki savaşa girerken ilerler.
+    // Böylece "2 canavar daha" ifadesi gerçekten gelecekteki savaşları sayar.
 
     log(`💀 ${enemy.name} yenildi!`);
     // Silah dayanıklılığı artık darbe başına değil, yenilen canavar sayısına göre azalır. Gösterge her zaman 8 üzerinden çalışır.
@@ -2250,7 +2314,6 @@ function drinkPotion() {
 
     log("🧪 Küçük can iksiri kullanıldı. -1 iksir");
 
-    if(enemy) enemyAttack();
     update();
 
 }
@@ -2281,7 +2344,7 @@ function drinkBigPotion() {
     log("❤️ Büyük can iksiri kullanıldı. -1 iksir");
 
     if(enemy) enemyAttack();
-    update();
+    else update();
 
 }
 
@@ -2307,7 +2370,6 @@ function restoreMana() {
     player.manaPotions--;
     player.mana = Math.min(player.maxMana,player.mana+50);
     log("🔵 Küçük mana iksiri kullanıldı. -1 iksir");
-    if(enemy) enemyAttack();
     update();
 
 }
@@ -2335,7 +2397,7 @@ function restoreBigMana() {
     player.mana = Math.min(player.maxMana,player.mana+120);
     log("💙 Büyük mana iksiri kullanıldı. -1 iksir");
     if(enemy) enemyAttack();
-    update();
+    else update();
 
 }
 
@@ -2373,7 +2435,7 @@ function useSuperPotion() {
     log("🔵 +100 Mana");
 
     if(enemy) enemyAttack();
-    update();
+    else update();
 
 }
 
@@ -2579,43 +2641,37 @@ function buyWeapon(name,attack,cost,material) {
     player.gold -= cost;
     if(material) player[material + 'Pieces'] -= 5;
     player.weapon = name; player.weaponLevel = 1; player.weaponDamageMultiplier = 1; player.attack += attack;
-    player.weaponMaxDurability = 8; player.weaponDurability = 8; player.weaponWearCounter = 0;
+    player.weaponMaxDurability = WEAPON_CONFIGS[name]?.maxDurability || 8; player.weaponDurability = player.weaponMaxDurability; player.weaponWearCounter = 0;
     log(`⚔️ ${name} satın aldın! -${cost} altın.`); log(`⚔️ +${attack} saldırı! 🧩 5 ${material ? (material==='iron'?'Demir':material==='gold'?'Altın':'Elmas') : ''} parçası kullanıldı.`); update();
 }
 
 function upgradeWeapon() {
-    const configs = {
-        "Tahta Kılıç":{base:100,gain:0,damageBonus:0.02,label:"🪵"},
-        "Demir Kılıç":{base:180,gain:0,damageBonus:0.03,label:"⚔️"},
-        "Altın Kılıç":{base:350,gain:0,damageBonus:0.04,label:"🟡"},
-        "Elmas Kılıç":{base:650,gain:0,damageBonus:0.05,label:"💎"}
-    };
-    const cfg=configs[player.weapon]; if(!cfg)return;
-    if(player.weaponLevel >= 2){
-        log(`🔒 ${player.weapon} zaten maksimum seviye olan Lv.2'de! Daha fazla geliştirilemez.`);
+    const cfg=WEAPON_CONFIGS[player.weapon];
+    if(!cfg) return;
+    if(player.weaponLevel>=MAX_EQUIPMENT_LEVEL){
+        log(`🔒 ${player.weapon} zaten maksimum seviye olan Lv.${MAX_EQUIPMENT_LEVEL}'de!`);
         return;
     }
-    const cost=cfg.base;
+    const cost=Math.round(cfg.baseUpgrade*Math.pow(1.5,Math.max(0,player.weaponLevel-1)));
     if(player.gold<cost){log(`❌ ${player.weapon} geliştirmesi için ${cost} altın gerekli!`);return;}
     player.gold-=cost;
-    player.weaponLevel=2;
+    player.weaponLevel=MAX_EQUIPMENT_LEVEL;
     player.weaponDamageMultiplier=1+cfg.damageBonus;
-    player.weaponMaxDurability = 8;
-    player.weaponDurability = Math.min(player.weaponDurability, 8);
-    log(`${cfg.label} ${player.weapon} seviye 2 oldu! ⚔️ Normal saldırı hasarı +%${cfg.damageBonus*100} arttı.`);
+    player.weaponMaxDurability=cfg.maxDurability;
+    player.weaponDurability=Math.min(player.weaponDurability,player.weaponMaxDurability);
+    log(`${cfg.label} ${player.weapon} seviye ${MAX_EQUIPMENT_LEVEL} oldu! ⚔️ Normal saldırı hasarı +%${cfg.damageBonus*100} arttı.`);
     log(`💰 -${cost} altın. 🔒 Silah maksimum seviyeye ulaştı.`);
     update();
 }
 
 function upgradeSpell(type) {
-    const baseCosts = {fireball:200, ice:250, lightning:350, heal:300, curse:400};
-    const names = {fireball:'Ateş Topu', ice:'Buz Mızrağı', lightning:'Şimşek', heal:'Kutsal Şifa', curse:'Lanet'};
-    const materialNames = {fireball:'Ateş Çekirdeği', ice:'Buz Çekirdeği', lightning:'Şimşek Çekirdeği', heal:'Kutsal Çekirdek', curse:'Lanet Çekirdeği'};
-    const materialKeys = {fireball:'fireCorePieces', ice:'iceCorePieces', lightning:'lightningCorePieces', heal:'holyCorePieces', curse:'curseCorePieces'};
+    const cfg = SPELL_CONFIGS[type];
+    if(!cfg){ log("❌ Geçersiz büyü."); return; }
     const level = player.spellLevels[type] || 1;
-    const cost = baseCosts[type];
-    const materialKey = materialKeys[type];
-    const materialName = materialNames[type];
+    const cost = Math.round(cfg.baseCost * Math.pow(1.45, Math.max(0,level-1)));
+    const materialKey = cfg.materialKey;
+    const materialName = cfg.materialName;
+    const names = Object.fromEntries(Object.entries(SPELL_CONFIGS).map(([k,v])=>[k,v.name]));
 
     if(level >= 2){
         log(`🔒 ${names[type]} zaten maksimum seviye olan Lv.2'de! Daha fazla geliştirilemez.`);
@@ -2651,12 +2707,20 @@ function buyArmor(name,defense,cost,material) {
 }
 
 function upgradeArmor() {
-    const configs={"Tahta Zırh":{base:120,gain:3,label:"🪵"},"Demir Zırh":{base:250,gain:5,label:"⚙️"},"Altın Zırh":{base:450,gain:8,label:"🟡"},"Elmas Zırh":{base:750,gain:12,label:"💎"}};
-    const config=configs[player.armor]; if(!config){log("🔒 Önce bir zırh edinmelisin!");return;}
-    const cost=Math.round(config.base*Math.pow(1.5,Math.max(0,player.armorLevel-1)));
+    const config=ARMOR_CONFIGS[player.armor];
+    if(!config){log("🔒 Önce bir zırh edinmelisin!");return;}
+    if(player.armorLevel>=config.maxLevel){
+        log(`🔒 ${player.armor} zaten maksimum seviye olan Lv.${config.maxLevel}'de!`);
+        return;
+    }
+    const cost=Math.round(config.baseUpgrade*Math.pow(1.5,Math.max(0,player.armorLevel-1)));
     if(player.gold<cost){log(`❌ ${player.armor} geliştirmesi için ${cost} altın gerekli!`);return;}
-    player.gold-=cost; player.armorLevel++; player.defense+=config.gain;
-    log(`${config.label} ${player.armor} Seviye ${player.armorLevel} oldu! +${config.gain} savunma.`); log(`💰 -${cost} altın.`); update();
+    player.gold-=cost;
+    player.armorLevel++;
+    player.defense+=config.gain;
+    log(`${config.label} ${player.armor} Seviye ${player.armorLevel} oldu! +${config.gain} savunma.`);
+    log(`💰 -${cost} altın. 🔒 Maksimum seviye: ${config.maxLevel}.`);
+    update();
 }
 
 function openArena() {
@@ -2675,85 +2739,23 @@ function closeArena() {
 }
 
 
-function startBoss(
-    name,
-    emoji,
-    hp,
-    attack,
-    gold,
-    xp,
-    levelRequired
-) {
+function startBoss(bossId) {
+    const cfg=BOSS_CONFIGS[bossId];
+    if(!cfg){ log("❌ Geçersiz boss."); return; }
+    if(player.weaponDurability<=0){ log("🔨 Silahın kırık! Boss savaşına girmeden önce marketten tamir etmelisin."); closeArena(); return; }
+    if(player.level<cfg.levelRequired){ log(`🔒 ${cfg.name} için Level ${cfg.levelRequired} gerekiyor!`); closeArena(); return; }
+    if(enemy){ log("⚠️ Zaten savaştasın!"); closeArena(); return; }
 
-    if(player.weaponDurability <= 0) { log("🔨 Silahın kırık! Boss savaşına girmeden önce marketten tamir etmelisin."); closeArena(); return; }
-
-    if(player.level < levelRequired) {
-
-        log(
-            `🔒 ${name} için Level ${levelRequired} gerekiyor!`
-        );
-
-        closeArena();
-
-        return;
-    }
-
-
-    if(enemy) {
-
-        log("⚠️ Zaten savaştasın!");
-
-        closeArena();
-
-        return;
-    }
-
-
-    enemy = {
-
-        name:name,
-        emoji:emoji,
-
-        hp:hp,
-        maxHp:hp,
-
-        attack:attack,
-
-        gold:gold,
-        xp:xp,
-
-        boss:true,
-        type:"boss",
-        bossPhase:false,
-        burning:false,
-        frozen:false,
-        cursed:false,
-        curseTurns:0
-    };
-
-
+    enemy={name:cfg.name,emoji:cfg.emoji,hp:cfg.hp,maxHp:cfg.hp,attack:cfg.attack,gold:cfg.gold,xp:cfg.xp,boss:true,type:"boss",bossPhase:false,burning:false,frozen:false,cursed:false,curseTurns:0,poisoned:false,poisonTurns:0,enraged:false,weakened:false};
+    advanceBattleCooldowns();
     closeArena();
-
-
-    document.getElementById("enemyArea").style.display =
-        "block";
-
-    document.getElementById("enemyEmoji").textContent =
-        emoji;
-
-    document.getElementById("enemyName").textContent =
-        "👑 " + name;
-
-    document.getElementById("sceneTitle").textContent =
-        "🏟️ BOSS SAVAŞI";
-
-
-    log(`🔥 BOSS SAVAŞI BAŞLADI: ${name}!`);
-
+    document.getElementById("enemyArea").style.display="block";
+    document.getElementById("enemyEmoji").textContent=cfg.emoji;
+    document.getElementById("enemyName").textContent="👑 "+cfg.name;
+    document.getElementById("sceneTitle").textContent="🏟️ BOSS SAVAŞI";
+    log(`🔥 BOSS SAVAŞI BAŞLADI: ${cfg.name}!`);
     update();
-
 }
-
 
 function gameOver() {
 
