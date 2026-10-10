@@ -132,16 +132,6 @@ header p {
     border:1px solid #55458a; border-radius:999px; background:rgba(7,7,16,.82); color:#d8caff; font-weight:800;
     letter-spacing:.5px; box-shadow:0 0 20px rgba(111,76,220,.25);
 }
-#sceneTitle {
-    position:absolute;
-    top:39%;
-    left:50%;
-    transform:translate(-50%,-50%);
-    margin:0;
-    z-index:5;
-    white-space:nowrap;
-    pointer-events:none;
-}
 .damage-popup {
     position:absolute; left:50%; top:42%; transform:translate(-50%,0) scale(.6); font-size:38px; font-weight:900; opacity:0;
     pointer-events:none; z-index:8; text-shadow:0 3px 0 #160611,0 0 16px currentColor;
@@ -373,7 +363,8 @@ button:disabled {
 .save-panel{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin:10px 0 18px}
 .save-panel button{border:1px solid #4a3f72;background:#151329;color:#eee;border-radius:9px;padding:8px 12px;cursor:pointer}
 .save-panel button:hover{background:#241d43}
-.turn-status{display:none}
+.turn-status{display:none !important;}
+#sceneTitle{position:absolute;top:195px;left:0;right:0;margin:0;text-align:center;z-index:6;pointer-events:none;text-shadow:0 2px 8px #000;}
 
 .inventory-modal-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin-top:14px}
 .inventory-section{background:linear-gradient(145deg,#19162a,#11111d);border:1px solid #39325b;border-radius:14px;padding:13px}
@@ -434,6 +425,10 @@ button:disabled {
 .tutorial-nav button { flex:1; }
 .tutorial-dots { text-align:center; color:#aaa; margin:8px 0; }
 @media(max-width:650px){ .tutorial-grid{grid-template-columns:1fr;} }
+
+
+/* Online leaderboard */
+.lb-toolbar{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:12px 0}.lb-toolbar input,.lb-toolbar select{width:100%;min-width:0;padding:10px;border-radius:8px;background:#0c0b18;color:#fff;border:1px solid #51457e}.lb-table-wrap{overflow:auto}.lb-table{width:100%;border-collapse:collapse;min-width:520px}.lb-table th,.lb-table td{padding:10px 8px;text-align:left;border-bottom:1px solid #30284a}.lb-table th{color:#c9a7ff;background:#151127}.lb-table tr.lb-me{background:#30244e}.lb-status{padding:10px;border-radius:8px;background:#151127;color:#cfc5e8;margin:10px 0}.lb-note{font-size:12px;color:#aaa;line-height:1.5}.lb-primary{background:linear-gradient(135deg,#5b2fc2,#8b4de0)!important}.lb-columns{display:grid;grid-template-columns:1fr 1fr;gap:8px}.lb-columns label{font-size:12px;color:#cfc5e8}.lb-columns input{display:block;width:100%;margin-top:4px;padding:9px;border-radius:7px;border:1px solid #51457e;background:#0c0b18;color:white}@media(max-width:600px){.lb-columns,.lb-toolbar{grid-template-columns:1fr}}
 
 </style>
 
@@ -546,6 +541,18 @@ button:disabled {
 <div class="exp-modal" id="eventModal"><div class="exp-modal-box"><div class="exp-modal-head"><h2 id="eventTitle">🎲 Gizemli Olay</h2></div><div id="eventContent"></div></div></div>
 <div class="exp-modal" id="classModal"><div class="exp-modal-box"><div class="exp-modal-head"><h2>🧙 KARAKTER SINIFINI SEÇ</h2></div><p style="color:#aaa">Sınıf seçimi kalıcıdır. Seviye başına stat seçimi yoktur.</p><div class="exp-grid" id="classList"></div><button id="classConfirmBtn" onclick="confirmClassChoice()" disabled>SEÇİMİ ONAYLA</button></div></div>
 <div class="exp-modal" id="darkLordModal"><div class="exp-modal-box"><div class="exp-modal-head"><h2>👑 KARANLIK LORD KALESİ</h2><button class="exp-close" onclick="closeExpansionModal('darkLordModal')">✕</button></div><div id="darkLordContent"></div></div></div>
+
+
+<div class="exp-modal" id="leaderboardModal" style="z-index:10020"><div class="exp-modal-box" style="max-width:900px;width:96%"><div class="exp-modal-head"><h2>🏆 KARANLIK ARENA — ONLINE LİDERLİK</h2><button class="exp-close" onclick="closeExpansionModal('leaderboardModal')">✕</button></div>
+<p class="lb-note">Farklı bilgisayarlardaki oyuncuların ortak sıralaması. Supabase bağlantısı bu sürüme hazır olarak eklenmiştir. SQL kurulumu tamamlandıysa tabloyu doğrudan kullanabilirsin.</p>
+<div class="lb-columns"><label>Supabase Project URL<input id="lbProjectUrl" placeholder="https://proje-id.supabase.co" autocomplete="url"></label><label>Supabase Publishable Key<input id="lbPublishableKey" placeholder="sb_publishable_..." autocomplete="off"></label></div>
+<div class="lb-toolbar"><input id="lbNickname" maxlength="20" placeholder="Oyuncu adın (en fazla 20 karakter)"><select id="lbSort" onchange="renderLeaderboard()"><option value="score">⚔️ Genel skor</option><option value="boss_kills">👑 Boss sıralaması</option><option value="level">⭐ Seviye sıralaması</option><option value="ng_plus">🌑 NG+ sıralaması</option></select></div>
+<div class="lb-toolbar"><button class="lb-primary" onclick="saveLeaderboardConfig()">🔗 Bağlantıyı güncelle</button><button onclick="loadLeaderboard()">🔄 Sıralamayı yenile</button></div>
+<div class="lb-status" id="lbStatus">Bağlantı ayarlanmamış. Supabase bilgilerini girip bağlantıyı kaydet.</div>
+<div class="lb-table-wrap"><table class="lb-table"><thead><tr><th>#</th><th>Oyuncu</th><th>Skor</th><th>Seviye</th><th>Boss</th><th>Canavar</th><th>NG+</th></tr></thead><tbody id="lbRows"><tr><td colspan="7">Henüz sıralama yüklenmedi.</td></tr></tbody></table></div>
+<div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:12px"><button class="lb-primary" onclick="submitLeaderboardScore()">📤 Skorumu gönder</button><button onclick="showLeaderboardSetup()">📋 Kurulum bilgisini göster</button></div>
+<p class="lb-note">Not: Bu başlangıç sürümü tarayıcıdan gönderilen skorları kullanır; oyuncu skorlarını değiştirmeye çalışan hilecilere karşı tam koruma sağlamaz. Herkese açık liderlik için aşağıdaki SQL kurulumu gerekir. Güçlü hile koruması için daha sonra sunucu tarafı doğrulama eklenmelidir.</p>
+</div></div>
 
 <div class="exp-modal" id="inventoryModal">
   <div class="exp-modal-box">
@@ -670,6 +677,8 @@ style="width:100%">
 <button onclick="openWorldMap()">
 🗺️ DÜNYA HARİTASI
 </button>
+
+<button class="lb-primary" onclick="openLeaderboard()">🏆 ONLINE LİDERLİK TABLOSU</button>
 
 <button id="caveBtn" onclick="goCave()" style="background:linear-gradient(135deg,#35224e,#6c3b91)">
 🕳️ KARANLIK MAĞARAYA GİT
@@ -1193,6 +1202,7 @@ SAVAŞ
 </div>
 
 
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
 
 let player = {
@@ -1517,12 +1527,7 @@ function update() {
     const crystalInv=document.getElementById('darkCrystalInventoryText');
     if(crystalInv) crystalInv.textContent=player.darkCrystals;
     const turnEl=document.getElementById('turnStatus');
-    if(turnEl){
-        if(!enemy) turnEl.textContent='🟢 Hazır — yeni bir savaş başlatabilirsin.';
-        else if(enemy.frozen) turnEl.textContent=`❄️ ${enemy.name} DONDU — bu tur saldıramaz.`;
-        else if(enemy.cursed && enemy.curseTurns>0) turnEl.textContent=`☠️ ${enemy.name} LANETLİ — ${enemy.curseTurns} tur saldıramaz.`;
-        else turnEl.textContent=`🟢 Senin sıran — Tur ${player.turnNumber||0}`;
-    }
+    if(turnEl) turnEl.textContent='';
 
     document.getElementById("weaponText").textContent =
         player.weapon;
@@ -1967,7 +1972,7 @@ function goForest() {
     document.getElementById("enemyArea").style.display = "block";
     document.getElementById("enemyEmoji").textContent = enemy.emoji;
     document.getElementById("enemyName").textContent = enemy.name;
-    document.getElementById("sceneTitle").textContent = "⚔️ SAVAŞ";
+    document.getElementById("sceneTitle").textContent = "";
 
     log(`⚠️ ${enemy.name} karşına çıktı!`);
 
@@ -3350,7 +3355,7 @@ function restoreSaveData(data,manualMessage=''){
         document.getElementById('enemyArea').style.display='block';
         document.getElementById('enemyEmoji').textContent=enemy.emoji||'👹';
         document.getElementById('enemyName').textContent=enemy.boss?'👑 '+enemy.name:(enemy.name||'Düşman');
-        document.getElementById('sceneTitle').textContent=enemy.cave?'🕳️ KARANLIK MAĞARA':(enemy.boss?'🏟️ BOSS SAVAŞI':'⚔️ SAVAŞ');
+        document.getElementById('sceneTitle').textContent=enemy.cave?'🕳️ KARANLIK MAĞARA':(enemy.boss?'🏟️ BOSS SAVAŞI':'');
     } else {
         document.getElementById('enemyArea').style.display='none';
     }
@@ -3669,6 +3674,99 @@ renderExpansionDashboard();
 if(!hadSave && !player.classId) setTimeout(openClassModal,250);
 
 try{ if(localStorage.getItem('karanlikArenaTutorialSeen_v33')!=='1'){ openTutorial(); } }catch(e){ openTutorial(); }
+
+
+// ONLINE LİDERLİK TABLOSU (Supabase)
+let leaderboardClient=null;
+const LB_CONFIG_KEY='karanlikArenaLeaderboardConfig_v1';
+const LB_DEFAULT_URL='https://srxezfqohgqiivbbdobv.supabase.co';
+const LB_DEFAULT_KEY='sb_publishable_kyOvBBhh9VmNwVas67Ahpw_wbZMjuW4';
+const LB_PLAYER_KEY='karanlikArenaOnlinePlayerId_v1';
+function lbStatus(message,isError=false){const el=document.getElementById('lbStatus');if(el){el.textContent=message;el.style.color=isError?'#ff9a9a':'#cfc5e8';}}
+function lbPlayerId(){let id=localStorage.getItem(LB_PLAYER_KEY);if(!id){id=(crypto.randomUUID?crypto.randomUUID():('p'+Date.now().toString(36)+Math.random().toString(36).slice(2)));localStorage.setItem(LB_PLAYER_KEY,id);}return id;}
+function lbScore(){const st=player.stats||{};return Math.max(0,Math.round((st.kills||0)*100+(st.bossKills||0)*500+(player.level||1)*200+(player.ngPlus||0)*1000+(st.rareKills||0)*150+(st.dragonKills||0)*300+(player.darkLordDefeated?2500:0)+(player.ngRiftClears||0)*750));}
+function openLeaderboard(){let cfg=JSON.parse(localStorage.getItem(LB_CONFIG_KEY)||'{}');if(!cfg.url||!cfg.key){cfg={url:LB_DEFAULT_URL,key:LB_DEFAULT_KEY};localStorage.setItem(LB_CONFIG_KEY,JSON.stringify(cfg));}document.getElementById('lbProjectUrl').value=cfg.url||'';document.getElementById('lbPublishableKey').value=cfg.key||'';document.getElementById('lbNickname').value=localStorage.getItem('karanlikArenaLeaderboardName')||'';document.getElementById('leaderboardModal').style.display='flex';if(cfg.url&&cfg.key){initLeaderboardClient();loadLeaderboard();}}
+function saveLeaderboardConfig(){const url=document.getElementById('lbProjectUrl').value.trim().replace(/\/$/,'');const key=document.getElementById('lbPublishableKey').value.trim();if(!/^https:\/\/[a-zA-Z0-9-]+\.supabase\.co$/.test(url)||!key){lbStatus('Geçerli Project URL ve Publishable Key gir.',true);return;}localStorage.setItem(LB_CONFIG_KEY,JSON.stringify({url,key}));initLeaderboardClient();lbStatus('Bağlantı bilgileri kaydedildi. Şimdi SQL kurulumunu tamamlayıp sıralamayı yenile.');}
+function initLeaderboardClient(){const cfg=JSON.parse(localStorage.getItem(LB_CONFIG_KEY)||'{}');if(!cfg.url||!cfg.key||!window.supabase){leaderboardClient=null;return false;}leaderboardClient=window.supabase.createClient(cfg.url,cfg.key,{auth:{persistSession:false,autoRefreshToken:false}});return true;}
+function showLeaderboardSetup(){alert('1) Supabase Dashboard > SQL Editor aç.\n2) Bu oyunun yanında verilen Karanlik_Arena_Online_Liderlik_Kurulum.sql dosyasındaki kodun tamamını çalıştır.\n3) Project URL ve Publishable Key bilgilerini buraya girip Bağlantıyı kaydet.\n4) Oyuncu adını yazıp Skorumu gönder düğmesine bas.');}
+function normalizeNicknameForFilter(value){
+    return String(value||'').toLocaleLowerCase('tr-TR')
+        .normalize('NFD').replace(/[\u0300-\u036f]/g,'')
+        .replace(/ı/g,'i').replace(/ğ/g,'g').replace(/ü/g,'u').replace(/ş/g,'s').replace(/ö/g,'o').replace(/ç/g,'c')
+        .replace(/[^a-z0-9]+/g,'');
+}
+const BLOCKED_NICKNAME_WORDS=[
+    'amk','aq','amina','aminakoyim','aminakoyayim','amcik','amciklar','yarrak','yarak','yarrag','yarag',
+    'sik','sikerim','sikeyim','sikik','sikis','siktir','siktirgit','sikim','pipi','orospu','orospucocugu',
+    'pezevenk','ibne','gavat','kahpe','fahise','dalyarak','dangalak','salak','aptal','gerizekali',
+    'serefsiz','haysiyetsiz','pic','sikimsonik','yavsak','boktan','gotveren'
+].map(normalizeNicknameForFilter);
+const BLOCKED_NICKNAME_PHRASES=[
+    'allahananizisiken','allahananizisikeyim','ananizisiken','ananizisikeyim','ananizisikerim',
+    'ananisiken','ananisikeyim','ananisikerim','ananisikim','ananizisikim','annenizisiken','annenizisikerim'
+].map(normalizeNicknameForFilter);
+const BLOCKED_RELIGIOUS_TERMS=[
+    'allah','tanri','rab','ilah','isa','mesih','muhammed','muhammad','ahmed','ahmet','peygamber',
+    'hz','hazreti','kuran','kur’an','kuranikerim','incil','tevrat','yahve','yahweh','isaac','moses','musab'
+].map(normalizeNicknameForFilter);
+const BLOCKED_HATE_TERMS=[
+    'nazi','hitler','kkk','isis','isil','taliban','terorist','terorcu','irkci','irkcilik','fasist','fasizm',
+    'nazist','supremacist','whitepower','jihadist','cihadist'
+].map(normalizeNicknameForFilter);
+const BLOCKED_HISTORICAL_FIGURE_TERMS=[
+    'ataturk','mustafakemal','napoleon','alexanderthegreat','iskender','cengizhan','genghiskhan','hitler',
+    'stalin','lenin','churchill','juliuscaesar','sezar','cleopatra','spartacus','salahaddin','saladin',
+    'fatih','fatihsultanmehmed','kanuni','yavuz','metehan','alparslan','timur','tamerlane','suleyman','osman',
+    'osmanbey','orhangazi','ertugrulgazi','selahaddin','attila','hannibal','socrates','plato','aristotle'
+].map(normalizeNicknameForFilter);
+function isInappropriateNickname(value){
+    const normalized=normalizeNicknameForFilter(value);
+    if(!normalized) return false;
+    if(BLOCKED_NICKNAME_PHRASES.some(x=>normalized.includes(x))) return true;
+    if(BLOCKED_NICKNAME_WORDS.some(x=>x && normalized.includes(x))) return true;
+    if(BLOCKED_RELIGIOUS_TERMS.some(x=>x && normalized===x)) return true;
+    if(BLOCKED_HATE_TERMS.some(x=>x && normalized.includes(x))) return true;
+    if(BLOCKED_HISTORICAL_FIGURE_TERMS.some(x=>x && normalized===x)) return true;
+    return false;
+}
+function isHumanNameFormat(value){
+    const raw=String(value||'').trim();
+    if(!raw || raw.length<2 || raw.length>20) return false;
+    if(!/^[A-Za-zÀ-ÖØ-öø-ÿĀ-žА-Яа-яЁёĞğİıŞşÇçÖöÜüÄäËëÉéÑñÁáÍíÓóÚúŠšŽžĆćČčĐđŁłŐőŰűÆæØøÅå' -]+$/.test(raw)) return false;
+    const compact=normalizeNicknameForFilter(raw);
+    if(compact.length<2) return false;
+    const parts=raw.split(/\s+/).filter(Boolean);
+    if(parts.length>3) return false;
+    return parts.every(part=>part.replace(/['-]/g,'').length>=2);
+}
+function nicknameIsAllowed(value){
+    if(!isHumanNameFormat(value)){
+        lbStatus('Lütfen yalnızca gerçek bir insan adı veya ad-soyad yaz. Rakam, emoji, unvan, dinî ifade, nefret söylemi veya tarihî kişi adı kullanılamaz.',true);
+        return false;
+    }
+    if(isInappropriateNickname(value)){
+        lbStatus('Bu oyuncu adı uygun değil. Lütfen küfür, hakaret, dinî ifade, nefret söylemi veya tarihî kişi adı içermeyen bir insan adı seç.',true);
+        return false;
+    }
+    return true;
+}
+function lbNickname(){
+    let n=(document.getElementById('lbNickname').value||'').trim().replace(/[<>\u0000-\u001f]/g,'').slice(0,20);
+    if(!n){
+        n=prompt('Liderlik tablosunda görünecek oyuncu adın (en fazla 20 karakter):','Ata')||'';
+        n=n.trim().replace(/[<>\u0000-\u001f]/g,'').slice(0,20);
+        if(document.getElementById('lbNickname'))document.getElementById('lbNickname').value=n;
+    }
+    if(!n || !nicknameIsAllowed(n)) return '';
+    if(document.getElementById('lbNickname'))document.getElementById('lbNickname').value=n;
+    localStorage.setItem('karanlikArenaLeaderboardName',n);
+    return n;
+}
+
+async function submitLeaderboardScore(){if(!leaderboardClient&&!initLeaderboardClient()){lbStatus('Önce Supabase URL ve Publishable Key bilgilerini girip bağlantıyı kaydet.',true);return;}const nickname=lbNickname();if(!nickname){lbStatus('Skor göndermek için oyuncu adı gerekli.',true);return;}const st=player.stats||{};const row={player_id:lbPlayerId(),nickname,score:lbScore(),level:Number(player.level)||1,boss_kills:Number(st.bossKills)||0,kills:Number(st.kills)||0,ng_plus:Number(player.ngPlus)||0,updated_at:new Date().toISOString()};lbStatus('Skor gönderiliyor…');try{const {error}=await leaderboardClient.from('leaderboard_scores').insert(row);if(error)throw error;lbStatus('Skorun online tabloya gönderildi!');await loadLeaderboard();}catch(e){console.error(e);lbStatus('Gönderilemedi: '+(e.message||'Supabase bağlantısını ve SQL kurulumunu kontrol et.'),true);}}
+async function loadLeaderboard(){if(!leaderboardClient&&!initLeaderboardClient()){lbStatus('Önce Supabase bağlantısını ayarla.',true);return;}lbStatus('Online sıralama yükleniyor…');try{const {data,error}=await leaderboardClient.from('leaderboard_scores').select('player_id,nickname,score,level,boss_kills,kills,ng_plus,updated_at').order('score',{ascending:false}).limit(500);if(error)throw error;const best=new Map();for(const r of (data||[])){const old=best.get(r.player_id);if(!old){best.set(r.player_id,{...r});}else{old.score=Math.max(Number(old.score)||0,Number(r.score)||0);old.level=Math.max(Number(old.level)||1,Number(r.level)||1);old.boss_kills=Math.max(Number(old.boss_kills)||0,Number(r.boss_kills)||0);old.kills=Math.max(Number(old.kills)||0,Number(r.kills)||0);old.ng_plus=Math.max(Number(old.ng_plus)||0,Number(r.ng_plus)||0);if(new Date(r.updated_at)>new Date(old.updated_at))old.nickname=r.nickname;}}window._lbRows=[...best.values()];renderLeaderboard();lbStatus(`Online tablo yüklendi · ${window._lbRows.length} oyuncu`);}catch(e){console.error(e);lbStatus('Tablo yüklenemedi: '+(e.message||'SQL kurulumu / tablo izinlerini kontrol et.'),true);}}
+function renderLeaderboard(){const body=document.getElementById('lbRows');if(!body)return;let rows=window._lbRows||[];const sort=document.getElementById('lbSort')?.value||'score';rows=[...rows].sort((a,b)=>Number(b[sort]||0)-Number(a[sort]||0));const mine=localStorage.getItem(LB_PLAYER_KEY);if(!rows.length){body.innerHTML='<tr><td colspan="7">Henüz oyuncu yok. İlk skoru sen gönder!</td></tr>';return;}body.innerHTML=rows.slice(0,100).map((r,i)=>`<tr class="${r.player_id===mine?'lb-me':''}"><td>${i===0?'🥇':i===1?'🥈':i===2?'🥉':i+1}</td><td>${escapeLeaderboardText(r.nickname||'Adsız')}${r.player_id===mine?' <b>(SEN)</b>':''}</td><td>${Number(r.score||0).toLocaleString('tr-TR')}</td><td>${Number(r.level)||1}</td><td>${Number(r.boss_kills)||0}</td><td>${Number(r.kills)||0}</td><td>${Number(r.ng_plus)||0}</td></tr>`).join('');}
+function escapeLeaderboardText(v){return String(v).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
 
 </script>
 
