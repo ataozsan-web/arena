@@ -344,6 +344,30 @@ button:disabled {
     }
 }
 
+
+.save-modal{position:fixed;inset:0;background:rgba(0,0,0,.72);display:flex;align-items:center;justify-content:center;z-index:9999;padding:18px}
+.save-modal-box{width:min(620px,100%);max-height:80vh;overflow:auto;background:#0c0d18;border:1px solid #59488d;border-radius:18px;box-shadow:0 20px 70px rgba(0,0,0,.6);padding:18px}
+.save-modal-head{display:flex;align-items:center;justify-content:space-between;gap:12px;border-bottom:1px solid #30294d;padding-bottom:12px;margin-bottom:12px}
+.save-modal-head h3{margin:0;color:#d8c5ff}
+.save-close{background:#211b35!important;border:1px solid #463b69!important;color:#fff!important;border-radius:8px;padding:6px 10px!important;cursor:pointer}
+.save-list{display:grid;gap:10px}
+.save-entry{display:flex;align-items:center;justify-content:space-between;gap:12px;background:#151329;border:1px solid #383057;border-radius:12px;padding:12px}
+.save-entry-info{min-width:0}
+.save-entry-name{font-weight:700;color:#fff;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.save-entry-meta{font-size:12px;color:#9290a5;margin-top:4px}
+.save-entry-actions{display:flex;gap:6px;flex-shrink:0}
+.save-entry-actions button,.save-modal-actions button{background:#241d43;border:1px solid #4a3f72;color:#eee;border-radius:8px;padding:7px 10px;cursor:pointer}
+.save-entry-actions button:hover,.save-modal-actions button:hover{background:#322758}
+.save-empty{padding:18px;text-align:center;color:#888;border:1px dashed #39325b;border-radius:12px}
+@media(max-width:600px){.save-entry{align-items:flex-start;flex-direction:column}.save-entry-actions{width:100%}.save-entry-actions button{flex:1}}
+.save-panel{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin:10px 0 18px}
+.save-panel button{border:1px solid #4a3f72;background:#151329;color:#eee;border-radius:9px;padding:8px 12px;cursor:pointer}
+.save-panel button:hover{background:#241d43}
+.turn-status{margin:8px auto 0;padding:7px 12px;border:1px solid #3d3565;border-radius:10px;background:rgba(0,0,0,.28);max-width:520px;text-align:center;font-weight:700;color:#d8d0ff}
+.inventory-summary{display:flex;gap:12px;flex-wrap:wrap;margin:8px 0;color:#c9c4df}
+.inventory-full{color:#ff9a9a}
+.boss-phase-note{color:#ffcf70;font-size:.9em}
+
 @media(max-width: 800px) {
     .layout {
         grid-template-columns: 1fr;
@@ -436,6 +460,26 @@ button:disabled {
 
 </div>
 
+<div class="save-panel">
+<button onclick="saveGame(true)">💾 KAYDET</button>
+<button onclick="openSaveManager()">📂 KAYITLARI YÜKLE</button>
+<button onclick="resetGame()">🗑️ YENİ OYUN</button>
+<span id="saveStatus" style="align-self:center;color:#888;font-size:12px"></span>
+</div>
+
+<div id="saveManagerModal" class="save-modal" style="display:none">
+  <div class="save-modal-box">
+    <div class="save-modal-head">
+      <h3>📂 Kayıtlarım</h3>
+      <button class="save-close" onclick="closeSaveManager()">✕</button>
+    </div>
+    <div id="saveList" class="save-list"></div>
+    <div class="save-modal-actions">
+      <button onclick="closeSaveManager()">Kapat</button>
+    </div>
+  </div>
+</div>
+
 <div class="layout">
 
 <div class="panel">
@@ -443,6 +487,7 @@ button:disabled {
 <div class="scene">
 
 <div class="battle-banner" id="battleBanner">🌲 KARANLIK ORMAN</div>
+<div class="turn-status" id="turnStatus">🟢 Hazır — ilk hamleni yap.</div>
 <div class="battle-stage" id="battleStage">
     <div class="fighter player-fighter" id="playerFighter">
         <div class="fighter-art" id="playerArt">🧙‍♂️</div>
@@ -833,6 +878,19 @@ SATIN AL
 <button class="shop" onclick="sellAllLoot()">💰 TÜM LOOT'U SAT</button>
 </div>
 
+<h3>🎒 ENVANTER</h3>
+<div class="item">
+<div class="inventory-summary"><span>🎒 Loot: <b id="lootCountText">0 / 30</b></span><span>💎 Karanlık Kristal: <b id="darkCrystalInventoryText">0</b></span></div>
+<p style="color:#aaa">Loot çantası 30 eşya taşır. Çanta doluyken yeni loot otomatik olarak %60 satış değeriyle satılır; hiçbir ödül kaybolmaz.</p>
+</div>
+
+<h3>💎 KARANLIK KRİSTAL SANDIĞI</h3>
+<div class="item">
+<div class="item-icon">💎</div>
+<p>3 Karanlık Kristal + 400 altın karşılığında 3–5 rastgele büyü çekirdeği kazan.</p>
+<button onclick="buyCrystalCache()">💎 SANDIĞI AÇ — 3 KRİSTAL + 400 ALTIN</button>
+</div>
+
 <h3>🎁 HAZİNE SANDIĞI</h3>
 <div class="item">
 <div class="item-icon">🎁</div>
@@ -967,7 +1025,7 @@ SATIN AL
 <h3>Arena Savaşçısı</h3>
 
 <p>❤️ 120 Can | ⚔️ 20 Saldırı</p>
-<p>🔓 Level 3</p>
+<p>🔓 Level 3 · 💰 Giriş: 40 altın</p>
 
 <button onclick="startBoss('Arena Savaşçısı','🗡️',240,30,180,150,3)">
 SAVAŞ
@@ -982,7 +1040,7 @@ SAVAŞ
 <h3>Ork Şefi</h3>
 
 <p>❤️ 250 Can | ⚔️ 30 Saldırı</p>
-<p>🔓 Level 5</p>
+<p>🔓 Level 5 · 💰 Giriş: 100 altın</p>
 
 <button onclick="startBoss('Ork Şefi','👹',450,42,400,320,5)">
 SAVAŞ
@@ -997,7 +1055,7 @@ SAVAŞ
     <h3>Goblin Kralı</h3>
 
     <p>❤️ 180 Can | ⚔️ 24 Saldırı</p>
-    <p>🔓 Level 5</p>
+    <p>🔓 Level 5 · 💰 Giriş: 75 altın</p>
 
     <button onclick="startBoss('Goblin Kralı','👑',320,34,350,280,5)">
     SAVAŞ
@@ -1013,7 +1071,7 @@ SAVAŞ
 <h3>Cehennem Lordu</h3>
 
 <p>❤️ 450 Can | ⚔️ 40 Saldırı</p>
-<p>🔓 Level 8</p>
+<p>🔓 Level 8 · 💰 Giriş: 200 altın</p>
 
 <button onclick="startBoss('Cehennem Lordu','🔥',750,55,800,650,8)">
 SAVAŞ
@@ -1028,7 +1086,7 @@ SAVAŞ
 <h3>Ejderha</h3>
 
 <p>❤️ 800 Can | ⚔️ 55 Saldırı</p>
-<p>🔓 Level 12</p>
+<p>🔓 Level 12 · 💰 Giriş: 500 altın</p>
 
 <button onclick="startBoss('Ejderha','🐉',1400,72,2500,1800,12)">
 SAVAŞ
@@ -1096,7 +1154,12 @@ let player = {
     // EKONOMİ
     loot: {},
     darkCrystals: 0,
-    caveUnlocked: false
+    caveUnlocked: false,
+    turnNumber: 0,
+    turnLocked: false,
+    lastForestEnemyType: null,
+    inventoryLimit: 30,
+    dead: false
 };
 
 
@@ -1178,9 +1241,23 @@ const LOOT_BY_TYPE = {
 };
 
 function lootInfo(id){ return LOOT_TABLE.find(x=>x.id===id); }
+function getLootCount(){
+    return LOOT_TABLE.reduce((sum,item)=>sum+(player.loot[item.id]||0),0);
+}
 function addLoot(id, amount=1){
-    if(!id) return;
-    player.loot[id]=(player.loot[id]||0)+amount;
+    if(!id || amount<=0) return;
+    const limit = player.inventoryLimit || 30;
+    const free = Math.max(0, limit - getLootCount());
+    const kept = Math.min(amount, free);
+    if(kept>0) player.loot[id]=(player.loot[id]||0)+kept;
+    const overflow = amount-kept;
+    if(overflow>0){
+        const item=lootInfo(id);
+        const autoGold=Math.floor((item?.value||0)*0.60*overflow);
+        player.gold += autoGold;
+        log(`🎒 Envanter dolu! ${item?.emoji||'📦'} ${item?.name||'Loot'} x${overflow} otomatik satıldı: +${autoGold} altın.`);
+    }
+    return kept;
 }
 function sellLoot(id){
     const item=lootInfo(id);
@@ -1203,19 +1280,36 @@ function sellAllLoot(){
     log(`💰 ${count} loot eşyası satıldı: +${total} altın.`);
     update();
 }
+function buyCrystalCache(){
+    const crystalCost=3, goldCost=400;
+    if(player.darkCrystals<crystalCost){ log(`❌ Bu sandık için ${crystalCost} Karanlık Kristal gerekli!`); return; }
+    if(player.gold<goldCost){ log(`❌ Bu sandık için ${goldCost} altın gerekli!`); return; }
+    player.darkCrystals-=crystalCost;
+    player.gold-=goldCost;
+    const configs=[
+      ['fireCorePieces','🔥 Ateş Çekirdeği'],['iceCorePieces','❄️ Buz Çekirdeği'],
+      ['lightningCorePieces','⚡ Şimşek Çekirdeği'],['holyCorePieces','✨ Kutsal Çekirdek'],['curseCorePieces','☠️ Lanet Çekirdeği']
+    ];
+    const c=configs[Math.floor(Math.random()*configs.length)];
+    const amount=random(3,5);
+    player[c[0]] += amount;
+    log(`💎 Karanlık Kristal Sandığı açıldı: ${c[1]} x${amount}!`);
+    update();
+}
+
 function buyTreasureChest(){
     const cost=250;
     if(player.gold<cost){ log(`❌ Hazine Sandığı için ${cost} altın gerekli!`); return; }
     player.gold-=cost;
     const roll=Math.random();
-    if(roll<.55){
-        const reward=random(180,320); player.gold+=reward; log(`🎁 Hazine Sandığı açıldı: +${reward} altın!`);
-    } else if(roll<.88){
+    if(roll<.60){
+        const reward=random(100,190); player.gold+=reward; log(`🎁 Hazine Sandığı açıldı: +${reward} altın!`);
+    } else if(roll<.90){
         const pool=LOOT_TABLE.filter(x=>x.minLevel<=player.level);
         const item=pool[Math.floor(Math.random()*pool.length)];
         const amount=random(2,4); addLoot(item.id,amount); log(`🎁 Hazine Sandığı: ${item.emoji} ${item.name} x${amount} çıktı!`);
     } else {
-        const reward=random(300,650); player.gold+=reward; log(`✨ NADİR HAZİNE! Sandıktan +${reward} altın çıktı!`);
+        const reward=random(350,500); player.gold+=reward; log(`✨ NADİR HAZİNE! Sandıktan +${reward} altın çıktı!`);
     }
     update();
 }
@@ -1315,6 +1409,22 @@ function update() {
 
     document.getElementById("goldText").textContent =
         player.gold;
+
+    const lootCountEl=document.getElementById('lootCountText');
+    if(lootCountEl){
+        const lc=getLootCount(), lim=player.inventoryLimit||30;
+        lootCountEl.textContent=`${lc} / ${lim}`;
+        lootCountEl.classList.toggle('inventory-full',lc>=lim);
+    }
+    const crystalInv=document.getElementById('darkCrystalInventoryText');
+    if(crystalInv) crystalInv.textContent=player.darkCrystals;
+    const turnEl=document.getElementById('turnStatus');
+    if(turnEl){
+        if(!enemy) turnEl.textContent='🟢 Hazır — yeni bir savaş başlatabilirsin.';
+        else if(enemy.frozen) turnEl.textContent=`❄️ ${enemy.name} DONDU — bu tur saldıramaz.`;
+        else if(enemy.cursed && enemy.curseTurns>0) turnEl.textContent=`☠️ ${enemy.name} LANETLİ — ${enemy.curseTurns} tur saldıramaz.`;
+        else turnEl.textContent=`🟢 Senin sıran — Tur ${player.turnNumber||0}`;
+    }
 
     document.getElementById("weaponText").textContent =
         player.weapon;
@@ -1525,7 +1635,7 @@ function update() {
         else if(enemy.frozen) {
 
             document.getElementById("enemyStatus").textContent =
-                "❄️ YAVAŞLADI";
+                "❄️ DONDU — SIRASI ATLADI";
 
         }
 
@@ -1732,8 +1842,8 @@ function goForest() {
 
     // İlk seviyelerde rahat kasılma, ilerleyen seviyelerde kontrollü güçlenme.
     const levelDiff = Math.max(0, player.level - e[7]);
-    const hpBonus = Math.min(70, levelDiff * 7);
-    const attackBonus = Math.min(12, Math.floor(levelDiff * 1.2));
+    const hpBonus = Math.min(140, levelDiff * 10);
+    const attackBonus = Math.min(24, Math.floor(levelDiff * 2));
 
     enemy = {
         name:e[0],
@@ -1752,7 +1862,8 @@ function goForest() {
         poisoned:false,
         poisonTurns:0,
         enraged:false,
-        weakened:false
+        weakened:false,
+        shielded:false
     };
 
     document.getElementById("enemyArea").style.display = "block";
@@ -1809,7 +1920,7 @@ function updateBattleVisual(){
         if(ef) ef.style.opacity="1";
         if(eh) eh.textContent=`${Math.max(0,enemy.hp)} / ${enemy.maxHp}`;
         if(eb) eb.style.width=`${Math.max(0,enemy.hp/enemy.maxHp*100)}%`;
-        if(banner) banner.textContent=enemy.boss?"🏟️ BOSS SAVAŞI":"⚔️ SAVAŞ BAŞLADI";
+        if(banner) banner.textContent=enemy.boss?`🏟️ BOSS SAVAŞI · FAZ ${enemy.bossPhase||1}`:"⚔️ SAVAŞ BAŞLADI";
     } else {
         if(ef) ef.style.opacity=".35"; if(eh) eh.textContent="—"; if(eb) eb.style.width="100%"; if(banner) banner.textContent="🌲 KARANLIK ORMAN";
     }
@@ -1832,6 +1943,12 @@ function attack() {
 
     let damage =
         Math.round((player.attack + random(0,10)) * (player.weaponDamageMultiplier || 1));
+
+    if(enemy.shielded){
+        damage=Math.max(1,Math.floor(damage*0.45));
+        enemy.shielded=false;
+        log(`🛡️ ${enemy.name} kalkanıyla hasarı %55 azalttı!`);
+    }
 
 
     if(Math.random() < .15) {
@@ -1863,7 +1980,7 @@ function attack() {
     }
 
 
-    enemyAttack();
+    endPlayerTurn();
 
     update();
 
@@ -2078,16 +2195,37 @@ function castSpell(type) {
     }
 
 
-    enemyAttack();
+    endPlayerTurn();
 
     update();
 
 }
 
 
+function endPlayerTurn(){
+    if(!enemy || player.turnLocked) return;
+    player.turnLocked=true;
+    player.turnNumber=(player.turnNumber||0)+1;
+    const turnEl=document.getElementById('turnStatus');
+    if(turnEl) turnEl.textContent=`🔴 Düşman sırası — Tur ${player.turnNumber}`;
+    enemyAttack();
+    player.turnLocked=false;
+    update();
+}
+
 function enemyAttack() {
 
     if(player.healCooldown > 0) player.healCooldown--;
+
+    // Buz Mızrağı ile donan düşman 1 tur boyunca hiçbir saldırı/özel etki yapamaz.
+    if(enemy.frozen) {
+        log(`❄️ ${enemy.name} dondu! Bu tur saldırı yapamadı.`);
+        const frozenStatus = document.getElementById("enemyStatus");
+        if(frozenStatus) frozenStatus.textContent = "❄️ DONDU — Bu tur saldırı yapamadı.";
+        enemy.frozen = false;
+        update();
+        return;
+    }
 
     // Lanetliyken canavarın hiçbir saldırısı veya özel hasarı çalışmaz.
     if(enemy.cursed && enemy.curseTurns > 0) {
@@ -2103,10 +2241,61 @@ function enemyAttack() {
         return;
     }
 
+    // Bosslar %66 ve %33 can eşiklerinde gerçek faz değiştirir.
+    if(enemy.boss){
+        if((enemy.bossPhase||1) < 2 && enemy.hp <= enemy.maxHp*0.66){
+            enemy.bossPhase=2;
+            enemy.attack += Math.max(4,Math.round(enemy.attack*0.15));
+            log(`👑 ${enemy.name} FAZ 2'ye geçti! Saldırıları güçlendi.`);
+        }
+        if((enemy.bossPhase||1) < 3 && enemy.hp <= enemy.maxHp*0.33){
+            enemy.bossPhase=3;
+            enemy.attack += Math.max(6,Math.round(enemy.attack*0.20));
+            log(`🔥 ${enemy.name} FAZ 3'e geçti! Çok daha tehlikeli hale geldi.`);
+        }
+        if((enemy.bossSpecialCooldown||0)>0) enemy.bossSpecialCooldown--;
+    }
+
     let enemyDamage = enemy.attack;
     let eventText = "";
     const status = document.getElementById("enemyStatus");
     if(status) status.textContent = "";
+
+    // Boss faz özel saldırıları: tek turda tek güçlü mekanik çalışır.
+    if(enemy.boss && enemy.bossPhase>=2 && enemy.bossSpecialCooldown===0 && Math.random()<0.32){
+        enemy.bossSpecialCooldown = 2;
+        if(enemy.bossPhase===2){
+            const drain=Math.min(player.mana, random(12,22));
+            player.mana-=drain;
+            const damage=Math.max(5,Math.round(enemy.attack*0.85)-Math.floor(player.defense*0.45));
+            player.hp-=damage;
+            log(`👑 ${enemy.name} özel saldırı yaptı: ${damage} hasar + ${drain} mana kaybı!`);
+            const st=document.getElementById('enemyStatus'); if(st) st.textContent='👑 BOSS ÖZEL SALDIRISI';
+        } else {
+            const damage=Math.max(8,Math.round(enemy.attack*1.25)-Math.floor(player.defense*0.35));
+            player.hp-=damage;
+            if(Math.random()<0.5) player.mana=Math.max(0,player.mana-random(10,25));
+            log(`🔥 ${enemy.name} FAZ 3 ÖZEL SALDIRISI: ${damage} ağır hasar!`);
+            const st=document.getElementById('enemyStatus'); if(st) st.textContent='🔥 FAZ 3 ÖZEL SALDIRISI';
+        }
+        if(player.hp<=0){ player.hp=0; player.dead=true; log('💀 Boss özel saldırısıyla yenildin!'); setTimeout(gameOver,500); }
+        update();
+        return;
+    }
+
+    // Tür bazlı yeni mekanikler.
+    if(enemy.type==='rat' && Math.random()<0.22 && !enemy.poisoned){
+        enemy.poisoned=true; enemy.poisonTurns=2;
+        log(`🐀 ${enemy.name} hastalık bulaştırdı! 2 tur zehir etkisi.`);
+    }
+    if(enemy.type==='goblin' && Math.random()<0.18 && player.gold>0){
+        const stolen=Math.min(player.gold,random(5,15)); player.gold-=stolen;
+        log(`👺 Goblin cebinden ${stolen} altın çaldı!`);
+    }
+    if(enemy.type==='knight' && Math.random()<0.22){
+        enemy.shielded=true;
+        log(`🛡️ ${enemy.name} kalkanını kaldırdı! Bir sonraki saldırın azaltılacak.`);
+    }
 
     // Her canavar artık sadece normal vuruşa güvenmiyor. Ormanda
     // rastgele ağır/çok ağır saldırılar sıkça görülebilir.
@@ -2173,9 +2362,6 @@ function enemyAttack() {
         eventText = `🐺 Kurt seri saldırdı! +${extra} hasar`;
         log(`🐺 KURT SERİ SALDIRISI! ${enemy.name} sana ${extra} ek hasar verdi.`);
     }
-
-    if(enemy.frozen)
-        enemyDamage = Math.floor(enemyDamage * 0.65);
 
     // Bazı ani saldırılar savunmanın bir bölümünü deler.
     let effectiveDefense = enemy.type === "knight" ? Math.floor(player.defense * 0.55) : player.defense;
@@ -2268,6 +2454,7 @@ function enemyAttack() {
 
     if(player.hp <= 0) {
         player.hp = 0;
+        player.dead = true;
         log("💀 ÖLDÜN! Canavarın özel saldırısı seni yere serdi.");
         if(status) status.textContent = "💀 YENİLDİN — Canavarın özel saldırısı çok ağırdı.";
         setTimeout(gameOver,500);
@@ -2409,7 +2596,7 @@ function drinkPotion() {
 
     log("🧪 Küçük can iksiri kullanıldı. -1 iksir");
 
-    if(enemy) enemyAttack();
+    // Küçük can iksiri kullanmak savaş turunu düşmana vermez.
     update();
 
 }
@@ -2439,7 +2626,7 @@ function drinkBigPotion() {
 
     log("❤️ Büyük can iksiri kullanıldı. -1 iksir");
 
-    if(enemy) enemyAttack();
+    if(enemy) endPlayerTurn();
     update();
 
 }
@@ -2466,7 +2653,7 @@ function restoreMana() {
     player.manaPotions--;
     player.mana = Math.min(player.maxMana,player.mana+50);
     log("🔵 Küçük mana iksiri kullanıldı. -1 iksir");
-    if(enemy) enemyAttack();
+    // Mana kullanımı savaş turunu düşmana vermez.
     update();
 
 }
@@ -2493,7 +2680,7 @@ function restoreBigMana() {
     player.bigManaPotions--;
     player.mana = Math.min(player.maxMana,player.mana+120);
     log("💙 Büyük mana iksiri kullanıldı. -1 iksir");
-    if(enemy) enemyAttack();
+    // Mana kullanımı savaş turunu düşmana vermez.
     update();
 
 }
@@ -2531,7 +2718,7 @@ function useSuperPotion() {
 
     log("🔵 +100 Mana");
 
-    if(enemy) enemyAttack();
+    // Mana kullanımı savaş turunu düşmana vermez.
     update();
 
 }
@@ -2834,6 +3021,15 @@ function closeArena() {
 }
 
 
+function bossEntryFee(name){
+    if(name === 'Arena Savaşçısı') return 40;
+    if(name === 'Goblin Kralı') return 75;
+    if(name === 'Ork Şefi') return 100;
+    if(name === 'Cehennem Lordu') return 200;
+    if(name === 'Ejderha') return 500;
+    return 50;
+}
+
 function startBoss(
     name,
     emoji,
@@ -2858,6 +3054,13 @@ function startBoss(
     }
 
 
+    const entryFee = bossEntryFee(name);
+    if(player.gold < entryFee){
+        log(`❌ ${name} boss giriş ücreti ${entryFee} altın. Yeterli altının yok!`);
+        closeArena();
+        return;
+    }
+
     if(enemy) {
 
         log("⚠️ Zaten savaştasın!");
@@ -2867,6 +3070,9 @@ function startBoss(
         return;
     }
 
+
+    player.gold -= entryFee;
+    log(`🏟️ ${name} giriş ücreti: -${entryFee} altın.`);
 
     enemy = {
 
@@ -2883,7 +3089,8 @@ function startBoss(
 
         boss:true,
         type:"boss",
-        bossPhase:false,
+        bossPhase:1,
+        bossSpecialCooldown:0,
         burning:false,
         frozen:false,
         cursed:false,
@@ -2916,6 +3123,7 @@ function startBoss(
 
 function gameOver() {
 
+    try{localStorage.removeItem(SAVE_KEY);}catch(e){}
     alert(
         "💀 ÖLDÜN!\n\n" +
         "Level: " + player.level +
@@ -2953,7 +3161,166 @@ function tutorialNext(){
 function tutorialPrev(){ if(tutorialPage>0){ tutorialPage--; renderTutorial(); } }
 
 
-update();
+const SAVE_KEY='karanlikArenaAutosave_v5';
+const SAVE_SLOTS_KEY='karanlikArenaSaveSlots_v1';
+
+function getNamedSaves(){
+    try{
+        const raw=localStorage.getItem(SAVE_SLOTS_KEY);
+        const saves=raw?JSON.parse(raw):[];
+        return Array.isArray(saves)?saves:[];
+    }catch(e){ return []; }
+}
+
+function setNamedSaves(saves){
+    localStorage.setItem(SAVE_SLOTS_KEY,JSON.stringify(saves));
+}
+
+function buildSaveData(){
+    return {
+        player:JSON.parse(JSON.stringify(player)),
+        enemy:enemy?JSON.parse(JSON.stringify(enemy)):null,
+        savedAt:new Date().toISOString()
+    };
+}
+
+function saveGame(manual=false){
+    try{
+        const data=buildSaveData();
+        if(manual){
+            const name=prompt('Kayıt için bir isim yaz:', `Kayıt ${getNamedSaves().length+1}`);
+            if(name===null) return false;
+            const cleanName=name.trim().slice(0,40);
+            if(!cleanName){ alert('Kayıt adı boş olamaz.'); return false; }
+            const saves=getNamedSaves();
+            const existing=saves.findIndex(x=>x.name.toLowerCase()===cleanName.toLowerCase());
+            if(existing>=0 && !confirm(`"${cleanName}" adlı kayıt zaten var. Üzerine yazılsın mı?`)) return false;
+            const record={id:existing>=0?saves[existing].id:(Date.now().toString(36)+Math.random().toString(36).slice(2,7)),name:cleanName,...data};
+            if(existing>=0) saves[existing]=record; else saves.unshift(record);
+            setNamedSaves(saves.slice(0,12));
+            const el=document.getElementById('saveStatus');
+            if(el) el.textContent=`💾 "${cleanName}" kaydedildi`;
+            log(`💾 "${cleanName}" adlı kayıt kaydedildi.`);
+            return true;
+        }
+        localStorage.setItem(SAVE_KEY,JSON.stringify(data));
+        const el=document.getElementById('saveStatus');
+        if(el) el.textContent='💾 Otomatik kayıt';
+        return true;
+    }catch(e){
+        const el=document.getElementById('saveStatus'); if(el) el.textContent='⚠️ Kayıt başarısız';
+        if(manual) log('⚠️ Tarayıcı kayda izin vermedi.');
+        return false;
+    }
+}
+
+function restoreSaveData(data,manualMessage=''){
+    if(!data || !data.player) throw new Error('invalid save');
+    const defaults={dead:false,hp:100,maxHp:100,mana:100,maxMana:100,attack:10,defense:5,gold:100,level:1,xp:0,potions:3,manaPotions:2,bigPotions:0,bigManaPotions:0,superPotions:0,weapon:'Tahta Kılıç',weaponLevel:1,weaponDurability:8,weaponMaxDurability:8,weaponWearCounter:0,armor:'Tahta Zırh',armorLevel:1,ironPieces:0,goldPieces:0,diamondPieces:0,fireCorePieces:0,iceCorePieces:0,lightningCorePieces:0,holyCorePieces:0,curseCorePieces:0,spellLevels:{fireball:1,ice:1,lightning:1,heal:1,curse:1},curseCharges:0,escapeCharges:0,fireballCharges:0,iceCharges:0,lightningCharges:0,healCharges:0,loot:{},darkCrystals:0,caveUnlocked:false,turnNumber:0,turnLocked:false,lastForestEnemyType:null,inventoryLimit:30};
+    const merged={...defaults,...data.player,spellLevels:{...defaults.spellLevels,...(data.player.spellLevels||{})},loot:{...(data.player.loot||{})}};
+    Object.keys(player).forEach(k=>delete player[k]);
+    Object.assign(player,merged);
+    player.hp=Math.max(0,Math.min(player.hp,player.maxHp));
+    player.mana=Math.max(0,Math.min(player.mana,player.maxMana));
+    if(player.dead || player.hp<=0) throw new Error('dead save');
+    enemy=data.enemy||null;
+    if(enemy){
+        document.getElementById('enemyArea').style.display='block';
+        document.getElementById('enemyEmoji').textContent=enemy.emoji||'👹';
+        document.getElementById('enemyName').textContent=enemy.boss?'👑 '+enemy.name:(enemy.name||'Düşman');
+        document.getElementById('sceneTitle').textContent=enemy.cave?'🕳️ KARANLIK MAĞARA':(enemy.boss?'🏟️ BOSS SAVAŞI':'⚔️ SAVAŞ');
+    } else {
+        document.getElementById('enemyArea').style.display='none';
+    }
+    if(manualMessage) log(manualMessage);
+    update();
+}
+
+function loadGame(manual=false){
+    try{
+        const raw=localStorage.getItem(SAVE_KEY);
+        if(!raw){ if(manual) log('📂 Otomatik kayıt bulunamadı.'); return false; }
+        const data=JSON.parse(raw);
+        restoreSaveData(data,manual?'📂 Otomatik kayıt yüklendi.':'');
+        return true;
+    }catch(e){
+        if(manual) log('⚠️ Otomatik kayıt bozuk, silindi.');
+        try{localStorage.removeItem(SAVE_KEY);}catch(_){}
+        return false;
+    }
+}
+
+function openSaveManager(){
+    const modal=document.getElementById('saveManagerModal');
+    renderSaveList();
+    modal.style.display='flex';
+}
+function closeSaveManager(){
+    const modal=document.getElementById('saveManagerModal');
+    if(modal) modal.style.display='none';
+}
+function formatSaveDate(iso){
+    try{return new Date(iso).toLocaleString('tr-TR');}catch(e){return 'Tarih bilinmiyor';}
+}
+function renderSaveList(){
+    const list=document.getElementById('saveList');
+    if(!list) return;
+    const saves=getNamedSaves();
+    if(!saves.length){
+        list.innerHTML='<div class="save-empty">Henüz isimlendirilmiş kayıt yok.<br><small>💾 KAYDET butonuna basıp bir isim vererek ilk kaydını oluştur.</small></div>';
+        return;
+    }
+    list.innerHTML=saves.map((s,i)=>{
+        const p=s.player||{};
+        const safeName=String(s.name||`Kayıt ${i+1}`).replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+        return `<div class="save-entry">
+            <div class="save-entry-info">
+                <div class="save-entry-name">💾 ${safeName}</div>
+                <div class="save-entry-meta">Seviye ${p.level||1} • ${p.gold||0} altın • ${formatSaveDate(s.savedAt)}</div>
+            </div>
+            <div class="save-entry-actions">
+                <button onclick="loadNamedSave('${String(s.id).replace(/'/g,"\\'")}')">▶ Yükle</button>
+                <button onclick="deleteNamedSave('${String(s.id).replace(/'/g,"\\'")}')">🗑️ Sil</button>
+            </div>
+        </div>`;
+    }).join('');
+}
+function loadNamedSave(id){
+    const saves=getNamedSaves();
+    const save=saves.find(s=>s.id===id);
+    if(!save){alert('Kayıt bulunamadı.'); renderSaveList(); return;}
+    if(!confirm(`"${save.name}" kaydı yüklensin mi? Mevcut ilerlemenin otomatik kaydı değişecek.`)) return;
+    try{
+        restoreSaveData(save,`📂 "${save.name}" adlı kayıt yüklendi.`);
+        localStorage.setItem(SAVE_KEY,JSON.stringify(buildSaveData()));
+        closeSaveManager();
+    }catch(e){
+        alert('Bu kayıt yüklenemedi veya bozuk.');
+    }
+}
+function deleteNamedSave(id){
+    const saves=getNamedSaves();
+    const save=saves.find(s=>s.id===id);
+    if(!save) return;
+    if(!confirm(`"${save.name}" kaydı silinsin mi?`)) return;
+    setNamedSaves(saves.filter(s=>s.id!==id));
+    renderSaveList();
+}
+function resetGame(){
+    if(!confirm('Yeni oyun başlatılsın mı? Otomatik ve isimlendirilmiş tüm kayıtlar silinecek.')) return;
+    try{localStorage.removeItem(SAVE_KEY);localStorage.removeItem(SAVE_SLOTS_KEY);}catch(e){}
+    location.reload();
+}
+
+// Her state güncellemesinde otomatik kayıt al; kayıt alınamıyorsa oyun yine çalışmaya devam eder.
+const _originalUpdate=update;
+update=function(){
+    _originalUpdate();
+    saveGame(false);
+};
+
+const hadSave=loadGame(false);
+if(!hadSave) update();
 
 try{ if(localStorage.getItem('karanlikArenaTutorialSeen_v33')!=='1'){ openTutorial(); } }catch(e){ openTutorial(); }
 
