@@ -430,6 +430,41 @@ button:disabled {
 /* Online leaderboard */
 .lb-toolbar{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:12px 0}.lb-toolbar input,.lb-toolbar select{width:100%;min-width:0;padding:10px;border-radius:8px;background:#0c0b18;color:#fff;border:1px solid #51457e}.lb-table-wrap{overflow:auto}.lb-table{width:100%;border-collapse:collapse;min-width:520px}.lb-table th,.lb-table td{padding:10px 8px;text-align:left;border-bottom:1px solid #30284a}.lb-table th{color:#c9a7ff;background:#151127}.lb-table tr.lb-me{background:#30244e}.lb-status{padding:10px;border-radius:8px;background:#151127;color:#cfc5e8;margin:10px 0}.lb-note{font-size:12px;color:#aaa;line-height:1.5}.lb-primary{background:linear-gradient(135deg,#5b2fc2,#8b4de0)!important}.lb-columns{display:grid;grid-template-columns:1fr 1fr;gap:8px}.lb-columns label{font-size:12px;color:#cfc5e8}.lb-columns input{display:block;width:100%;margin-top:4px;padding:9px;border-radius:7px;border:1px solid #51457e;background:#0c0b18;color:white}@media(max-width:600px){.lb-columns,.lb-toolbar{grid-template-columns:1fr}}
 
+ .potion-guide{padding:14px 16px;margin:14px 0;background:linear-gradient(135deg,#171b32,#1c1532);border:1px solid #65529b;border-radius:14px}
+.potion-guide h3{margin:0 0 8px;color:#e4d8ff}.potion-guide h3 small{font-size:12px;color:#a7a1be;font-weight:normal}
+.potion-guide-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(145px,1fr));gap:8px;margin:10px 0}
+.potion-tile{padding:10px;border-radius:10px;background:#111222;border:1px solid #3b345b;font-size:13px}
+.potion-tile b{display:block;color:#f0eaff;margin-bottom:4px}.potion-tile small{display:block;color:#b9b5d3;margin-top:3px}
+.potion-hint{font-size:12px;line-height:1.55;color:#d2cbe6;background:rgba(99,79,155,.13);border-radius:9px;padding:9px;margin:9px 0}
+.potion-inventory-btn{padding:9px!important;margin:3px 0!important;background:#392a63!important}
+
+/* Belirgin ve mobil uyumlu yetersiz altın uyarısı */
+#goldWarningOverlay{position:fixed;inset:0;background:rgba(0,0,0,.66);z-index:110000;display:none;align-items:center;justify-content:center;padding:18px}
+#goldWarningOverlay.visible{display:flex}
+.gold-warning-card{width:min(390px,100%);background:linear-gradient(145deg,#21192d,#121322);border:2px solid #ffbb56;border-radius:18px;padding:24px 18px;text-align:center;box-shadow:0 20px 80px #000a;color:#fff}
+.gold-warning-card h2{font-size:22px;color:#ffd071;margin:8px 0 12px}.gold-warning-card p{margin:9px 0;line-height:1.5}
+.gold-warning-card .gold-missing{color:#ffb1a5;font-weight:800}.gold-warning-card button{margin-top:18px;background:linear-gradient(135deg,#9b5726,#c78a35);font-weight:bold;min-height:48px}
+</style>
+<style id="marketMobileCss">
+/* Mobil uyumlu market: bölüm sekmeleri her zaman erişilebilir. */
+#shopModal .modal-content{scroll-behavior:smooth;overscroll-behavior:contain;scroll-padding-top:136px;}
+#shopModal .market-sticky{position:sticky;top:-25px;z-index:30;background:#11111d;border-bottom:1px solid #524077;box-shadow:0 9px 16px #080710dc;margin:-25px -25px 16px;padding:12px 16px 10px;}
+#shopModal .market-topline{display:flex;justify-content:space-between;align-items:center;gap:10px;}
+#shopModal .market-topline h2{font-size:clamp(17px,4vw,23px);margin:0;}
+#shopModal .market-close{width:auto;flex-shrink:0;padding:10px 13px;margin:0;background:#4c283b;min-height:42px;}
+#shopModal .market-wallet{font-size:13px;color:#ccc;margin:7px 0 9px;}
+#shopModal .market-tabs{display:flex;gap:7px;overflow-x:auto;padding:0 0 5px;scrollbar-width:thin;scrollbar-color:#7659bd #181426;-webkit-overflow-scrolling:touch;}
+#shopModal .market-tabs button{width:auto;flex:0 0 auto;white-space:nowrap;margin:0;padding:10px 12px;min-height:44px;font-size:13px;border:1px solid #4e4175;background:#211b37;}
+#shopModal .market-tabs button.active{background:#6538bd;border-color:#bba0ff;color:#fff;}
+#shopModal .market-section{scroll-margin-top:155px;}
+@media(max-width:650px){
+  #shopModal{padding:0;align-items:stretch;}
+  #shopModal .modal-content{width:100%;height:100dvh;max-height:100dvh;border-radius:0;padding:15px;overscroll-behavior:contain;scroll-padding-top:125px;}
+  #shopModal .market-sticky{top:-15px;margin:-15px -15px 12px;padding:10px 12px 8px;}
+  #shopModal .market-section{scroll-margin-top:136px;}
+  #shopModal .item button{min-height:45px;}
+  #shopModal .market-wallet{margin:5px 0 7px;}
+}
 </style>
 
 <style id="arenaExpansionCss">
@@ -452,6 +487,38 @@ button:disabled {
 .status-combo{display:inline-block;padding:4px 8px;border-radius:999px;background:#201b34;border:1px solid #514273;color:#e5dcff;font-size:12px;margin:2px}
 </style>
 
+<style id="collapsiblePotionGuideStyles">
+/* Dar alanda savaş sahnesini örtmeyen, isteğe bağlı iksir rehberi. */
+#potionGuide{padding:0;overflow:hidden}
+#potionGuide .potion-guide-toggle{display:flex;align-items:center;gap:8px;cursor:pointer;list-style:none;padding:12px 14px;font-weight:700;color:#e4d8ff;min-height:48px;touch-action:manipulation;user-select:none}
+#potionGuide .potion-guide-toggle::-webkit-details-marker{display:none}
+#potionGuide .potion-guide-toggle:focus-visible{outline:2px solid #c5a1ff;outline-offset:-3px}
+#potionGuide .potion-guide-subtitle{font-size:11px;font-weight:400;color:#bcb4d8}
+#potionGuide .potion-guide-chevron{margin-left:auto;transition:transform .15s;font-size:19px;color:#c5a1ff}
+#potionGuide[open] .potion-guide-chevron{transform:rotate(180deg)}
+#potionGuide .potion-guide-body{padding:2px 14px 14px;border-top:1px solid #514273}
+@media(max-width:600px){#potionGuide .potion-guide-toggle{padding:9px 12px;font-size:13px;min-height:42px}#potionGuide .potion-guide-body{padding:2px 10px 10px}}
+</style>
+<style id="mobileCombatStyles">
+/* Mobil savaş paneli: masaüstü ekranına dokunmaz. */
+#mobileCombatDock{display:none}
+@media (max-width:800px){
+ body{padding-bottom:calc(80px + env(safe-area-inset-bottom,0px))}
+ #actionButtons>button.attack,#actionButtons>#magicButtons,#drinkPotionBtn,#restoreManaBtn{display:none!important}
+ #mobileCombatDock{display:block;position:fixed;bottom:0;left:0;right:0;z-index:8;background:#100d20;border-top:1px solid #8065c4;padding:7px 8px calc(7px + env(safe-area-inset-bottom,0px));box-shadow:0 -5px 26px #000a}
+ #mobileCombatDock .mc-row{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px}
+ #mobileCombatDock button{font-size:12px;min-height:45px;padding:9px 2px;margin:0;line-height:1.25;touch-action:manipulation}
+ #mobileCombatDock .mc-row button[aria-expanded="true"]{background:#6940bf}
+ #mobileCombatDock .mc-drawer{display:none;max-height:min(42dvh,300px);overflow-y:auto;overscroll-behavior:contain;margin-bottom:8px;padding:9px;background:#18132d;border:1px solid #524080;border-radius:12px}
+ #mobileCombatDock .mc-drawer.open{display:block}
+ #mobileCombatDock .mc-drawer-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px}
+ #mobileCombatDock .mc-drawer-grid button{min-height:48px;padding:9px 5px;white-space:normal}
+ #mobileCombatDock .mc-title{font-size:12px;color:#bdb1db;margin-bottom:8px}
+ #mobileCombatDock button:disabled{opacity:.4}
+ #potionGuide{margin-bottom:12px}
+ #actionButtons>button{min-height:44px}
+}
+</style>
 </head>
 
 <body>
@@ -564,7 +631,8 @@ button:disabled {
       <p style="color:#aaa;margin:8px 0">Sahip olduğun tüm kullanılabilir eşyalar, malzemeler ve özel nesneler.</p>
       <span class="inventory-cap" id="inventoryModalCap">Loot: 0 / 30</span>
     </div>
-    <div class="inventory-modal-grid" id="inventoryModalGrid"></div>
+    <p class="potion-hint">🧪 Küçük iksirler hızlıdır (%35), büyük iksirler güçlüdür (%70), Süper İksir her iki kaynağı da doldurur. Savaşta büyük ve Süper İksir 1 hamle harcar.</p>
+    <p id="bagInventoryStatus" style="color:#c9a7ff"></p><div class="inventory-modal-grid" id="inventoryModalGrid"></div>
   </div>
 </div>
 <div class="exp-modal" id="ngRiftModal"><div class="exp-modal-box"><div class="exp-modal-head"><h2>🌑 YENİ OYUN+ — KARANLIK YARIK</h2><button class="exp-close" onclick="closeExpansionModal('ngRiftModal')">✕</button></div><div id="ngRiftContent"></div></div></div>
@@ -623,6 +691,16 @@ style="width:100%">
 
 </div>
 
+<div id="battlePotionCounter" style="text-align:center;font-weight:700;font-size:14px;background:#17142a;border:1px solid #564378;border-radius:10px;padding:10px;margin:8px 0">🧪 Savaşa hazır: 3/3 iksir hakkı</div>
+<details class="potion-guide" id="potionGuide">
+  <summary class="potion-guide-toggle">🧪 İksir Rehberi <span class="potion-guide-subtitle">(Dokun: göster / gizle)</span><span class="potion-guide-chevron" aria-hidden="true">⌄</span></summary>
+  <div class="potion-guide-body" aria-live="polite">
+  <div id="potionGuideStats">Karakter seçildiğinde iksir etkileri gösterilir.</div>
+  <div class="potion-guide-grid" id="potionGuideGrid"></div><p id="potionBattleLimitInfo" style="color:#ccc;font-size:12px"></p>
+  <p class="potion-hint">💡 Her savaşta toplam 3 iksir kullanabilirsin. Süper İksir en fazla 1 kez kullanılabilir. Küçük iksirler düşmana saldırı hakkı vermez. Büyük ve Süper İksir savaşta 1 hamle harcar; düşman karşılık verebilir. İksirler maksimum kapasiteyi aşmaz.</p>
+  <button type="button" class="potion-inventory-btn" onclick="openInventory()">🎒 Tüm iksirlerimi gör ve kullan</button>
+  </div>
+</details>
 <div id="actionButtons">
 
 <button class="attack" onclick="attack()">
@@ -843,15 +921,24 @@ Bazı iksirler pahalıdır ama boss savaşlarında büyük avantaj sağlar.
 
 <div class="modal-content">
 
-<h2>🏪 KARANLIK MARKET</h2>
+<div class="market-sticky" id="marketSticky">
+ <div class="market-topline"><h2>🏪 KARANLIK MARKET</h2><button type="button" class="market-close" onclick="closeShop()" aria-label="Marketi kapat">✕ Kapat</button></div>
+ <p class="market-wallet">⭐ Level: <b id="shopLevel">1</b> &nbsp; 💰 Altın: <b id="shopGold">100</b></p>
+ <nav class="market-tabs" aria-label="Market bölümleri">
+  <button type="button" onclick="marketGo('marketPotions',this)">🧪 İksirler</button>
+  <button type="button" onclick="marketGo('marketSpells',this)">🔮 Büyüler</button>
+  <button type="button" onclick="marketGo('marketLoot',this)">🎒 Loot</button>
+  <button type="button" onclick="marketGo('marketChests',this)">🎁 Sandıklar</button>
+  <button type="button" onclick="marketGo('marketWeapons',this)">⚔️ Silahlar</button>
+  <button type="button" onclick="marketGo('marketArmor',this)">🛡️ Zırhlar</button>
+  <button type="button" onclick="marketGo('marketRepair',this)">🔨 Tamir</button>
+  <button type="button" onclick="marketGo('marketRegions',this)">🕳️ Bölgeler</button>
+  <button type="button" onclick="marketGo('marketTop',this)">⬆ Üste</button>
+ </nav>
+</div>
 
-<p>
-⭐ Level: <b id="shopLevel">1</b>
-&nbsp;&nbsp;
-💰 Altın: <b id="shopGold">100</b>
-</p>
-
-<h3>🧪 İKSİRLER</h3>
+<h3 class="market-section" id="marketPotions">🧪 İKSİRLER</h3>
+<div class="item" style="border-color:#8465cf"><h3>🎒 İksir Çantası</h3><p id="bagShopStatus">5 / 5 iksir kapasitesi</p><div class="exp-progress"><i id="bagShopProgress" style="width:100%"></i></div><p id="bagShopNext">Seviye 3: 7 slot</p><button id="bagUpgradeButton" onclick="upgradePotionBag()">🎒 ÇANTAYI GELİŞTİR</button><small style="color:#aaa">Yalnızca can ve mana iksirleri. Beş iksir çeşidi ortak kapasite kullanır. Loot envanterinden ayrıdır.</small></div>
 
 <div class="shop-grid">
 
@@ -861,7 +948,7 @@ Bazı iksirler pahalıdır ama boss savaşlarında büyük avantaj sağlar.
 
 <h3>Küçük Can İksiri</h3>
 
-<p>❤️ +50 Can</p>
+<p id="smallHealthEffect">❤️ Maksimum canın %35’i</p>
 
 <p>🔓 Level 1</p>
 
@@ -880,11 +967,11 @@ SATIN AL
 
 <h3>Büyük Can İksiri</h3>
 
-<p>❤️ +120 Can</p>
+<p id="bigHealthEffect">❤️ Maksimum canın %70’i</p>
 
 <p>🔓 Level 5</p>
 
-<p>💰 150 altın</p>
+<p>💰 220 altın</p>
 
 <button onclick="buyBigPotion()">
 SATIN AL
@@ -899,7 +986,7 @@ SATIN AL
 
 <h3>Küçük Mana İksiri</h3>
 
-<p>🔵 +50 Mana</p>
+<p id="smallManaEffect">🔵 Maksimum mananın %35’i</p>
 
 <p>🔓 Level 1</p>
 
@@ -918,11 +1005,11 @@ SATIN AL
 
 <h3>Büyük Mana İksiri</h3>
 
-<p>🔵 +120 Mana</p>
+<p id="bigManaEffect">🔵 Maksimum mananın %70’i</p>
 
 <p>🔓 Level 7</p>
 
-<p>💰 140 altın</p>
+<p>💰 350 altın</p>
 
 <button onclick="buyBigManaPotion()">
 SATIN AL
@@ -937,11 +1024,11 @@ SATIN AL
 
 <h3>Süper İksir</h3>
 
-<p>❤️ +200 Can +100 Mana</p>
+<p id="superPotionEffect">❤️ Can ve 🔵 manayı tamamen doldurur</p>
 
 <p>🔓 Level 10</p>
 
-<p>💰 200 altın</p>
+<p>💰 850 altın</p>
 
 <button onclick="buySuperPotion()">
 SATIN AL
@@ -952,7 +1039,7 @@ SATIN AL
 </div>
 
 
-<h3>🔮 BÜYÜ GELİŞTİRMELERİ</h3>
+<h3 class="market-section" id="marketSpells">🔮 BÜYÜ GELİŞTİRMELERİ</h3>
 
 <div class="shop-grid">
 <div class="item"><div class="item-icon">🔥</div><h3>Ateş Topu</h3><p>Seviye: <b id="fireballShopLevel">1</b></p><p>🧩 Ateş Çekirdeği: <b id="fireballShopMaterial">0 / 5</b></p><p>💰 Geliştirme: <b id="fireballShopCost">200</b> altın</p><button id="fireballUpgradeBtn" onclick="upgradeSpell('fireball')">GELİŞTİR</button></div>
@@ -971,7 +1058,7 @@ SATIN AL
 <p style="color:#aaa">Her büyü yalnızca Lv.2'ye kadar geliştirilebilir. Lv.2 için 5 özel çekirdek ve altın gerekir.</p>
 </div>
 
-<h3>🎒 LOOT TÜCCARI</h3>
+<h3 class="market-section" id="marketLoot">🎒 LOOT TÜCCARI</h3>
 <div class="item">
 <p style="color:#aaa">Canavarlardan düşen eşyaları satarak sürekli gelir elde et. Daha yüksek seviye düşmanlar daha değerli loot bırakır.</p>
 <div id="lootShopGrid" class="shop-grid"></div>
@@ -991,14 +1078,14 @@ SATIN AL
 <button onclick="buyCrystalCache()">💎 SANDIĞI AÇ — 3 KRİSTAL + 400 ALTIN</button>
 </div>
 
-<h3>🎁 HAZİNE SANDIĞI</h3>
+<h3 class="market-section" id="marketChests">🎁 HAZİNE SANDIĞI</h3>
 <div class="item">
 <div class="item-icon">🎁</div>
 <p>250 altın öde. Altın, loot veya nadir büyük altın ödülü çıkabilir.</p>
 <button onclick="buyTreasureChest()">🎁 SANDIK AÇ — 250 ALTIN</button>
 </div>
 
-<h3>🕳️ BÖLGE AÇMA</h3>
+<h3 class="market-section" id="marketRegions">🕳️ BÖLGE AÇMA</h3>
 <div class="item">
 <div class="item-icon">🕳️</div>
 <p><b>Karanlık Mağara</b> — Level 6 · 750 altın</p>
@@ -1014,7 +1101,7 @@ SATIN AL
 <p>💎 Karanlık Kristal: <b id="darkCrystalText">0</b> · Bosslardan düşer ve değerli özel taş olarak saklanır.</p>
 </div>
 
-<h3>⚔️ SİLAHLAR</h3>
+<h3 class="market-section" id="marketWeapons">⚔️ SİLAHLAR</h3>
 <div class="shop-grid">
 <div class="item">
 <div class="item-icon">🪵</div><h3>Tahta Kılıç</h3>
@@ -1056,7 +1143,7 @@ SATIN AL
 </div>
 </div>
 
-<h3>🛡️ ZIRHLAR</h3>
+<h3 class="market-section" id="marketArmor">🛡️ ZIRHLAR</h3>
 <div class="shop-grid">
 <div class="item" id="woodArmorItem">
 <div class="item-icon">🪵</div><h3>Tahta Zırh</h3>
@@ -1090,7 +1177,7 @@ SATIN AL
 </div>
 </div>
 
-<h3>🔨 TAMİR</h3>
+<h3 class="market-section" id="marketRepair">🔨 TAMİR</h3>
 <div class="shop-grid">
 <div class="item">
 <div class="item-icon">🔨</div>
@@ -1227,6 +1314,11 @@ let player = {
     bigPotions: 0,
     bigManaPotions: 0,
     superPotions: 0,
+    potionBagTier: 0,
+    battlePotionUses: 0,
+    battleSmallPotionUses: 0,
+    battleSuperPotionUses: 0,
+    battlePotionActive: false,
 
     weapon: "Tahta Kılıç",
     weaponLevel: 1,
@@ -1445,7 +1537,32 @@ function goCave(){
     update();
 }
 
+
+function closeGoldWarning(){
+ const overlay=document.getElementById('goldWarningOverlay');
+ if(overlay) overlay.classList.remove('visible');
+}
+function showGoldWarning(cost, label='Bu alışveriş'){
+ const overlay=document.getElementById('goldWarningOverlay');
+ if(!overlay) return;
+ const current=Math.max(0,Number(player.gold)||0);
+ const needed=Number(cost);
+ document.getElementById('goldWarningItem').textContent=label+' için altının yetmiyor.';
+ const fmt=n=>Math.round(n).toLocaleString('tr-TR');
+ document.getElementById('goldWarningNumbers').textContent=Number.isFinite(needed)?`💰 Gerekli: ${fmt(needed)}  |  Sende: ${fmt(current)}`:`💰 Mevcut altının: ${fmt(current)}`;
+ document.getElementById('goldWarningMissing').textContent=Number.isFinite(needed)?`❗ ${fmt(Math.max(0,needed-current))} altın daha gerekiyor.`:'Biraz daha altın kazanıp tekrar dene.';
+ overlay.classList.add('visible');
+}
+document.addEventListener('keydown', e=>{if(e.key==='Escape')closeGoldWarning();});
+
 function log(text) {
+    if(typeof text==='string' && /^❌/.test(text) && /altın/i.test(text) && document.getElementById('shopModal')?.style.display==='flex') {
+        const m=text.match(/([\d.,]+)\s*altın/i);
+        const number=m ? Number(m[1].replace(/\./g,'').replace(',','.')) : NaN;
+        const label=text.replace(/^❌\s*/, '').replace(/\d[\d.,]*\s*altın.*$/i,'').trim() || 'Bu işlem';
+        showGoldWarning(number,label);
+    }
+
 
     let box = document.getElementById("log");
 
@@ -1477,11 +1594,16 @@ function requiredXP() {
 
 
 function update() {
+    if(enemy && !player.battlePotionActive){
+        player.battlePotionActive=true;player.battlePotionUses=0;player.battleSmallPotionUses=0;player.battleSuperPotionUses=0;
+    } else if(!enemy && player.battlePotionActive){
+        player.battlePotionActive=false;player.battlePotionUses=0;player.battleSmallPotionUses=0;player.battleSuperPotionUses=0;
+    }
 
     if(document.getElementById('inventoryModal')?.style.display==='flex') renderInventory();
 
-    player.maxMana = 100;
-    player.mana = Math.max(0, Math.min(100, player.mana));
+    player.hp = Math.max(0, Math.min(player.maxHp, player.hp));
+    player.mana = Math.max(0, Math.min(player.maxMana, player.mana));
 
     document.getElementById("hpText").textContent =
         `${player.hp} / ${player.maxHp}`;
@@ -1494,13 +1616,13 @@ function update() {
 
 
     document.getElementById("manaText").textContent =
-        `${player.mana} / 100`;
+        `${player.mana} / ${player.maxMana}`;
 
     document.getElementById("playerManaSmall").textContent =
-        `${player.mana} / 100 Mana`;
+        `${player.mana} / ${player.maxMana} Mana`;
 
     document.getElementById("playerManaBar").style.width =
-        `${Math.max(0,player.mana/100*100)}%`;
+        `${Math.max(0,player.mana/player.maxMana*100)}%`;
 
 
     document.getElementById("attackText").textContent =
@@ -1613,7 +1735,7 @@ function update() {
       const btn=document.getElementById(type+"UpgradeBtn");
       const matKey=spellMaterialKeys[type];
       if(btn){
-        btn.disabled=level>=2 || player[matKey]<5 || player.gold<Math.round(spellBaseCosts[type]);
+        btn.disabled=level>=2 || player[matKey]<5;
         btn.textContent=level>=2?"MAKSİMUM SEVİYE":"GELİŞTİR";
       }
     });
@@ -1636,7 +1758,7 @@ function update() {
         const baseCost={"Demir Kılıç":300,"Altın Kılıç":750,"Elmas Kılıç":1500}[name]||0;
         const actualCost=ngPrice(baseCost);
         const enoughGold=player.gold>=actualCost;
-        buyEl.disabled=owned || !nextInOrder || pieces<5 || !enoughGold;
+        buyEl.disabled=owned || !nextInOrder || pieces<5;
         buyEl.textContent=owned?"SATIN ALINDI":(!nextInOrder?"ÖNCEKİ KILIÇ GEREKLİ":(pieces<5?"5 PARÇA GEREKLİ":(!enoughGold?`${actualCost} ALTIN GEREKLİ`:"SATIN AL")));
       }
       if(upEl){
@@ -1661,29 +1783,61 @@ function update() {
       if(upEl){upEl.disabled=!owned; if(owned)upEl.textContent=`GELİŞTİR (Lv.${player.armorLevel} → Lv.${player.armorLevel+1})`;}
     });
 
+    // Canlı rehber: sınıfa göre maksimum ve şu an gerçekten kazanılacak puanlar.
+    const guideStats = document.getElementById('potionGuideStats');
+    const guideGrid = document.getElementById('potionGuideGrid');
+    if (guideStats && guideGrid) {
+        const missingHp = Math.max(0, player.maxHp - player.hp);
+        const missingMana = Math.max(0, player.maxMana - player.mana);
+        const className = (typeof CLASS_DEFS !== 'undefined' && CLASS_DEFS[player.classId]) ? CLASS_DEFS[player.classId].name : 'Karakter';
+        guideStats.textContent = `${className} | ❤️ ${player.hp}/${player.maxHp} can | 🔵 ${player.mana}/${player.maxMana} mana`;
+        const guidePotions = [
+          ['🧪 Küçük Can', player.maxHp, .35, missingHp, 'can', player.potions, 'Hızlı'],
+          ['❤️ Büyük Can', player.maxHp, .70, missingHp, 'can', player.bigPotions, '1 hamle'],
+          ['🔵 Küçük Mana', player.maxMana, .35, missingMana, 'mana', player.manaPotions, 'Hızlı'],
+          ['💙 Büyük Mana', player.maxMana, .70, missingMana, 'mana', player.bigManaPotions, '1 hamle']
+        ];
+        guideGrid.innerHTML = guidePotions.map(([name,max,rate,missing,unit,count,turn]) =>
+          `<div class="potion-tile"><b>${name}</b> +${Math.ceil(max*rate)} ${unit} (%${rate*100})<small>Şu an: +${Math.min(missing,Math.ceil(max*rate))} | Çanta: ${count||0} | ${turn}</small></div>`
+        ).join('') + `<div class="potion-tile"><b>⚡ Süper İksir</b> ❤️ +${missingHp} / 🔵 +${missingMana}<small>Tam dolum | Çanta: ${player.superPotions||0} | 1 hamle</small></div>`;
+    }
+
+    const limitInfo=document.getElementById('potionBattleLimitInfo');
+    if(limitInfo) limitInfo.textContent=enemy
+      ? `⚔️ Kalan iksir hakkı: ${Math.max(0,3-(player.battlePotionUses||0))}/3 · Süper İksir: ${player.battleSuperPotionUses||0}/1.`
+      : '⚔️ Her savaşta toplam 3 iksir kullanabilirsin. Süper İksir en fazla 1 kez kullanılabilir.';
+    const battlePotionCounter=document.getElementById('battlePotionCounter');
+    if(battlePotionCounter){
+       battlePotionCounter.textContent=enemy ? `🧪 İksir Hakkı: ${Math.max(0,3-(player.battlePotionUses||0))}/3` : '🧪 Savaşa hazır: 3/3 iksir hakkı';
+       battlePotionCounter.style.color=enemy && (player.battlePotionUses||0)>=3?'#ff9999':'#d8caff';
+    }
+    // Market, aktif karaktere göre gerçek yenileme değerlerini gösterir.
+    const potionEffects = {
+        smallHealthEffect: `❤️ +${Math.ceil(player.maxHp * .35)} Can (%35) · Hızlı kullanım`,
+        bigHealthEffect: `❤️ +${Math.ceil(player.maxHp * .70)} Can (%70) · Savaşta 1 hamle`,
+        smallManaEffect: `🔵 +${Math.ceil(player.maxMana * .35)} Mana (%35) · Hızlı kullanım`,
+        bigManaEffect: `🔵 +${Math.ceil(player.maxMana * .70)} Mana (%70) · Savaşta 1 hamle`,
+        superPotionEffect: `❤️ +${player.maxHp} Can / 🔵 +${player.maxMana} Mana kapasitesine kadar tam dolum · Savaşta 1 hamle`
+    };
+    for (const [id, description] of Object.entries(potionEffects)) {
+        const node = document.getElementById(id);
+        if (node) node.textContent = description;
+    }
+
     document.getElementById("potionText").textContent =
         player.potions;
 
     document.getElementById("manaPotionText").textContent =
         player.manaPotions;
 
-    const smallHealthBuyBtn = document.getElementById("buySmallHealthBtn");
-    if (smallHealthBuyBtn) {
-        smallHealthBuyBtn.disabled = player.potions >= 2;
-        smallHealthBuyBtn.textContent = player.potions >= 2 ? "ENVANTER DOLU (2/2)" : "SATIN AL";
-    }
-    const smallManaBuyBtn = document.getElementById("buySmallManaBtn");
-    if (smallManaBuyBtn) {
-        smallManaBuyBtn.disabled = player.manaPotions >= 3;
-        smallManaBuyBtn.textContent = player.manaPotions >= 3 ? "ENVANTER DOLU (3/3)" : "SATIN AL";
-    }
+    renderPotionBag();
 
     // İksir butonlarında mevcut miktarı anlık göster
     document.getElementById("drinkPotionBtn").textContent =
-        `🧪 MİNİK İKSİR UYGULA (${Math.max(0, player.potions)})`;
+        `🧪 Küçük Can +${Math.min(Math.max(0,player.maxHp-player.hp),potionAmount(player.maxHp,.35))} (${Math.max(0, player.potions)})`;
 
     document.getElementById("restoreManaBtn").textContent =
-        `🔵 MANA UYGULA (${Math.max(0, player.manaPotions)})`;
+        `🔵 Küçük Mana +${Math.min(Math.max(0,player.maxMana-player.mana),potionAmount(player.maxMana,.35))} (${Math.max(0, player.manaPotions)})`;
 
     const spellButtons = {
         fireball: player.fireballCharges,
@@ -1801,6 +1955,7 @@ function update() {
     const crystalEl=document.getElementById("darkCrystalText"); if(crystalEl) crystalEl.textContent=player.darkCrystals;
 
     updateShopLocks();
+    renderPotionBag();
 
 }
 
@@ -1866,20 +2021,17 @@ function gainXP(amount) {
 
         player.level++;
 
-        player.hp = Math.min(player.hp, 100);
-        player.maxHp = 100;
-
-        player.maxMana = 100;
-        player.mana = Math.min(player.mana, 100);
+        player.hp = Math.min(player.hp, player.maxHp);
+        player.mana = Math.min(player.mana, player.maxMana);
 
         player.attack += 5;
 
 
         log(`🎉 LEVEL ${player.level} OLDUN!`);
 
-        log("❤️ Maksimum can 100 olarak kaldı.");
+        log(`❤️ Maksimum can ${player.maxHp} olarak kaldı.`);
 
-        log("🔵 Maksimum mana 100 olarak kaldı.");
+        log(`🔵 Maksimum mana ${player.maxMana} olarak kaldı.`);
 
         log("⚔️ Saldırın arttı!");
 
@@ -2713,6 +2865,86 @@ function winBattle() {
 }
 
 
+// İksirler sınıfın maksimum kapasitesine göre ölçeklenir.
+// Küçük: %35, Büyük: %70; Süper: her ikisini tamamen doldurur.
+const POTION_BAG_TIERS = [
+    {level:1, capacity:5, price:0, name:'Başlangıç'},
+    {level:3, capacity:7, price:250, name:'Küçük Çanta'},
+    {level:6, capacity:9, price:750, name:'Orta Çanta'},
+    {level:10, capacity:12, price:1800, name:'Büyük Çanta'}
+];
+function potionBagCount(){
+    return ['potions','manaPotions','bigPotions','bigManaPotions','superPotions']
+        .reduce((sum,key)=>sum+Math.max(0, Number(player[key])||0),0);
+}
+function potionBagCapacity(){
+    return POTION_BAG_TIERS[Math.min(3,Math.max(0,Number(player.potionBagTier)||0))].capacity;
+}
+function bagHasRoom(){
+    if(potionBagCount() >= potionBagCapacity()) {
+        log(`🎒 İksir çantan dolu! (${potionBagCount()}/${potionBagCapacity()}) Marketten çantanı geliştirebilirsin.`);
+        update();
+        return false;
+    }
+    return true;
+}
+function upgradePotionBag(){
+    if(enemy){log('🚫 Savaş sırasında çanta geliştiremezsin.'); return;}
+    const tier=Math.max(0,Math.min(3,Number(player.potionBagTier)||0));
+    if(tier===3){log('🎒 İksir çantan en yüksek seviyede!'); return;}
+    const next=POTION_BAG_TIERS[tier+1], cost=ngPrice(next.price);
+    if(player.level<next.level){log(`🔒 ${next.name} Level ${next.level}'te açılır.`);return;}
+    if(player.gold<cost){log(`❌ Çanta geliştirmek için ${cost} altın gerekli.`);return;}
+    player.gold-=cost;
+    player.potionBagTier=tier+1;
+    log(`🎒 ${next.name} açıldı! İksir kapasitesi ${next.capacity} oldu. -${cost} altın.`);
+    update();
+}
+function renderPotionBag(){
+    const used=potionBagCount(), cap=potionBagCapacity();
+    const status=`🎒 İksir Çantası: ${used}/${cap} · ${Math.max(0,cap-used)} boş slot`;
+    for(const id of ['bagCharacterStatus','bagInventoryStatus','bagShopStatus']){
+        const el=document.getElementById(id);if(el)el.textContent=status;
+    }
+    const bar=document.getElementById('bagShopProgress');if(bar)bar.style.width=`${Math.min(100,used/cap*100)}%`;
+    const tier=Math.max(0,Math.min(3,Number(player.potionBagTier)||0));
+    const next=POTION_BAG_TIERS[tier+1];
+    const info=document.getElementById('bagShopNext'),btn=document.getElementById('bagUpgradeButton');
+    if(info)info.textContent=next?`Sonraki: ${next.name} — ${next.capacity} slot · Level ${next.level} · ${ngPrice(next.price)} altın`:'✅ Maksimum kapasite (12 slot)';
+    if(btn){btn.disabled=!next || player.level<next.level || !!enemy;
+        btn.textContent=!next?'✅ MAKSİMUM SEVİYE':player.level<next.level?`🔒 LEVEL ${next.level} GEREKLİ`:`🎒 GELİŞTİR — ${ngPrice(next.price)} ALTIN`;
+    }
+    for(const [id,level] of [['buySmallHealthBtn',1],['buySmallManaBtn',1]]) {
+        const el=document.getElementById(id);
+        if(el){el.disabled=player.level<level || used>=cap;el.textContent=used>=cap?`🎒 ÇANTA DOLU (${used}/${cap})`:'SATIN AL';}
+    }
+    for(const [name,lvl] of [['bigHealthItem',5],['bigManaItem',7],['superPotionItem',10]]){
+        const el=document.querySelector(`#${name} button`);
+        if(el){el.disabled=player.level<lvl || used>=cap;el.textContent=used>=cap?`🎒 ÇANTA DOLU (${used}/${cap})`:'SATIN AL';}
+    }
+}
+function canUsePotionInBattle(kind){
+    if(!enemy)return true;
+    if((player.battlePotionUses||0)>=3){log('🧪 Bu savaşta 3 iksir hakkını kullandın. Yeni savaşta hakların yenilenir.');return false;}
+    if(kind==='super' && (player.battleSuperPotionUses||0)>=1){log('⚡ Bu savaşta Süper İksir yalnızca 1 kez kullanılabilir.');return false;}
+    return true;
+}
+function trackPotionUse(kind){
+    if(!enemy)return;
+    player.battlePotionUses=(player.battlePotionUses||0)+1;
+    if(kind==='small')player.battleSmallPotionUses=(player.battleSmallPotionUses||0)+1;
+    if(kind==='super')player.battleSuperPotionUses=(player.battleSuperPotionUses||0)+1;
+}
+function potionAmount(maximum, ratio) {
+    return Math.ceil(maximum * ratio);
+}
+function restorePotionStat(stat, ratio) {
+    const max = stat === 'hp' ? player.maxHp : player.maxMana;
+    const before = player[stat];
+    player[stat] = Math.min(max, before + potionAmount(max, ratio));
+    return player[stat] - before;
+}
+
 function drinkPotion() {
 
     if(player.potions <= 0) {
@@ -2731,9 +2963,13 @@ function drinkPotion() {
     }
 
 
+    if(!canUsePotionInBattle('small')) return;
+    trackPotionUse('small');
     player.potions--;
 
-    player.hp = Math.min(player.maxHp,player.hp+50);
+    const restored = restorePotionStat("hp", .35);
+
+    log(`❤️ +${restored} Can yenilendi. (${player.hp}/${player.maxHp})`);
 
     log("🧪 Küçük can iksiri kullanıldı. -1 iksir");
 
@@ -2761,9 +2997,13 @@ function drinkBigPotion() {
     }
 
 
+    if(!canUsePotionInBattle('big')) return;
+    trackPotionUse('big');
     player.bigPotions--;
 
-    player.hp = Math.min(player.maxHp,player.hp+120);
+    const restored = restorePotionStat("hp", .70);
+
+    log(`❤️ +${restored} Can yenilendi. (${player.hp}/${player.maxHp})`);
 
     log("❤️ Büyük can iksiri kullanıldı. -1 iksir");
 
@@ -2791,8 +3031,11 @@ function restoreMana() {
     }
 
 
+    if(!canUsePotionInBattle('small')) return;
+    trackPotionUse('small');
     player.manaPotions--;
-    player.mana = Math.min(player.maxMana,player.mana+50);
+    const restored = restorePotionStat("mana", .35);
+    log(`🔵 +${restored} Mana yenilendi. (${player.mana}/${player.maxMana})`);
     log("🔵 Küçük mana iksiri kullanıldı. -1 iksir");
     // Mana kullanımı savaş turunu düşmana vermez.
     update();
@@ -2818,10 +3061,14 @@ function restoreBigMana() {
     }
 
 
+    if(!canUsePotionInBattle('big')) return;
+    trackPotionUse('big');
     player.bigManaPotions--;
-    player.mana = Math.min(player.maxMana,player.mana+120);
+    const restored = restorePotionStat("mana", .70);
+    log(`🔵 +${restored} Mana yenilendi. (${player.mana}/${player.maxMana})`);
     log("💙 Büyük mana iksiri kullanıldı. -1 iksir");
-    // Mana kullanımı savaş turunu düşmana vermez.
+    // Güçlü iksirler savaşta bir hamle tüketir.
+    if(enemy) endPlayerTurn();
     update();
 
 }
@@ -2848,22 +3095,38 @@ function useSuperPotion() {
     }
 
 
+    if(!canUsePotionInBattle('super')) return;
+    trackPotionUse('super');
     player.superPotions--;
 
-    player.hp = Math.min(player.maxHp,player.hp+200);
-    player.mana = Math.min(player.maxMana,player.mana+100);
+    const restoredHp = player.maxHp - player.hp;
+    const restoredMana = player.maxMana - player.mana;
+    player.hp = player.maxHp;
+    player.mana = player.maxMana;
 
     log("⚡ SÜPER İKSİR kullanıldı!");
+    log(`❤️ +${restoredHp} Can (${player.hp}/${player.maxHp})`);
+    log(`🔵 +${restoredMana} Mana (${player.mana}/${player.maxMana})`);
 
-    log("❤️ +200 Can");
-
-    log("🔵 +100 Mana");
-
-    // Mana kullanımı savaş turunu düşmana vermez.
+    // Tam yenileme güçlüdür: savaşta bir hamle tüketir.
+    if(enemy) endPlayerTurn();
     update();
 
 }
 
+
+function marketGo(sectionId, btn) {
+    const modal = document.querySelector('#shopModal .modal-content');
+    const sticky = document.getElementById('marketSticky');
+    if(!modal || !sticky) return;
+    const target = sectionId === 'marketTop' ? null : document.getElementById(sectionId);
+    if(sectionId !== 'marketTop' && !target) return;
+    const destination = target
+        ? modal.scrollTop + target.getBoundingClientRect().top - modal.getBoundingClientRect().top - sticky.getBoundingClientRect().height - 12
+        : 0;
+    modal.scrollTo({top: Math.max(0,destination), behavior:'smooth'});
+    document.querySelectorAll('#shopModal .market-tabs button').forEach(b => b.classList.toggle('active', b === btn));
+}
 
 function openShop() {
 
@@ -2874,6 +3137,9 @@ function openShop() {
 
     document.getElementById("shopModal").style.display =
         "flex";
+    const shopScroller = document.querySelector('#shopModal .modal-content');
+    if(shopScroller) shopScroller.scrollTop = 0;
+    document.querySelectorAll('#shopModal .market-tabs button').forEach((b,i) => b.classList.toggle('active',i === 0));
 
     update();
 
@@ -2909,12 +3175,8 @@ function closeShop() {
 
 
 function buyPotion() {
+    if(!bagHasRoom()) return;
 
-    if (player.potions >= 2) {
-        log("❌ En fazla 2 küçük can iksiri taşıyabilirsin!");
-        update();
-        return;
-    }
 
     if(player.level < 1) {
 
@@ -2945,6 +3207,7 @@ function buyPotion() {
 
 
 function buyBigPotion() {
+    if(!bagHasRoom()) return;
 
     if(player.level < 5) {
 
@@ -2954,7 +3217,7 @@ function buyBigPotion() {
     }
 
 
-    const price=ngPrice(150);
+    const price=ngPrice(220);
     if(player.gold < price) {
 
         log(`❌ Büyük can iksiri ${price} altın gerekli.`);
@@ -2975,12 +3238,8 @@ function buyBigPotion() {
 
 
 function buyManaPotion() {
+    if(!bagHasRoom()) return;
 
-    if (player.manaPotions >= 3) {
-        log("❌ En fazla 3 küçük mana iksiri taşıyabilirsin!");
-        update();
-        return;
-    }
 
     if(player.level < 1) {
 
@@ -3011,6 +3270,7 @@ function buyManaPotion() {
 
 
 function buyBigManaPotion() {
+    if(!bagHasRoom()) return;
 
     if(player.level < 7) {
 
@@ -3020,7 +3280,7 @@ function buyBigManaPotion() {
     }
 
 
-    const price=ngPrice(140);
+    const price=ngPrice(350);
     if(player.gold < price) {
 
         log(`❌ Büyük mana iksiri ${price} altın.`);
@@ -3041,6 +3301,7 @@ function buyBigManaPotion() {
 
 
 function buySuperPotion() {
+    if(!bagHasRoom()) return;
 
     if(player.level < 10) {
 
@@ -3050,10 +3311,10 @@ function buySuperPotion() {
     }
 
 
-    const price=ngPrice(200);
+    const price=ngPrice(850);
     if(player.gold < price) {
 
-        log("❌ Yeterli altının yok!");
+        log(`❌ Süper İksir için ${price} altın gerekli!`);
 
         return;
     }
@@ -3376,14 +3637,25 @@ function saveGame(manual=false){
 
 function restoreSaveData(data,manualMessage=''){
     if(!data || !data.player) throw new Error('invalid save');
-    const defaults={dead:false,hp:100,maxHp:100,mana:100,maxMana:100,attack:10,defense:5,gold:100,level:1,xp:0,potions:2,manaPotions:3,bigPotions:0,bigManaPotions:0,superPotions:0,weapon:'Tahta Kılıç',weaponLevel:1,weaponDurability:8,weaponMaxDurability:8,weaponWearCounter:0,armor:'Tahta Zırh',armorLevel:1,ironPieces:0,goldPieces:0,diamondPieces:0,fireCorePieces:0,iceCorePieces:0,lightningCorePieces:0,holyCorePieces:0,curseCorePieces:0,spellLevels:{fireball:1,ice:1,lightning:1,heal:1,curse:1},curseCharges:0,escapeCharges:0,fireballCharges:0,iceCharges:0,lightningCharges:0,healCharges:0,loot:{},darkCrystals:0,caveUnlocked:false,turnNumber:0,turnLocked:false,lastForestEnemyType:null,inventoryLimit:30,classId:null,classAttackMult:1,classSpellMult:1,classManaMult:1,classDefenseBonus:0,critChance:.15,critMult:2,healMult:1,stats:{kills:0,goldEarned:0,spells:0,iceCasts:0,bossKills:0,rareKills:0,lowHpWins:0,dragonKills:0,lootCollected:0},achievements:{},quest:null,questProgress:0,questClaimed:false,questStartValue:0,darkKeys:0,secretRooms:0,ngPlus:0,darkLordDefeated:false,traderRefresh:0,spellMastery:{fireball:1,ice:1,lightning:1,heal:1,curse:1},voidRelics:0,ngRiftClears:0};
+    const defaults={dead:false,hp:100,maxHp:100,mana:100,maxMana:100,attack:10,defense:5,gold:100,level:1,xp:0,potions:2,manaPotions:3,bigPotions:0,bigManaPotions:0,superPotions:0,potionBagTier:0,battlePotionUses:0,battleSmallPotionUses:0,battleSuperPotionUses:0,battlePotionActive:false,weapon:'Tahta Kılıç',weaponLevel:1,weaponDurability:8,weaponMaxDurability:8,weaponWearCounter:0,armor:'Tahta Zırh',armorLevel:1,ironPieces:0,goldPieces:0,diamondPieces:0,fireCorePieces:0,iceCorePieces:0,lightningCorePieces:0,holyCorePieces:0,curseCorePieces:0,spellLevels:{fireball:1,ice:1,lightning:1,heal:1,curse:1},curseCharges:0,escapeCharges:0,fireballCharges:0,iceCharges:0,lightningCharges:0,healCharges:0,loot:{},darkCrystals:0,caveUnlocked:false,turnNumber:0,turnLocked:false,lastForestEnemyType:null,inventoryLimit:30,classId:null,classAttackMult:1,classSpellMult:1,classManaMult:1,classDefenseBonus:0,critChance:.15,critMult:2,healMult:1,stats:{kills:0,goldEarned:0,spells:0,iceCasts:0,bossKills:0,rareKills:0,lowHpWins:0,dragonKills:0,lootCollected:0},achievements:{},quest:null,questProgress:0,questClaimed:false,questStartValue:0,darkKeys:0,secretRooms:0,ngPlus:0,darkLordDefeated:false,traderRefresh:0,spellMastery:{fireball:1,ice:1,lightning:1,heal:1,curse:1},voidRelics:0,ngRiftClears:0};
     const merged={...defaults,...data.player,spellLevels:{...defaults.spellLevels,...(data.player.spellLevels||{})},loot:{...(data.player.loot||{})}};
     const weaponUpgradeBonus={'Tahta Kılıç':0.02,'Demir Kılıç':0.03,'Altın Kılıç':0.04,'Elmas Kılıç':0.05};
     merged.weaponDamageMultiplier = Number(merged.weaponLevel) >= 2 ? 1 + (weaponUpgradeBonus[merged.weapon] || 0) : 1;
-    merged.potions = Math.max(0, Math.min(2, Number(merged.potions) || 0));
-    merged.manaPotions = Math.max(0, Math.min(3, Number(merged.manaPotions) || 0));
+    for(const key of ['potions','manaPotions','bigPotions','bigManaPotions','superPotions'])
+        merged[key]=Math.max(0,Math.floor(Number(merged[key])||0));
+    merged.potionBagTier=Math.max(0,Math.min(3,Math.floor(Number(merged.potionBagTier)||0)));
+    // Eski kayıtlardaki fazla iksirler silinmez; boş yer açılana kadar yeni iksir alınamaz.
+
     Object.keys(player).forEach(k=>delete player[k]);
     Object.assign(player,merged);
+    if(player.classId && CLASS_DEFS[player.classId]){
+        const cls=CLASS_DEFS[player.classId];
+        if(player.maxHp!==cls.hp || player.maxMana!==cls.mana){
+            player.hp=Math.round(player.hp/Math.max(1,player.maxHp)*cls.hp);
+            player.mana=Math.round(player.mana/Math.max(1,player.maxMana)*cls.mana);
+        }
+        player.maxHp=cls.hp; player.maxMana=cls.mana;
+    }
     player.hp=Math.max(0,Math.min(player.hp,player.maxHp));
     player.mana=Math.max(0,Math.min(player.mana,player.maxMana));
     if(player.dead || player.hp<=0) throw new Error('dead save');
@@ -3488,10 +3760,10 @@ update=function(){
 /* ================= Karanlık Arena Expansion Pack ================= */
 const EXP_VERSION = 1;
 const CLASS_DEFS = {
- warrior:{name:'Savaşçı',emoji:'⚔️',desc:'Güvenilir yakın dövüş: normal saldırılar %15 daha güçlü.',apply(){player.classAttackMult=1.15;}},
- mage:{name:'Büyücü',emoji:'🧙',desc:'Büyü hasarı %15 daha güçlü; büyüler %10 daha az mana harcar.',apply(){player.classSpellMult=1.15;player.classManaMult=.90;}},
- assassin:{name:'Suikastçı',emoji:'🗡️',desc:'Hızlı ve kritik odaklı: saldırılar %5 daha güçlü, kritik şansı %22 ve kritik hasarı x2,1.',apply(){player.classAttackMult=1.05;player.critChance=.22;player.critMult=2.1;}},
- paladin:{name:'Paladin',emoji:'🛡️',desc:'Dayanıklı savunma: +6 savunma ve iyileştirme %20 daha güçlü.',apply(){player.classDefenseBonus=6;player.healMult=1.20;if(!player._paladinDefenseApplied){player.defense+=6;player._paladinDefenseApplied=true;}}}
+ warrior:{name:'Savaşçı',emoji:'⚔️',hp:125,mana:50,desc:'125 Can / 50 Mana · Normal saldırılar %15 daha güçlü.',apply(){player.classAttackMult=1.15;}},
+ mage:{name:'Büyücü',emoji:'🔮',hp:80,mana:150,desc:'80 Can / 150 Mana · Büyü hasarı %15 daha güçlü; büyüler %10 daha az mana harcar.',apply(){player.classSpellMult=1.15;player.classManaMult=.90;}},
+ assassin:{name:'Suikastçı',emoji:'🗡️',hp:95,mana:75,desc:'95 Can / 75 Mana · Hızlı ve kritik odaklı: saldırılar %5 daha güçlü, kritik şansı %22 ve kritik hasarı x2,1.',apply(){player.classAttackMult=1.05;player.critChance=.22;player.critMult=2.1;}},
+ paladin:{name:'Paladin',emoji:'🛡️',hp:105,mana:85,desc:'105 Can / 85 Mana · Dayanıklı savunma: +6 savunma ve iyileştirme %20 daha güçlü.',apply(){player.classDefenseBonus=6;player.healMult=1.20;if(!player._paladinDefenseApplied){player.defense+=6;player._paladinDefenseApplied=true;}}}
 };
 const ACHIEVEMENTS = [
  {id:'firstKill',name:'İlk Kan',desc:'İlk canavarı yen.',check:s=>s.kills>=1,reward:75},
@@ -3545,9 +3817,9 @@ function checkAchievements(){const s=player.stats;ACHIEVEMENTS.forEach(a=>{if(!p
 function openAchievementManager(){checkAchievements();const box=document.getElementById('achievementList');box.innerHTML=ACHIEVEMENTS.map(a=>{const ok=!!player.achievements[a.id];return `<div class="exp-card ${ok?'':'exp-locked'}"><h4>${ok?'🏆':'🔒'} ${a.name}</h4><p>${a.desc}</p><span class="exp-badge">${ok?'Kazanıldı':'Kilitli'}</span><span class="exp-badge">+${a.reward} G</span></div>`}).join('');document.getElementById('achievementModal').style.display='flex';}
 function updateClassUI(){const b=document.getElementById('classBadgeArea');if(!b)return;if(!player.classId){b.innerHTML='<span class="exp-badge">🧙 Sınıf seçilmedi</span>';return;}const c=CLASS_DEFS[player.classId];b.innerHTML=`<span class="exp-badge">${c.emoji} ${c.name}</span> <span style="color:#aaa">${c.desc}</span>`;}
 let selectedClass=null;
-function openClassModal(){const box=document.getElementById('classList');box.innerHTML=Object.entries(CLASS_DEFS).map(([id,c])=>`<div class="exp-card class-choice" data-class="${id}" onclick="selectClass('${id}')"><h4>${c.emoji} ${c.name}</h4><p>${c.desc}</p></div>`).join('');document.getElementById('classModal').style.display='flex';}
+function openClassModal(){const box=document.getElementById('classList');box.innerHTML=Object.entries(CLASS_DEFS).map(([id,c])=>`<div class="exp-card class-choice" data-class="${id}" onclick="selectClass('${id}')"><h4>${c.emoji} ${c.name}</h4><p style="color:#ff8b93">❤️ ${c.hp} Can &nbsp; <span style="color:#75bcff">🔵 ${c.mana} Mana</span></p><p>${c.desc}</p></div>`).join('');document.getElementById('classModal').style.display='flex';}
 function selectClass(id){selectedClass=id;document.querySelectorAll('.class-choice').forEach(x=>x.classList.toggle('selected',x.dataset.class===id));document.getElementById('classConfirmBtn').disabled=false;}
-function confirmClassChoice(){if(!selectedClass)return;player.classId=selectedClass;CLASS_DEFS[selectedClass].apply();log(`🧙 Sınıfın seçildi: ${CLASS_DEFS[selectedClass].name}!`);document.getElementById('classModal').style.display='none';update();saveGame(false);}
+function confirmClassChoice(){if(!selectedClass)return;player.classId=selectedClass;CLASS_DEFS[selectedClass].apply();player.maxHp=CLASS_DEFS[selectedClass].hp;player.maxMana=CLASS_DEFS[selectedClass].mana;player.hp=player.maxHp;player.mana=player.maxMana;log(`🧙 Sınıfın seçildi: ${CLASS_DEFS[selectedClass].name}!`);document.getElementById('classModal').style.display='none';update();saveGame(false);}
 function closeExpansionModal(id){const e=document.getElementById(id);if(e)e.style.display='none';}
 function openWorldMap(){renderWorldMap();document.getElementById('worldMapModal').style.display='flex';}
 function renderWorldMap(){const box=document.getElementById('worldMapGrid');box.innerHTML=REGION_DEFS.map(r=>{let unlocked=player.level>=r.req;if(r.id==='cave')unlocked=unlocked&&player.caveUnlocked;if(r.id==='castle')unlocked=unlocked&&player.darkCrystals>=5;return `<div class="exp-card map-node ${unlocked?'':'exp-locked'}"><div><h4>${r.emoji} ${r.name}</h4><p>${r.desc}</p></div><button ${unlocked?'':'disabled'} onclick="${r.action}">${unlocked?'GİR':'🔒 Lv.'+r.req}</button></div>`}).join('');}
@@ -3654,13 +3926,14 @@ function inventoryItem(icon,name,count,meta='',action='',disabled=false){
 function renderInventory(){
  const grid=document.getElementById('inventoryModalGrid'); if(!grid)return;
  const lootCount=getLootCount(), limit=player.inventoryLimit||30;
+ renderPotionBag();
  document.getElementById('inventoryModalCap').textContent=`Loot: ${lootCount} / ${limit} · 💎 Kristal: ${player.darkCrystals||0} · 🗝️ Anahtar: ${player.darkKeys||0}`;
  const potions=[
-  ['🧪','Küçük Can İksiri',player.potions||0,'+50 Can',"drinkPotion()"],
-  ['❤️','Büyük Can İksiri',player.bigPotions||0,'+120 Can',"drinkBigPotion()"],
-  ['🔵','Küçük Mana İksiri',player.manaPotions||0,'+50 Mana',"restoreMana()"],
-  ['💙','Büyük Mana İksiri',player.bigManaPotions||0,'+120 Mana',"restoreBigMana()"],
-  ['⚡','Süper İksir',player.superPotions||0,'+200 Can · +100 Mana',"useSuperPotion()"]
+  ['🧪','Küçük Can İksiri',player.potions||0,`+${potionAmount(player.maxHp,.35)} Can (%35) · Hızlı · Şimdi +${Math.min(Math.max(0,player.maxHp-player.hp),potionAmount(player.maxHp,.35))}`,"drinkPotion()"],
+  ['❤️','Büyük Can İksiri',player.bigPotions||0,`+${potionAmount(player.maxHp,.70)} Can (%70) · 1 hamle · Şimdi +${Math.min(Math.max(0,player.maxHp-player.hp),potionAmount(player.maxHp,.70))}`,"drinkBigPotion()"],
+  ['🔵','Küçük Mana İksiri',player.manaPotions||0,`+${potionAmount(player.maxMana,.35)} Mana (%35) · Hızlı · Şimdi +${Math.min(Math.max(0,player.maxMana-player.mana),potionAmount(player.maxMana,.35))}`,"restoreMana()"],
+  ['💙','Büyük Mana İksiri',player.bigManaPotions||0,`+${potionAmount(player.maxMana,.70)} Mana (%70) · 1 hamle · Şimdi +${Math.min(Math.max(0,player.maxMana-player.mana),potionAmount(player.maxMana,.70))}`,"restoreBigMana()"],
+  ['⚡','Süper İksir',player.superPotions||0,`Tam dolum · Şimdi ❤️ +${Math.max(0,player.maxHp-player.hp)} / 🔵 +${Math.max(0,player.maxMana-player.mana)} · 1 hamle`,"useSuperPotion()"]
  ];
  const materials=[['⚙️','Demir Parçası',player.ironPieces||0,'5 adet ekipman için'],['🟡','Altın Parçası',player.goldPieces||0,'5 adet ekipman için'],['💎','Elmas Parçası',player.diamondPieces||0,'5 adet ekipman için'],['🔥','Ateş Çekirdeği',player.fireCorePieces||0,'Büyü ustalığı'],['❄️','Buz Çekirdeği',player.iceCorePieces||0,'Büyü ustalığı'],['⚡','Şimşek Çekirdeği',player.lightningCorePieces||0,'Büyü ustalığı'],['✨','Kutsal Çekirdek',player.holyCorePieces||0,'Büyü ustalığı'],['☠️','Lanet Çekirdeği',player.curseCorePieces||0,'Büyü ustalığı']];
  const special=[['💎','Karanlık Kristal',player.darkCrystals||0,'Özel sandıklar ve Karanlık Lord'],['🗝️','Gizli Oda Anahtarı',player.darkKeys||0,'Gizli odaları açar'],['🪬','Boşluk Kalıntısı',player.voidRelics||0,'NG+ Karanlık Yarık ödülü']];
@@ -3806,5 +4079,73 @@ function escapeLeaderboardText(v){return String(v).replace(/[&<>"']/g,c=>({'&':'
 
 </script>
 
+<!-- Mobilde ekranın altında her zaman erişilebilen savaş kumandaları -->
+<div id="mobileCombatDock" aria-label="Mobil savaş kumandaları">
+ <div id="mcDrawer" class="mc-drawer" aria-live="polite"></div>
+ <div class="mc-row">
+  <button class="attack" id="mcAttack" type="button" onclick="mobileCombatAction('attack')">⚔️ Saldır</button>
+  <button id="mcMagic" type="button" aria-expanded="false" onclick="mobileCombatToggle('magic')">🔮 Büyüler</button>
+  <button id="mcPotions" type="button" aria-expanded="false" onclick="mobileCombatToggle('potions')">🧪 İksirler</button>
+  <button id="mcTravel" type="button" aria-expanded="false" onclick="mobileCombatToggle('travel')">🧭 Menü</button>
+ </div>
+</div>
+<script id="mobileCombatScript">
+(function(){
+ 'use strict';
+ let openPanel='';
+ const actions={
+   magic:[['🔥 Ateş Topu',"castSpell('fireball')"],['❄️ Buz Mızrağı',"castSpell('ice')"],['⚡ Şimşek',"castSpell('lightning')"],['✨ Kutsal Şifa',"castSpell('heal')"],['☠️ Lanet',"castSpell('curse')"],['🏃 Kaçış','escapeBattle()']],
+   potions:[['🧪 Küçük Can','drinkPotion()'],['🔵 Küçük Mana','restoreMana()'],['🎒 Büyük / Süper İksir','openInventory()']],
+   travel:[['🌲 Ormana Git','goForest()'],['🕳️ Mağara','goCave()'],['🎒 Envanter','openInventory()'],['🏪 Market','openShop()'],['🏟️ Arena','openArena()'],['🗺️ Harita','openWorldMap()']]
+ };
+ function getOriginal(call){return [...document.querySelectorAll('#actionButtons button')].find(b=>b.getAttribute('onclick')===call)||null;}
+ window.mobileCombatAction=function(kind,index){
+   if(kind==='attack'){
+     const button=getOriginal('attack()'); if(button&&!button.disabled)button.click();
+   }else{
+     const entry=actions[kind]&&actions[kind][index]; if(!entry)return;
+     const original=getOriginal(entry[1]);
+     if(original){if(!original.disabled)original.click();}
+     else { // Envanterdeki büyük iksir ve panele özgü eylemler
+       const allowed={'openInventory()':()=>window.openInventory?.(),'openShop()':()=>window.openShop?.(),'openArena()':()=>window.openArena?.(),'openWorldMap()':()=>window.openWorldMap?.(),'goCave()':()=>window.goCave?.(),'goForest()':()=>window.goForest?.()};
+       allowed[entry[1]]?.();
+     }
+   }
+   if(openPanel){renderPanel();}
+ };
+ window.mobileCombatToggle=function(kind){openPanel=openPanel===kind?'':kind;renderPanel();};
+ function renderPanel(){
+   const drawer=document.getElementById('mcDrawer');if(!drawer)return;
+   drawer.classList.toggle('open',!!openPanel);
+   ['Magic','Potions','Travel'].forEach(name=>document.getElementById('mc'+name)?.setAttribute('aria-expanded',String(openPanel===name.toLowerCase())));
+   if(!openPanel){drawer.replaceChildren();return;}
+   const heading=document.createElement('div');heading.className='mc-title';heading.textContent={magic:'🔮 Büyünü seç',potions:'🧪 İksir seç veya çantanı aç',travel:'🧭 Hızlı erişim'}[openPanel];
+   const grid=document.createElement('div');grid.className='mc-drawer-grid';
+   actions[openPanel].forEach(([fallback,call],i)=>{
+     const b=document.createElement('button');b.type='button';const original=getOriginal(call);
+     b.textContent=original?.textContent?.trim()||fallback;
+     b.disabled=!!original?.disabled;
+     b.onclick=()=>mobileCombatAction(openPanel,i);
+     grid.appendChild(b);
+   });
+   drawer.replaceChildren(heading,grid);
+ }
+ // Normal oyun ekranı güncellendiğinde açık menüdeki iksir sayıları ve büyü yükleri güncel kalsın.
+ const originalUpdate=window.update;
+ if(typeof originalUpdate==='function')window.update=function(...args){const result=originalUpdate.apply(this,args);if(openPanel)renderPanel();return result;};
+ window.addEventListener('resize',()=>{if(innerWidth>800&&openPanel){openPanel='';renderPanel();}});
+})();
+</script>
+
+<div id="goldWarningOverlay" role="dialog" aria-modal="true" aria-labelledby="goldWarningTitle" onclick="if(event.target===this)closeGoldWarning()">
+ <div class="gold-warning-card">
+  <div style="font-size:38px" aria-hidden="true">💰</div>
+  <h2 id="goldWarningTitle">YETERSİZ ALTIN!</h2>
+  <p id="goldWarningItem">Bu alışveriş için yeterli altının yok.</p>
+  <p id="goldWarningNumbers"></p>
+  <p class="gold-missing" id="goldWarningMissing"></p>
+  <button type="button" onclick="closeGoldWarning()">TAMAM</button>
+ </div>
+</div>
 </body>
 </html>
