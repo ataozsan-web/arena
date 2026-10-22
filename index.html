@@ -952,7 +952,7 @@ Bazı iksirler pahalıdır ama boss savaşlarında büyük avantaj sağlar.
 
 <p>🔓 Level 1</p>
 
-<p>💰 75 altın</p>
+<p>💰 45 altın</p>
 
 <button id="buySmallHealthBtn" onclick="buyPotion()">
 SATIN AL
@@ -990,7 +990,7 @@ SATIN AL
 
 <p>🔓 Level 1</p>
 
-<p>💰 80 altın</p>
+<p>💰 50 altın</p>
 
 <button id="buySmallManaBtn" onclick="buyManaPotion()">
 SATIN AL
@@ -3186,7 +3186,7 @@ function buyPotion() {
     }
 
 
-    const price=ngPrice(75);
+    const price=ngPrice(45);
     if(player.gold < price) {
 
         log(`❌ Küçük can iksiri ${price} altın.`);
@@ -3249,7 +3249,7 @@ function buyManaPotion() {
     }
 
 
-    const price=ngPrice(80);
+    const price=ngPrice(50);
     if(player.gold < price) {
 
         log(`❌ Küçük mana iksiri ${price} altın.`);
