@@ -4282,7 +4282,7 @@ const classNames={warrior:'⚔ Savaşçı',mage:'✦ Büyücü',assassin:'◆ Su
 const classStats={
  warrior:{hp:135,mana:80,speed:1,defense:.12,bonus:'135 Can · %12 zırh · F: Kalkan (1.5 sn %75 koruma)'},
  mage:{hp:90,mana:150,speed:1,defense:0,bonus:'150 Mana · Büyüler %20 daha güçlü · F: Mana Yenileme'},
- assassin:{hp:95,mana:95,speed:1.22,defense:0,bonus:'%22 hızlı · %20 kritik şansı · F: Gölge Atılımı'},
+ assassin:{hp:110,mana:100,speed:1.26,defense:.06,bonus:'110 Can · %6 zırh · %26 hızlı · %25 kritik · F: Gölge Atılımı (6 sn)'},
  paladin:{hp:120,mana:110,speed:.9,defense:.10,bonus:'120 Can · %10 zırh · Şifalar %25 güçlü · F: Koruyucu Işık'}
 };
 const SPELLS={
@@ -4319,7 +4319,7 @@ window.pixelDash=()=>{if(!connected||me.hp<=0)return;const now=Date.now();if(now
  sparks(me.x,me.y-25,'#bdeeff',16);me.x+=vx*72;me.y+=vy*40;collide(me);me.swingAt=now;
  sparks(me.x,me.y-25,'#d5eeff',18);broadcast('classSkill',{x:me.x,y:me.y,classId:me.classId});broadcast('state',snapshot());};
 window.pixelUltimate=()=>{if(!connected||me.hp<=0||ultimate<100)return;ultimate=0;ultAt=Date.now();me.swingAt=ultAt;me.swingSpecial=true;
- const power={warrior:41,mage:46,assassin:38,paladin:32}[me.classId]||38;
+ const power={warrior:41,mage:46,assassin:44,paladin:32}[me.classId]||38;
  if(me.classId==='paladin'){me.hp=Math.min(maxHp(),me.hp+30);guardUntil=Date.now()+1800;broadcast('state',snapshot())}
  const attack={id:myId,x:Math.round(me.x),y:Math.round(me.y),dir:me.dir,classId:me.classId,power};
  fx.push({kind:'burst',x:me.x,y:me.y-24,life:36,max:36,color:(palettes[me.classId]||palettes.warrior).fx,radius:63});
@@ -4366,12 +4366,12 @@ window.pixelCastSlot=(slot)=>{
 window.pixelGuard=()=>{
  if(!connected||me.hp<=0)return;
  const now=Date.now();if(now<classSkillAt){spellFeedback('Sınıf yeteneği henüz hazır değil');return}
- classSkillAt=now+8500;
+ classSkillAt=now+(me.classId==='assassin'?6000:8500);
  const c=me.classId;
  if(c==='warrior'){guardUntil=now+1500;skillFX(me.x,me.y,'#8fceff',18);spellFeedback('🛡️ Kalkan: 1.5 saniye güçlü koruma!')}
  if(c==='paladin'){guardUntil=now+2300;me.hp=Math.min(maxHp(),me.hp+14);skillFX(me.x,me.y,'#ffe2a3',22);spellFeedback('✨ Koruyucu Işık: +14 HP ve kalkan!')}
  if(c==='mage'){mana=Math.min(maxMana(),mana+35);skillFX(me.x,me.y,'#b196ff',22);spellFeedback('🔮 +35 Mana!')}
- if(c==='assassin'){me.x+=me.dir*92;collide(me);guardUntil=now+400;skillFX(me.x,me.y,'#75f7c0',20);spellFeedback('💨 Gölge Atılımı!')}
+ if(c==='assassin'){me.x+=me.dir*110;collide(me);invincibleUntil=now+450;skillFX(me.x,me.y,'#75f7c0',20);spellFeedback('💨 Gölge Atılımı! Kısa dokunulmazlık!')}
  broadcast('classSkill',{x:me.x,y:me.y,classId:c,skillAt:now});broadcast('state',snapshot());
 };
 function spellHud(now){txt('pixelManaLabel','MANA '+Math.floor(mana)+' / '+maxMana());$('pixelManaFill').style.width=(100*mana/maxMana())+'%';
@@ -4453,7 +4453,7 @@ function updateRoster(){
   channel.on('broadcast',{event:'ultimate'},({payload:p})=>{if(!p||p.id===myId)return;
    const col=(palettes[p.classId]||palettes.warrior).fx;
    fx.push({kind:'burst',x:p.x,y:p.y-24,life:38,max:38,color:col,radius:66});sparks(p.x,p.y-25,col,40);
-   if(me.hp>0&&Math.hypot(me.x-p.x,(me.y-p.y)*1.35)<135)hurtLocal(Math.min(55,Math.max(1,Number(p.power)||35)),me.x,me.y,p.id);
+   if(me.hp>0&&Math.hypot(me.x-p.x,(me.y-p.y)*1.35)<135)hurtLocal(Math.min(55,Math.max(1,Number(p.power)||35)),me.x,me.y,p.id,p.classId);
   });
   channel.on('broadcast',{event:'defeat'},({payload:p})=>{if(p?.winner===myId){score++;addUltimate(20);status('RAKİBİ YENDİN! +1 SKOR');updateRoster();updateBoard()}});
   channel.subscribe((state)=>{if(state==='SUBSCRIBED'){
@@ -4473,7 +4473,7 @@ function updateRoster(){
  function pop(x,y,text,color){fx.push({kind:'text',x,y,text,color,life:45,max:45})}
  function sparks(x,y,color,count=12){for(let i=0;i<count;i++){const ang=Math.random()*Math.PI*2,v=0.65+Math.random()*2.4;fx.push({kind:'particle',x,y,vx:Math.cos(ang)*v,vy:Math.sin(ang)*v-0.6,life:12+Math.random()*20,max:32,color,size:1+Math.random()*2})}}
  // Melee hitboxes use the same world-space ellipse as the range preview.
- function meleeReach(a){return a.classId==='assassin'?(a.special?86:60):a.classId==='paladin'?(a.special?98:70):(a.special?96:65)}
+ function meleeReach(a){return a.classId==='assassin'?(a.special?102:73):a.classId==='paladin'?(a.special?98:70):(a.special?96:65)}
  function meleeHit(a,target){const dx=target.x-a.x,dy=(target.y-a.y)*1.5;return (dx*a.dir>=-8 && dx*a.dir<=meleeReach(a) && Math.abs(dy)<(a.special?46:36))}
  function hitSegment(x1,y1,x2,y2,x,y,rx=22,ry=31){
    // Swept projectile collision: no tunneling on laggy frames or high-speed spells.
@@ -4487,19 +4487,22 @@ function updateRoster(){
    const kind=a.classId==='mage'?'arcane':a.classId==='assassin'?(a.special?'shadow':'dagger'):a.classId==='paladin'?(a.special?'holy':'blade'):'blade';
    const ranged=kind==='arcane'||kind==='shadow'||kind==='holy';
    if(ranged){
-     const speed=(a.special?4.4:5.8)*dir;
-     projectiles.push({x:a.x+dir*23,y:a.y,vx:speed,vy:0,life:a.special?85:70,classId:a.classId,special:!!a.special,kind,own,hit:false,damage:a.special?24:13,color:pal.fx||'#fff',id:a.id||myId});
+     const speed=(a.special?6.3:5.8)*dir;
+     projectiles.push({x:a.x+dir*23,y:a.y,vx:speed,vy:0,life:a.special?85:70,classId:a.classId,special:!!a.special,kind,own,hit:false,damage:a.classId==='assassin'?(a.special?31:16):(a.special?24:13),color:pal.fx||'#fff',id:a.id||myId});
      sparks(a.x+dir*21,a.y-35,pal.fx,6);
    }else{
      fx.push({kind:'slash',x:a.x,y:a.y-30,dir,classId:a.classId,special:!!a.special,own,reach:meleeReach(a),life:a.special?26:20,max:a.special?26:20});
-     if(!own && me.hp>0 && meleeHit({...a,dir},me)){hurtLocal(a.special?24:12,me.x,me.y,a.id)}
+     if(!own && me.hp>0 && meleeHit({...a,dir},me)){hurtLocal(a.classId==='assassin'?(a.special?31:16):(a.special?24:12),me.x,me.y,a.id,a.classId)}
      if(a.classId==='assassin')fx.push({kind:'slash',x:a.x+dir*9,y:a.y-23,dir,classId:a.classId,special:false,life:13,max:13,offset:1});
    }
    if(own){const move=classAttack[a.classId]||classAttack.warrior;txt('pixelGameStatus',a.special?move.special:move.normal+'!')}
  }
- function hurtLocal(dmg,x,y,attacker){
+ function hurtLocal(dmg,x,y,attacker,attackClass){
    if(me.hp<=0||Date.now()-me.lastHit<280)return;
-   me.lastHit=Date.now();let actual=Math.round(dmg*(1-stat().defense));if(Date.now()<weakUntil)actual=Math.round(actual*1.2);if(Date.now()<guardUntil)actual=Math.max(1,Math.round(actual*.25));if(Date.now()<invincibleUntil)return;me.hp=Math.max(0,me.hp-actual);dmg=actual;addUltimate(9);
+   me.lastHit=Date.now();
+   const critical=attackClass==='assassin'&&Math.random()<.25;
+   if(critical){dmg=Math.round(dmg*1.5);pop(x,y-68,'KRİTİK!','#ffe08c');}
+   let actual=Math.round(dmg*(1-stat().defense));if(Date.now()<weakUntil)actual=Math.round(actual*1.2);if(Date.now()<guardUntil)actual=Math.max(1,Math.round(actual*.25));if(Date.now()<invincibleUntil)return;me.hp=Math.max(0,me.hp-actual);dmg=actual;addUltimate(9);
    hitFlash=Date.now()+130;pop(x,y-38,'-'+dmg,'#ff697b');sparks(x,y-26,'#ffe6ae',14);
    if(me.hp===0){status('Yenildin! Yeniden doğ ile devam et.');broadcast('defeat',{winner:attacker})}
    broadcast('state',snapshot());updateRoster();
@@ -4772,7 +4775,7 @@ function updateRoster(){
      const hitsMe=hitSegment(oldX,oldY,p.x,p.y,me.x,me.y,radius,39);
      const nearProps=props.some(o=>hitSegment(oldX,oldY,p.x,p.y,o.x,o.y,Math.max(10,o.r-5),Math.max(12,o.r-8)));
      if(!p.hit&&!p.own&&me.hp>0&&hitsMe){
-       p.hit=true;hurtLocal(p.damage,me.x,me.y,p.id);
+       p.hit=true;hurtLocal(p.damage,me.x,me.y,p.id,p.classId);
        if(p.spellId==='ice'){slowUntil=Date.now()+2000;pop(me.x,me.y-60,'YAVAŞ','#8cddff')}
        if(p.spellId==='curse'){weakUntil=Date.now()+3000;pop(me.x,me.y-60,'LANET','#c18bff')}
        if(p.spellId==='lightning'){fx.push({kind:'bolt',x:me.x,y:me.y-18,life:11,max:11,color:'#fff2a2'});}
