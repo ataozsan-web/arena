@@ -667,7 +667,15 @@ display:grid;place-items:center;padding:16px;font-family:monospace;color:#f7f0ff
 .pixel-room-empty{font-size:13px;color:#b6c6c5;padding:13px;text-align:center;border:1px dashed #47564f}
 @media(max-width:480px){.pixel-open-room{flex-wrap:wrap}.pixel-open-room button{width:100%!important}}
 </style>
-</head>
+<style id="pixelRespawnOverlayStyle">
+.pixel-canvas-wrap{position:relative}
+.pixel-death-overlay[hidden]{display:none!important}
+.pixel-death-overlay{position:absolute;inset:0;z-index:24;background:rgba(14,8,21,.65);display:flex;flex-direction:column;align-items:center;justify-content:center;pointer-events:none;text-align:center;text-shadow:0 3px 6px #000}
+.death-title{font:bold clamp(20px,4vw,45px) monospace;color:#ff858b;letter-spacing:3px}
+.death-count{font:bold clamp(55px,11vw,128px) monospace;color:#ffefaa;line-height:1.2;animation:pixelDeathPulse 1s ease-in-out infinite}
+.death-subtitle{font:bold clamp(9px,1.8vw,17px) monospace;color:#e6f3ff}
+@keyframes pixelDeathPulse{50%{transform:scale(1.12)}}
+</style></head>
 
 <body>
 
@@ -700,8 +708,8 @@ display:grid;place-items:center;padding:16px;font-family:monospace;color:#f7f0ff
     <div class="pixel-main-grid">
       <div class="pixel-stage-card"><div style="text-align:center;padding:5px;color:#e3f4c1;font-weight:bold;letter-spacing:2px">🌿 ORMAN HARABESİ • KADİM DÜELLO ALANI 🌿</div>
         <div class="pixel-hud"><span id="pixelRoomLabel">ODA: —</span><span id="pixelPlayerCount">OYUNCULAR: 0</span><span id="pixelHpLabel">CAN: 100 / 100</span><span id="pixelScoreLabel">SKOR: 0</span></div>
-        <div class="pixel-canvas-wrap"><canvas id="pixelCanvas" width="960" height="540" aria-label="Piksel çok oyunculu arena"></canvas><div id="pixelLiveBoard" class="pixel-live-board"><div class="pixel-board-title">🏆 ARENA SIRALAMASI</div><div id="pixelBoardRows">Oyuncular bekleniyor...</div></div></div>
-        <div class="pixel-statusbar"><span id="pixelGameStatus" class="pixel-status">Rakip bekleniyor...</span><button onclick="pixelRespawn()">↻ YENİDEN DOĞ</button></div>
+        <div class="pixel-canvas-wrap"><canvas id="pixelCanvas" width="960" height="540" aria-label="Piksel çok oyunculu arena"></canvas><div id="pixelDeathOverlay" class="pixel-death-overlay" hidden><div class="death-title">YENİLDİN!</div><div id="pixelDeathCount" class="death-count">5</div><div class="death-subtitle">SANİYE SONRA YENİDEN DOĞUYORSUN</div></div><div id="pixelLiveBoard" class="pixel-live-board"><div class="pixel-board-title">🏆 ARENA SIRALAMASI</div><div id="pixelBoardRows">Oyuncular bekleniyor...</div></div></div>
+        <div class="pixel-statusbar"><span id="pixelGameStatus" class="pixel-status">Rakip bekleniyor...</span><button id="pixelRespawnButton" onclick="pixelRespawn()" disabled>↻ YENİDEN DOĞ</button></div>
         <div class="pixel-ultimate-wrap"><div class="pixel-ultimate-track"><div id="pixelUltimateFill"></div></div><button id="pixelUltimateBtn" onclick="pixelUltimate()">G · ULTIMATE (0%)</button><button id="pixelDashBtn" onclick="pixelDash()">⇧ · KAÇIN</button><span id="pixelComboText">KOMBO: 0</span></div><div class="pixel-ability-bar"><button id="pixelSpellBtn1" onclick="pixelCastSlot(0)">E · BÜYÜ 1</button><button id="pixelSpellBtn2" onclick="pixelCastSlot(1)">R · BÜYÜ 2</button><button id="pixelGuardBtn" onclick="pixelGuard()">F · SINIF YETENEĞİ</button></div><div class="pixel-mana-track"><span id="pixelManaLabel">MANA 100 / 100</span><div><i id="pixelManaFill"></i></div></div><div class="pixel-controls"><div class="move-pad"><span></span><button data-move="up">▲</button><span></span><button data-move="left">◀</button><button data-move="down">▼</button><button data-move="right">▶</button></div><div class="action-pad"><button onclick="pixelAttack(false)">⚔ / ✦ NORMAL</button><button onclick="pixelAttack(true)">💥 ÖZEL YETENEK</button></div></div>
       </div>
       <aside class="pixel-side-panel">
@@ -4363,7 +4371,7 @@ const $=id=>document.getElementById(id);
 const view=$('pixelOnlineView'),gate=$('modeGate'),canvas=$('pixelCanvas'),ctx=canvas.getContext('2d');
 ctx.imageSmoothingEnabled=false;
 const W=960,H=540,keys=new Set(),others=new Map();
-let footstepAt=0,hitFlash=0;
+let footstepAt=0,hitFlash=0,respawnAt=0;const confirmedShots=new Set();
 let client=null,channel=null,connected=false,lastTime=0,lastPublish=0,lastAttack=0,lastSpecial=0,seq=0,score=0,fx=[],projectiles=[],room='',myId='',running=false,rosterStamp='';
 let me={x:480,y:330,hp:100,dir:1,name:'Savaşçı',classId:'warrior',kills:0,lastHit:0};
 const palettes={
@@ -4597,7 +4605,7 @@ function updateRoster(){
  window.chooseGameMode=mode=>{gate.style.display='none';view.style.display=mode==='online'?'block':'none';view.classList.remove('mobile-playing');if(mode==='online'){$('pixelName').value=localStorage.getItem('pixelArenaName')||'';drawSelection();startLoop();startRoomDirectory()}else{disconnect();stopRoomDirectory()}};
  window.pixelLeaveToMenu=()=>{view.classList.remove('mobile-playing');disconnect();stopRoomDirectory();view.style.display='none';gate.style.display='grid'};
  window.pixelShowLobby=()=>{view.classList.remove('mobile-playing');disconnect();$('pixelPlay').style.display='none';$('pixelLobby').style.display='block'};
- function disconnect(){if(channel){try{channel.send({type:'broadcast',event:'bye',payload:{id:myId}})}catch(e){}try{client?.removeChannel(channel)}catch(e){}}channel=null;client=null;connected=false;room='';isRoomCreator=false;publishRoomPresence();others.clear();keys.clear();rosterStamp='';updateMePanel();updateRoster()}
+ function disconnect(){respawnAt=0;confirmedShots.clear();$('pixelDeathOverlay').hidden=true;if(channel){try{channel.send({type:'broadcast',event:'bye',payload:{id:myId}})}catch(e){}try{client?.removeChannel(channel)}catch(e){}}channel=null;client=null;connected=false;room='';isRoomCreator=false;publishRoomPresence();others.clear();keys.clear();rosterStamp='';updateMePanel();updateRoster()}
  function broadcast(event,data){if(!connected||!channel)return;channel.send({type:'broadcast',event,payload:{...data,id:myId}}).catch(()=>{});}
  function snapshot(){return {x:Math.round(me.x),y:Math.round(me.y),hp:me.hp,maxHp:maxHp(),dir:me.dir,name:me.name,classId:me.classId,kills:score,seq:++seq}}
  window.pixelTestConnection=async()=>{
@@ -4621,7 +4629,7 @@ function updateRoster(){
   me.name=clean($('pixelName').value)||'Savaşçı';me.classId=$('pixelClass').value;equipped=[$('pixelSpell1').value,$('pixelSpell2').value];if(equipped[0]===equipped[1]){status('İki farklı büyü seçmelisin.');return;}
   isRoomCreator=!!create;room=code($('pixelRoom').value);if(create&&!room)room=Math.random().toString(36).slice(2,8).toUpperCase();
   if(!room){status('Önce oda kodu gir.');return} $('pixelRoom').value=room;
-  localStorage.setItem('pixelArenaName',me.name); myId=uuid();me.x=180+Math.random()*600;me.y=270+Math.random()*192;collide(me);me.hp=maxHp();me.maxHp=maxHp();mana=maxMana();cooldowns={};classSkillAt=0;guardUntil=0;slowUntil=0;weakUntil=0;score=0;ultimate=0;combo=0;dashAt=0;others.clear();fx=[];projectiles=[];seq=0;rosterStamp='';boardStamp='';
+  localStorage.setItem('pixelArenaName',me.name); myId=uuid();me.x=180+Math.random()*600;me.y=270+Math.random()*192;collide(me);me.hp=maxHp();me.maxHp=maxHp();mana=maxMana();cooldowns={};classSkillAt=0;guardUntil=0;slowUntil=0;weakUntil=0;score=0;ultimate=0;combo=0;dashAt=0;respawnAt=0;confirmedShots.clear();$('pixelDeathOverlay').hidden=true;others.clear();fx=[];projectiles=[];seq=0;rosterStamp='';boardStamp='';
   updateMePanel(); updateRoster();
   if(!window.supabase){status('Supabase kütüphanesi yüklenemedi. İnternet bağlantını kontrol et.');return}
   const {url,key}=cfg();if(!url||!key){status('Supabase bağlantı bilgisi eksik. Offline menüden liderlik ayarlarını yapılandır.');return}
@@ -4647,6 +4655,19 @@ function updateRoster(){
     const sp=SPELLS[p.spellId],actor=others.get(p.id);if(actor){actor.swingAt=Date.now();actor.swingSpecial=true}
     if(p.spellId==='heal'){sparks(p.x,p.y-25,sp.color,18);fx.push({kind:'burst',x:p.x,y:p.y-34,life:16,max:16,color:sp.color,radius:18});return}
     makeSpellProjectile(p.spellId,{x:p.x,y:p.y,dir:p.dir,classId:p.classId,id:p.id},false,Math.min(50,Math.max(1,p.damage||sp.damage)),p.shotId);
+  });
+  channel.on('broadcast',{event:'spellContact'},({payload:p})=>{
+    if(!p||p.targetId!==myId||!p.shotId||confirmedShots.has(p.shotId)||me.hp<=0)return;
+    confirmedShots.add(p.shotId);
+    const sp=SPELLS[p.spellId];if(!sp)return;
+    const dmg=Math.min(60,Math.max(1,Number(p.damage)||sp.damage||1));
+    const applied=hurtLocal(dmg,me.x,me.y,p.casterId,p.classId);
+    if(applied&&p.spellId==='ice'){slowUntil=Date.now()+2000;pop(me.x,me.y-65,'YAVAŞLADI','#b6eaff')}
+    if(applied&&p.spellId==='curse'){weakUntil=Date.now()+3000;pop(me.x,me.y-65,'LANETLENDİ','#d3a4ff')}
+    spellImpactFX(p.spellId,me.x,me.y,sp.color);
+    pop(me.x,me.y-82,applied?'BÜYÜ İSABET!':'KORUNDU',applied?'#ffe794':'#b5e5ff');
+    projectiles=projectiles.filter(q=>q.shotId!==p.shotId);
+    broadcast('spellImpact',{shotId:p.shotId,casterId:p.casterId,x:me.x,y:me.y,blocked:!applied});
   });
   channel.on('broadcast',{event:'spellImpact'},({payload:p})=>{
     if(!p||p.casterId!==myId||!p.shotId)return;
@@ -4675,7 +4696,7 @@ function updateRoster(){
   others.set(p.id,{moving:!!prev&&(Math.abs(newX-prev.x)+Math.abs(newY-prev.y)>1),x:Math.max(55,Math.min(W-55,Number(p.x)||480)),y:Math.max(242,Math.min(499,Number(p.y)||340)),hp:Math.max(0,Math.min(150,Number(p.hp)||0)),maxHp:Math.max(80,Math.min(150,Number(p.maxHp)||100)),dir:p.dir===-1?-1:1,name:clean(p.name)||'Savaşçı',classId:palettes[p.classId]?p.classId:'warrior',kills:Number(p.kills)||0,seq:p.seq,t:Date.now()});
   updateRoster();
  }
- window.pixelRespawn=()=>{me.hp=maxHp();me.maxHp=maxHp();mana=maxMana();guardUntil=0;slowUntil=0;weakUntil=0;me.x=180+Math.random()*600;me.y=270+Math.random()*192;collide(me);status('Savaşa geri döndün!');broadcast('state',snapshot());updateRoster()};
+ window.pixelRespawn=()=>{if(!connected||me.hp>0||!respawnAt||Date.now()<respawnAt)return;respawnAt=0;$('pixelDeathOverlay').hidden=true;confirmedShots.clear();me.hp=maxHp();me.maxHp=maxHp();mana=maxMana();guardUntil=0;slowUntil=0;weakUntil=0;me.x=180+Math.random()*600;me.y=270+Math.random()*192;collide(me);status('Savaşa geri döndün!');broadcast('state',snapshot());updateRoster()};
  const classAttack={warrior:{normal:'Kılıç Darbesi',special:'Dönen Kılıç'},mage:{normal:'Büyü Oku',special:'Meteor Küresi'},assassin:{normal:'Çift Hançer',special:'Gölge Fırlatışı'},paladin:{normal:'Kutsal Kılıç',special:'Işık Dalgası'}};
  function pop(x,y,text,color){fx.push({kind:'text',x,y,text,color,life:45,max:45})}
  function sparks(x,y,color,count=12){for(let i=0;i<count;i++){const ang=Math.random()*Math.PI*2,v=0.65+Math.random()*2.4;fx.push({kind:'particle',x,y,vx:Math.cos(ang)*v,vy:Math.sin(ang)*v-0.6,life:12+Math.random()*20,max:32,color,size:1+Math.random()*2})}}
@@ -4711,7 +4732,7 @@ function updateRoster(){
    if(critical){dmg=Math.round(dmg*1.5);pop(x,y-68,'KRİTİK!','#ffe08c');}
    let actual=Math.round(dmg*(1-stat().defense));if(Date.now()<weakUntil)actual=Math.round(actual*1.2);if(Date.now()<guardUntil)actual=Math.max(1,Math.round(actual*.25));if(Date.now()<invincibleUntil)return false;me.hp=Math.max(0,me.hp-actual);dmg=actual;addUltimate(9);
    hitFlash=Date.now()+130;pop(x,y-38,'-'+dmg,'#ff697b');sparks(x,y-26,'#ffe6ae',14);
-   if(me.hp===0){status('Yenildin! Yeniden doğ ile devam et.');broadcast('defeat',{winner:attacker})}
+   if(me.hp===0){respawnAt=Date.now()+5000;$('pixelDeathOverlay').hidden=false;status('Yenildin! 5 saniye sonra yeniden doğacaksın.');broadcast('defeat',{winner:attacker})}
    broadcast('state',snapshot());updateRoster();return true;
  }
  window.pixelAttack=(special=false)=>{
@@ -4998,7 +5019,19 @@ function updateRoster(){
      const radius=p.spellId==='fireball'?30:p.spellId==='ice'?22:p.spellId==='lightning'?32:22;
      const hitsMe=hitSegment(oldX,oldY,p.x,p.y,me.x,me.y,radius,39);
      const nearProps=props.some(o=>hitSegment(oldX,oldY,p.x,p.y,o.x,o.y,Math.max(10,o.r-5),Math.max(12,o.r-8)));
+     if(p.own&&p.spellId){
+       const victim=Array.from(others.entries()).find(([id,o])=>o.hp>0&&hitSegment(oldX,oldY,p.x,p.y,o.x,o.y,radius+7,49));
+       if(victim){
+         const [targetId,target]=victim;
+         spellImpactFX(p.spellId,target.x,target.y,p.color);
+         pop(target.x,target.y-70,'İSABET!',p.color);
+         broadcast('spellContact',{shotId:p.shotId,targetId,casterId:myId,spellId:p.spellId,damage:p.damage,classId:p.classId});
+         projectiles.splice(i,1);continue;
+       }
+     }
      if(!p.hit&&!p.own&&me.hp>0&&hitsMe){
+       if(p.shotId&&confirmedShots.has(p.shotId)){projectiles.splice(i,1);continue}
+       if(p.shotId)confirmedShots.add(p.shotId);
        // A projectile collides once: stop immediately and notify its caster.
        p.hit=true;
        const applied=hurtLocal(p.damage,me.x,me.y,p.id,p.classId);
@@ -5132,6 +5165,8 @@ function updateRoster(){
     ctx.strokeStyle=me.swingSpecial?'#ffd17f':'#d3faff';ctx.lineWidth=3;ctx.stroke();ctx.restore();
   }
   renderCombat(t,dt);
+  if(respawnAt&&me.hp===0){const remaining=Math.max(0,Math.ceil((respawnAt-Date.now())/1000));txt('pixelDeathCount',String(remaining));if(Date.now()>=respawnAt)window.pixelRespawn()}
+  $('pixelRespawnButton').disabled=true;
   txt('pixelHpLabel','CAN: '+me.hp+' / '+maxHp());txt('pixelScoreLabel','SKOR: '+score);txt('pixelPlayerCount','OYUNCULAR: '+(others.size+1));
   if(others.size===0&&connected&&$('pixelGameStatus').textContent.includes('Bağlandın'))status('Odadasın. Arkadaşın aynı oda koduyla bağlanabilir.');
   updateRoster();updateBoard();
